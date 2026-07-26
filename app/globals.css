@@ -481,18 +481,18 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   margin-top: 35px;
   padding: 23px 26px;
 }
-.status-panel span { color: #aeb3ae; font-size: 9px; }
-.status-panel strong { font-size: 16px; }
-.status-panel p { color: #aeb3ae; font-size: 10px; margin: 0; text-align: right; }
+.status-panel span { color: #c3c7c3; font-size: 12px; }
+.status-panel strong { font-size: 19px; }
+.status-panel p { color: #c3c7c3; font-size: 13px; line-height: 1.6; margin: 0; text-align: right; }
 .metric-plan { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 45px; }
 .metric-plan article { border: 1px solid var(--line); margin-right: -1px; min-height: 190px; padding: 22px; }
 .metric-plan span { color: #9fa49f; font-size: 10px; }
 .metric-plan h2 { font-size: 17px; margin: 48px 0 12px; }
 .metric-plan p { color: var(--muted); font-size: 11px; line-height: 1.6; }
 .method-box { border-top: 2px solid var(--ink); margin-top: 55px; padding-top: 20px; }
-.method-box h2 { font-size: 18px; }
+.method-box h2 { font-size: 22px; }
 .method-box div { display: flex; flex-wrap: wrap; gap: 8px; }
-.method-box span { background: var(--soft); color: var(--muted); font-size: 10px; padding: 8px 10px; }
+.method-box span { background: var(--soft); color: var(--muted); font-size: 12px; padding: 9px 12px; }
 
 .guide-grid {
   display: grid;
@@ -515,21 +515,21 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   margin-top: 35px;
 }
 .meta-stat-grid article { border: 1px solid var(--line); padding: 20px; }
-.meta-stat-grid article > span { color: var(--muted); display: block; font-size: 9px; margin-bottom: 20px; }
+.meta-stat-grid article > span { color: var(--muted); display: block; font-size: 13px; margin-bottom: 20px; }
 .meta-stat-grid article > div { align-items: baseline; display: flex; justify-content: space-between; }
-.meta-stat-grid small { color: var(--muted); font-size: 8px; }
-.meta-stat-grid strong { font-size: 22px; letter-spacing: -.04em; }
-.meta-stat-grid article > b { color: var(--muted); display: block; font-size: 11px; margin: 6px 0; text-align: center; }
-.meta-stat-grid article > p { color: var(--point); font-size: 11px; font-weight: 800; margin: 15px 0 0; text-align: right; }
+.meta-stat-grid small { color: var(--muted); font-size: 12px; }
+.meta-stat-grid strong { font-size: 28px; letter-spacing: -.04em; }
+.meta-stat-grid article > b { color: var(--muted); display: block; font-size: 14px; margin: 7px 0; text-align: center; }
+.meta-stat-grid article > p { color: var(--point); font-size: 13px; font-weight: 800; margin: 15px 0 0; text-align: right; }
 .meta-detail { border-top: 2px solid var(--ink); display: grid; gap: 50px; grid-template-columns: 1fr 1fr; margin-top: 55px; padding-top: 25px; }
-.meta-detail > div > span { color: var(--point); font-size: 9px; font-weight: 800; }
-.meta-detail h2 { font-size: 24px; line-height: 1.35; margin: 12px 0; }
-.meta-detail p, .method-box > p { color: var(--muted); font-size: 11px; line-height: 1.8; }
-.meta-detail a { display: inline-block; font-size: 10px; font-weight: 700; margin-top: 10px; }
+.meta-detail > div > span { color: var(--point); font-size: 12px; font-weight: 800; }
+.meta-detail h2 { font-size: 28px; line-height: 1.35; margin: 12px 0; }
+.meta-detail p, .method-box > p { color: var(--muted); font-size: 15px; line-height: 1.8; }
+.meta-detail a { display: inline-block; font-size: 13px; font-weight: 700; margin-top: 10px; }
 .meta-detail dl { margin: 0; }
 .meta-detail dl div { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; padding: 11px 0; }
-.meta-detail dt { color: var(--muted); font-size: 10px; }
-.meta-detail dd { font-size: 12px; font-weight: 800; margin: 0; }
+.meta-detail dt { color: var(--muted); font-size: 13px; }
+.meta-detail dd { font-size: 15px; font-weight: 800; margin: 0; }
 .guide-grid li { align-items: center; gap: 18px; }
 .guide-grid li b { color: var(--ink); flex: 1; font-size: 10px; min-width: 0; overflow-wrap: anywhere; text-align: right; white-space: normal; }
 .guide-formulas { border-top: 2px solid var(--ink); display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 55px; }
