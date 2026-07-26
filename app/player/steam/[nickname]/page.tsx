@@ -2,7 +2,14 @@ import type { Metadata } from "next";
 import SiteFooter from "../../../../components/SiteFooter";
 import SiteHeader from "../../../../components/SiteHeader";
 import PlayerSearchForm from "../../../../components/PlayerSearchForm";
-import { getPlayerProfile, PlayerModeStats, PubgApiError } from "../../../../lib/pubg";
+import PlayerTools from "../../../../components/PlayerTools";
+import {
+  getPlayerProfile,
+  PlayerModeStats,
+  PlayerProfile,
+  PubgApiError,
+  RecentMatch,
+} from "../../../../lib/pubg";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +75,77 @@ function time(seconds: number) {
   return `${minutes}분 ${remain}초`;
 }
 
+type MatchGroup = {
+  games: number;
+  kills: number;
+  damage: number;
+  wins: number;
+  top10s: number;
+};
+
+function groupMatches(matches: RecentMatch[], key: "mapName" | "gameMode") {
+  const groups = new Map<string, MatchGroup>();
+  for (const match of matches) {
+    const current = groups.get(match[key]) ?? { games: 0, kills: 0, damage: 0, wins: 0, top10s: 0 };
+    current.games += 1;
+    current.kills += match.kills;
+    current.damage += match.damage;
+    current.wins += match.placement === 1 ? 1 : 0;
+    current.top10s += match.placement > 0 && match.placement <= 10 ? 1 : 0;
+    groups.set(match[key], current);
+  }
+  return [...groups.entries()].sort((a, b) => b[1].games - a[1].games);
+}
+
+function recentAverage(matches: RecentMatch[]) {
+  const games = matches.length || 1;
+  return {
+    kills: matches.reduce((sum, match) => sum + match.kills, 0) / games,
+    damage: matches.reduce((sum, match) => sum + match.damage, 0) / games,
+    placement: matches.reduce((sum, match) => sum + match.placement, 0) / games,
+    survival: matches.reduce((sum, match) => sum + match.survivalSeconds, 0) / games,
+    longestKill: Math.max(0, ...matches.map((match) => match.longestKill)),
+    movement: matches.reduce((sum, match) => sum + match.walkDistance + match.rideDistance, 0) / games,
+  };
+}
+
+function playStyle(matches: RecentMatch[]) {
+  const average = recentAverage(matches);
+  if (average.kills >= 2 || average.damage >= 250) {
+    return { name: "교전 주도형", description: "최근 경기에서 킬과 피해량이 높습니다. 초반 교전과 주도권 확보에 강한 유형입니다." };
+  }
+  if (average.longestKill >= 150) {
+    return { name: "원거리 견제형", description: "장거리 킬 기록이 두드러집니다. DMR·SR을 활용한 거리 유지에 강점이 있습니다." };
+  }
+  if (average.placement <= 10 && average.survival >= 1_100) {
+    return { name: "생존 운영형", description: "생존 시간과 순위가 안정적입니다. 자기장 운영과 후반 진입을 중시하는 유형입니다." };
+  }
+  if (average.movement >= 5_000) {
+    return { name: "기동 운영형", description: "경기당 이동 거리가 깁니다. 차량과 로테이션을 적극적으로 활용하는 유형입니다." };
+  }
+  return { name: "균형 성장형", description: "교전과 생존 지표가 고르게 분포합니다. 최근 표본이 쌓일수록 유형이 더 정교해집니다." };
+}
+
+function profileMetrics(profile: PlayerProfile) {
+  const ranked = preferredMode(profile.rankedModes);
+  const season = preferredMode(profile.seasonModes);
+  const [modeKey, stats] = ranked ?? season ?? ["squad-fpp", {}];
+  const rounds = Number(stats.roundsPlayed ?? 0);
+  const wins = Number(stats.wins ?? 0);
+  const kills = Number(stats.kills ?? 0);
+  const deaths = Number(stats.deaths ?? Math.max(rounds - wins, 0));
+  return {
+    modeKey,
+    stats,
+    ranked: Boolean(ranked),
+    rounds,
+    wins,
+    kills,
+    kd: stats.kdr ?? (deaths ? kills / deaths : kills),
+    adr: rounds ? Number(stats.damageDealt ?? 0) / rounds : 0,
+  };
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -83,15 +161,20 @@ export async function generateMetadata({
 
 export default async function PlayerPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ nickname: string }>;
+  searchParams: Promise<{ compare?: string }>;
 }) {
   const { nickname } = await params;
+  const { compare } = await searchParams;
   const decoded = decodeURIComponent(nickname);
-  let profile = null;
+  let profile: PlayerProfile | null = null;
+  let comparison: PlayerProfile | null = null;
   let error = "";
   try {
     profile = await getPlayerProfile(decoded);
+    if (compare) comparison = await getPlayerProfile(decodeURIComponent(compare));
   } catch (cause) {
     if (cause instanceof PubgApiError && cause.status === 429) {
       error = "현재 검색 요청이 많습니다. 잠시 후 다시 시도해 주세요.";
@@ -119,15 +202,14 @@ export default async function PlayerPage({
     );
   }
 
-  const ranked = preferredMode(profile.rankedModes);
-  const season = preferredMode(profile.seasonModes);
-  const [modeKey, stats] = ranked ?? season ?? ["squad-fpp", {}];
-  const rounds = Number(stats.roundsPlayed ?? 0);
-  const wins = Number(stats.wins ?? 0);
-  const kills = Number(stats.kills ?? 0);
-  const deaths = Number(stats.deaths ?? Math.max(rounds - wins, 0));
-  const kd = stats.kdr ?? (deaths ? kills / deaths : kills);
-  const adr = rounds ? Number(stats.damageDealt ?? 0) / rounds : 0;
+  const { modeKey, stats, ranked, rounds, wins, kills, kd, adr } = profileMetrics(profile);
+  const maps = groupMatches(profile.recentMatches, "mapName");
+  const modes = groupMatches(profile.recentMatches, "gameMode");
+  const style = playStyle(profile.recentMatches);
+  const recent = recentAverage(profile.recentMatches.slice(0, 5));
+  const previous = recentAverage(profile.recentMatches.slice(5, 10));
+  const topWeapon = profile.weaponStats[0];
+  const topAttachment = profile.attachmentStats[0];
 
   return (
     <main>
@@ -141,6 +223,7 @@ export default async function PlayerPage({
           </div>
           <PlayerSearchForm compact />
         </section>
+        <PlayerTools nickname={profile.name} />
 
         <section className="player-summary">
           <article className="player-tier">
@@ -156,6 +239,128 @@ export default async function PlayerPage({
             <div><dt>킬</dt><dd>{number(kills)}</dd></div>
             <div><dt>최장 거리 킬</dt><dd>{number(stats.longestKill, 0)}m</dd></div>
           </dl>
+        </section>
+
+        {comparison ? (
+          <section className="player-comparison">
+            <div className="home-section-head">
+              <div><span>HEAD TO HEAD</span><h2>플레이어 비교</h2></div>
+              <p>각 플레이어의 현재 시즌 주력 모드 기준</p>
+            </div>
+            <div className="comparison-table">
+              {[
+                ["플레이어", profile.name, comparison.name],
+                ["K/D", number(kd, 2), number(profileMetrics(comparison).kd, 2)],
+                ["평균 피해량", number(adr, 1), number(profileMetrics(comparison).adr, 1)],
+                ["승률", ratio(stats.winRatio ?? (rounds ? wins / rounds : 0)), ratio(profileMetrics(comparison).stats.winRatio)],
+                ["최근 5경기 평균 킬", number(recent.kills, 1), number(recentAverage(comparison.recentMatches.slice(0, 5)).kills, 1)],
+                ["최근 5경기 평균 피해", number(recent.damage, 1), number(recentAverage(comparison.recentMatches.slice(0, 5)).damage, 1)],
+              ].map(([label, first, second]) => (
+                <div key={label}>
+                  <span>{label}</span>
+                  <strong>{first}</strong>
+                  <strong>{second}</strong>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="player-analysis-grid">
+          <article className="style-card">
+            <span>PLAY STYLE</span>
+            <h2>{style.name}</h2>
+            <p>{style.description}</p>
+            <dl>
+              <div><dt>최근 평균 킬</dt><dd>{number(recent.kills, 1)}</dd></div>
+              <div><dt>최근 평균 피해</dt><dd>{number(recent.damage, 0)}</dd></div>
+              <div><dt>평균 생존</dt><dd>{time(recent.survival)}</dd></div>
+            </dl>
+          </article>
+          <article className="trend-card">
+            <span>RECENT FORM</span>
+            <h2>최근 경기 흐름</h2>
+            <div>
+              <p>평균 킬 <strong>{number(recent.kills - previous.kills, 1)}</strong></p>
+              <p>평균 피해 <strong>{number(recent.damage - previous.damage, 1)}</strong></p>
+              <p>평균 순위 <strong>{number(recent.placement, 1)}위</strong></p>
+            </div>
+            <small>최근 5경기와 그 이전 5경기를 비교한 값입니다.</small>
+          </article>
+          <article className="recommend-card">
+            <span>PERSONAL PICK</span>
+            <h2>맞춤 추천</h2>
+            <p>
+              {topWeapon
+                ? `${topWeapon.name}에서 최근 가장 많은 킬이 확인됐습니다. 총기 도감에서 거리별 TTK와 추천 파츠를 함께 확인해 보세요.`
+                : style.name === "원거리 견제형"
+                  ? "DMR·SR의 거리별 피해 감소와 배율 조합을 우선 확인해 보세요."
+                  : "최근 킬 무기 표본이 더 쌓이면 개인 총기 추천이 표시됩니다."}
+            </p>
+            {topAttachment ? <b>자주 장착한 파츠 · {topAttachment.name}</b> : null}
+          </article>
+        </section>
+
+        <section className="player-breakdown">
+          <div className="home-section-head">
+            <div><span>RECENT BREAKDOWN</span><h2>맵·모드별 전적</h2></div>
+            <p>최근 최대 10경기 표본</p>
+          </div>
+          <div className="breakdown-columns">
+            <div>
+              <h3>맵별</h3>
+              {maps.map(([key, value]) => (
+                <article key={key}>
+                  <strong>{mapNames[key] ?? key}</strong>
+                  <span>{value.games}경기</span>
+                  <span>K/D {number(value.kills / Math.max(value.games - value.wins, 1), 2)}</span>
+                  <span>ADR {number(value.damage / value.games, 0)}</span>
+                  <span>Top 10 {ratio(value.top10s / value.games)}</span>
+                </article>
+              ))}
+            </div>
+            <div>
+              <h3>모드별</h3>
+              {modes.map(([key, value]) => (
+                <article key={key}>
+                  <strong>{modeNames[key] ?? key}</strong>
+                  <span>{value.games}경기</span>
+                  <span>평균 킬 {number(value.kills / value.games, 1)}</span>
+                  <span>ADR {number(value.damage / value.games, 0)}</span>
+                  <span>승률 {ratio(value.wins / value.games)}</span>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="player-loadout-report">
+          <div className="home-section-head">
+            <div><span>TELEMETRY REPORT</span><h2>내 총기·파츠 리포트</h2></div>
+            <p>최근 최대 5경기의 킬·장착 이벤트 기준</p>
+          </div>
+          <div className="loadout-columns">
+            <div>
+              <h3>킬 무기</h3>
+              {profile.weaponStats.length ? profile.weaponStats.slice(0, 6).map((weapon) => (
+                <article key={weapon.name}>
+                  <strong>{weapon.name}</strong>
+                  <span>{weapon.kills}킬</span>
+                  <span>평균 {number(weapon.averageDistance, 0)}m</span>
+                  <span>최장 {number(weapon.longestDistance, 0)}m</span>
+                </article>
+              )) : <p className="player-no-matches">최근 표본에서 확인된 킬 무기가 없습니다.</p>}
+            </div>
+            <div>
+              <h3>자주 장착한 파츠</h3>
+              {profile.attachmentStats.length ? profile.attachmentStats.slice(0, 8).map((attachment) => (
+                <article key={attachment.name}>
+                  <strong>{attachment.name}</strong>
+                  <span>{attachment.equips}회 장착</span>
+                </article>
+              )) : <p className="player-no-matches">최근 표본에서 확인된 파츠 장착 기록이 없습니다.</p>}
+            </div>
+          </div>
         </section>
 
         <section className="recent-matches">
@@ -176,6 +381,9 @@ export default async function PlayerPage({
                     <div><dt>킬</dt><dd>{match.kills}</dd></div>
                     <div><dt>피해량</dt><dd>{number(match.damage, 0)}</dd></div>
                     <div><dt>생존</dt><dd>{time(match.survivalSeconds)}</dd></div>
+                    <div><dt>헤드샷</dt><dd>{match.headshotKills}</dd></div>
+                    <div><dt>최장 킬</dt><dd>{number(match.longestKill, 0)}m</dd></div>
+                    <div><dt>이동</dt><dd>{number((match.walkDistance + match.rideDistance) / 1000, 1)}km</dd></div>
                   </dl>
                   <time dateTime={match.createdAt}>
                     {match.createdAt ? new Date(match.createdAt).toLocaleDateString("ko-KR") : "날짜 없음"}
@@ -189,7 +397,7 @@ export default async function PlayerPage({
         </section>
 
         <p className="player-data-note">
-          PUBG 공식 API의 Steam PC 데이터입니다. 최근 매치는 최대 10개를 표시하며 API 갱신 시점에 따라 게임 직후 기록이 늦게 보일 수 있습니다.
+          PUBG 공식 API와 텔레메트리의 Steam PC 데이터입니다. 플레이 스타일과 추천은 최근 표본을 바탕으로 계산한 BGI 분석이며 공식 PUBG 평가가 아닙니다. 최근 매치는 최대 10개를 표시하며 API 갱신 시점에 따라 게임 직후 기록이 늦게 보일 수 있습니다.
         </p>
       </div>
       <SiteFooter />

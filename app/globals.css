@@ -501,6 +501,14 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .player-heading p { color: var(--muted); font-size: 13px; margin: 0; }
 .player-search.compact { color: var(--ink); }
 .player-search.compact input { border: 1px solid var(--line); border-right: 0; }
+.player-tools { align-items: end; border-bottom: 1px solid var(--line); display: flex; gap: 25px; justify-content: space-between; padding: 18px 0; }
+.player-tools form { display: grid; gap: 6px; width: min(430px, 100%); }
+.player-tools label { color: var(--muted); font-size: 10px; font-weight: 700; }
+.player-tools form > div { display: grid; grid-template-columns: 1fr auto; }
+.player-tools input { border: 1px solid var(--line); font: inherit; font-size: 12px; min-width: 0; padding: 10px 12px; }
+.player-tools button { background: white; border: 1px solid var(--line); cursor: pointer; font-size: 11px; font-weight: 700; padding: 10px 14px; }
+.player-tools form button { background: var(--ink); color: white; }
+.player-tools > div { display: flex; gap: 8px; }
 .player-summary { display: grid; grid-template-columns: 280px 1fr; margin-top: 30px; }
 .player-tier { background: var(--ink); color: white; padding: 25px; }
 .player-tier > span { color: #75c894; display: block; font-size: 10px; font-weight: 800; margin-bottom: 22px; }
@@ -511,6 +519,31 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .player-summary > dl > div:nth-child(3n) { border-right: 0; }
 .player-summary dt { color: var(--muted); font-size: 10px; }
 .player-summary dd { font-size: 23px; font-weight: 800; margin: 7px 0 0; }
+.player-comparison, .player-breakdown, .player-loadout-report { margin-top: 55px; }
+.comparison-table { border-top: 1px solid var(--line); }
+.comparison-table > div { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid var(--line); padding: 13px 4px; }
+.comparison-table span { color: var(--muted); font-size: 10px; }
+.comparison-table strong { font-size: 14px; }
+.player-analysis-grid { display: grid; gap: 0; grid-template-columns: repeat(3, 1fr); margin-top: 55px; }
+.player-analysis-grid article { border: 1px solid var(--line); min-height: 245px; padding: 25px; }
+.player-analysis-grid article + article { border-left: 0; }
+.player-analysis-grid article > span { color: var(--point); font-size: 9px; font-weight: 800; letter-spacing: .1em; }
+.player-analysis-grid h2 { font-size: 25px; margin: 14px 0; }
+.player-analysis-grid p { color: var(--muted); font-size: 12px; line-height: 1.7; }
+.style-card dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 25px 0 0; }
+.style-card dt { color: var(--muted); font-size: 9px; }
+.style-card dd { font-size: 14px; font-weight: 800; margin: 5px 0 0; }
+.trend-card > div { display: grid; gap: 6px; }
+.trend-card > div p { display: flex; justify-content: space-between; margin: 0; }
+.trend-card small { color: var(--muted); display: block; font-size: 9px; margin-top: 20px; }
+.recommend-card b { display: block; font-size: 11px; margin-top: 22px; }
+.breakdown-columns, .loadout-columns { display: grid; gap: 28px; grid-template-columns: 1fr 1fr; }
+.breakdown-columns h3, .loadout-columns h3 { font-size: 13px; margin: 18px 0 10px; }
+.breakdown-columns article, .loadout-columns article { align-items: center; border-top: 1px solid var(--line); display: grid; gap: 12px; grid-template-columns: 1.5fr repeat(4, 1fr); padding: 12px 4px; }
+.loadout-columns article { grid-template-columns: 1.5fr repeat(3, 1fr); }
+.loadout-columns > div:last-child article { grid-template-columns: 1fr auto; }
+.breakdown-columns strong, .loadout-columns strong { font-size: 12px; }
+.breakdown-columns span, .loadout-columns span { color: var(--muted); font-size: 10px; }
 .recent-matches { margin-top: 55px; }
 .recent-matches .home-section-head > p { color: var(--muted); font-size: 11px; margin: 0; }
 .match-list { border-top: 1px solid var(--line); }
@@ -526,7 +559,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .match-list article > div span { color: var(--muted); font-size: 10px; }
 .match-list article > div strong { font-size: 22px; }
 .match-list article > p { font-size: 12px; font-weight: 700; margin: 0; }
-.match-list dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; }
+.match-list dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; row-gap: 10px; }
 .match-list dl div { border-left: 1px solid var(--line); padding-left: 18px; }
 .match-list dt { color: var(--muted); font-size: 9px; }
 .match-list dd { font-size: 14px; font-weight: 800; margin: 5px 0 0; }
@@ -750,6 +783,9 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .home-player-search, .player-heading, .player-summary { grid-template-columns: 1fr; }
   .player-heading { gap: 25px; }
   .player-heading .player-search { max-width: 520px; }
+  .player-analysis-grid { grid-template-columns: 1fr; }
+  .player-analysis-grid article + article { border-left: 1px solid var(--line); border-top: 0; }
+  .breakdown-columns, .loadout-columns { grid-template-columns: 1fr; }
   .match-list article { grid-template-columns: 85px 85px 1fr; }
   .match-list time { display: none; }
   .featured-weapons, .weapon-feature-grid { grid-template-columns: repeat(2, 1fr); }
@@ -770,12 +806,19 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .page-heading p { overflow-wrap: anywhere; }
   .home-lead h1 { font-size: 42px; }
   .home-player-search { gap: 24px; padding: 24px 20px; }
+  .player-tools { align-items: stretch; flex-direction: column; }
+  .player-tools > div { display: grid; grid-template-columns: 1fr 1fr; }
   .player-summary > dl { grid-template-columns: repeat(2, 1fr); }
   .player-summary > dl > div:nth-child(3n) { border-right: 1px solid var(--line); }
   .player-summary > dl > div:nth-child(2n) { border-right: 0; }
   .match-list article { gap: 10px; grid-template-columns: 70px 1fr; }
   .match-list article > p { text-align: right; }
   .match-list dl { grid-column: 1 / -1; }
+  .comparison-table > div { grid-template-columns: 90px 1fr 1fr; }
+  .breakdown-columns article { gap: 7px; grid-template-columns: 1.4fr repeat(2, 1fr); }
+  .breakdown-columns article span:nth-last-child(-n+2) { display: none; }
+  .loadout-columns article { grid-template-columns: 1.4fr 1fr; }
+  .loadout-columns article span:last-child { display: none; }
   .recent-patch-list > a { gap: 10px; grid-template-columns: 62px 48px 1fr auto; }
   .recent-patch-list p { display: none; }
   .featured-weapons, .weapon-feature-grid, .home-destinations, .guide-grid { grid-template-columns: minmax(0, 1fr); }
