@@ -375,6 +375,49 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .lead-action p { color: #b9beb9; font-size: 11px; line-height: 1.6; }
 .lead-action b { display: block; font-size: 11px; margin-top: 28px; }
 
+.home-player-search {
+  align-items: end;
+  background: var(--ink);
+  color: white;
+  display: grid;
+  gap: 50px;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 28px;
+  padding: 28px 32px;
+}
+.home-player-search > div > span,
+.player-empty > span,
+.player-heading > div > span {
+  color: #75c894;
+  font-size: 10px;
+  font-weight: 800;
+}
+.home-player-search h2 { font-size: 25px; margin: 8px 0 10px; }
+.home-player-search p { color: #bfc5bf; font-size: 12px; margin: 0; }
+.player-search { display: grid; gap: 8px; }
+.player-search label { color: inherit; font-size: 11px; font-weight: 700; }
+.player-search > div { display: grid; grid-template-columns: 1fr auto; }
+.player-search input {
+  background: white;
+  border: 0;
+  border-radius: 0;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  min-width: 0;
+  padding: 13px 14px;
+}
+.player-search button {
+  background: var(--point);
+  border: 0;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 0 20px;
+}
+.player-search button:hover { background: #0f6635; }
+
 .home-section { padding-top: 70px; }
 .home-section-head {
   align-items: flex-end;
@@ -444,6 +487,58 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .home-destinations h2 { font-size: 27px; margin: 10px 0 16px; }
 .home-destinations p { color: var(--muted); font-size: 12px; line-height: 1.7; max-width: 420px; }
 .home-destinations b { display: block; font-size: 11px; margin-top: 28px; }
+
+.player-shell { min-height: calc(100vh - 150px); }
+.player-heading {
+  align-items: end;
+  border-bottom: 2px solid var(--ink);
+  display: grid;
+  gap: 50px;
+  grid-template-columns: 1fr 420px;
+  padding: 65px 0 30px;
+}
+.player-heading h1 { font-size: clamp(40px, 6vw, 66px); letter-spacing: -.06em; margin: 10px 0; }
+.player-heading p { color: var(--muted); font-size: 13px; margin: 0; }
+.player-search.compact { color: var(--ink); }
+.player-search.compact input { border: 1px solid var(--line); border-right: 0; }
+.player-summary { display: grid; grid-template-columns: 280px 1fr; margin-top: 30px; }
+.player-tier { background: var(--ink); color: white; padding: 25px; }
+.player-tier > span { color: #75c894; display: block; font-size: 10px; font-weight: 800; margin-bottom: 22px; }
+.player-tier > strong { display: block; font-size: 27px; letter-spacing: -.04em; }
+.player-tier > p { color: #bfc5bf; font-size: 11px; margin: 10px 0 0; }
+.player-summary > dl { border-bottom: 1px solid var(--line); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; }
+.player-summary > dl > div { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 20px; }
+.player-summary > dl > div:nth-child(3n) { border-right: 0; }
+.player-summary dt { color: var(--muted); font-size: 10px; }
+.player-summary dd { font-size: 23px; font-weight: 800; margin: 7px 0 0; }
+.recent-matches { margin-top: 55px; }
+.recent-matches .home-section-head > p { color: var(--muted); font-size: 11px; margin: 0; }
+.match-list { border-top: 1px solid var(--line); }
+.match-list article {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 22px;
+  grid-template-columns: 110px 100px 1fr 90px;
+  padding: 15px 4px;
+}
+.match-list article > div { display: flex; flex-direction: column; gap: 5px; }
+.match-list article > div span { color: var(--muted); font-size: 10px; }
+.match-list article > div strong { font-size: 22px; }
+.match-list article > p { font-size: 12px; font-weight: 700; margin: 0; }
+.match-list dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; }
+.match-list dl div { border-left: 1px solid var(--line); padding-left: 18px; }
+.match-list dt { color: var(--muted); font-size: 9px; }
+.match-list dd { font-size: 14px; font-weight: 800; margin: 5px 0 0; }
+.match-list time { color: var(--muted); font-size: 10px; text-align: right; }
+.player-data-note, .player-no-matches { color: var(--muted); font-size: 11px; line-height: 1.7; }
+.player-data-note { border-top: 1px solid var(--line); margin: 35px 0 0; padding-top: 15px; }
+.player-no-matches { background: var(--soft); padding: 25px; }
+.player-empty { margin: 90px auto; max-width: 650px; text-align: center; }
+.player-empty h1 { font-size: 38px; letter-spacing: -.05em; margin: 12px 0; }
+.player-empty > p { color: var(--muted); font-size: 14px; margin: 0 0 28px; }
+.player-empty .player-search { color: var(--ink); text-align: left; }
+.player-empty .player-search input { border: 1px solid var(--line); border-right: 0; }
 
 .subpage-shell { min-height: calc(100vh - 150px); padding-bottom: 90px; }
 .page-heading {
@@ -652,6 +747,11 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .site-header nav a { flex: 0 0 auto; padding: 11px 0; }
   .home-lead { gap: 30px; grid-template-columns: 1fr; }
   .lead-action { min-height: 190px; }
+  .home-player-search, .player-heading, .player-summary { grid-template-columns: 1fr; }
+  .player-heading { gap: 25px; }
+  .player-heading .player-search { max-width: 520px; }
+  .match-list article { grid-template-columns: 85px 85px 1fr; }
+  .match-list time { display: none; }
   .featured-weapons, .weapon-feature-grid { grid-template-columns: repeat(2, 1fr); }
   .patch-archive article { grid-template-columns: 100px 1fr; }
   .patch-dates { grid-column: 2; }
@@ -669,6 +769,13 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 @media (max-width: 520px) {
   .page-heading p { overflow-wrap: anywhere; }
   .home-lead h1 { font-size: 42px; }
+  .home-player-search { gap: 24px; padding: 24px 20px; }
+  .player-summary > dl { grid-template-columns: repeat(2, 1fr); }
+  .player-summary > dl > div:nth-child(3n) { border-right: 1px solid var(--line); }
+  .player-summary > dl > div:nth-child(2n) { border-right: 0; }
+  .match-list article { gap: 10px; grid-template-columns: 70px 1fr; }
+  .match-list article > p { text-align: right; }
+  .match-list dl { grid-column: 1 / -1; }
   .recent-patch-list > a { gap: 10px; grid-template-columns: 62px 48px 1fr auto; }
   .recent-patch-list p { display: none; }
   .featured-weapons, .weapon-feature-grid, .home-destinations, .guide-grid { grid-template-columns: minmax(0, 1fr); }

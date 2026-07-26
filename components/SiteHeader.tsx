@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 
 const navigation = [
+  { href: "/#player-search", label: "전적 검색" },
   { href: "/patch-notes", label: "패치노트" },
   { href: "/weapons", label: "총기 도감" },
   { href: "/calculator", label: "TTK 계산기" },
@@ -21,7 +22,11 @@ export default function SiteHeader() {
       </a>
       <nav aria-label="주요 메뉴">
         {navigation.map((item) => (
-          <a className={pathname === item.href ? "active" : ""} href={item.href} key={item.href}>
+          <a
+            className={pathname === item.href || (item.href === "/#player-search" && pathname.startsWith("/player")) ? "active" : ""}
+            href={item.href}
+            key={item.href}
+          >
             {item.label}
           </a>
         ))}

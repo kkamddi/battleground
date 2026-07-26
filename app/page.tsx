@@ -1,5 +1,6 @@
 import SiteFooter from "../components/SiteFooter";
 import SiteHeader from "../components/SiteHeader";
+import PlayerSearchForm from "../components/PlayerSearchForm";
 
 const weaponImageBase =
   "https://wstatic-prod.pubg.com/web/live/static/game-info/weapons/images/viewer";
@@ -38,6 +39,15 @@ export default function Home() {
             <p>17개 훈련 챕터 · 월드맵 개편</p>
             <b>요약 보기 →</b>
           </a>
+        </section>
+
+        <section className="home-player-search" id="player-search">
+          <div>
+            <span>PLAYER SEARCH</span>
+            <h2>게임 닉네임으로 전적 검색</h2>
+            <p>Steam PUBG의 현재 시즌 경쟁전과 최근 매치를 확인합니다.</p>
+          </div>
+          <PlayerSearchForm />
         </section>
 
         <section className="home-section">
