@@ -42,9 +42,11 @@ const weaponAliases: Record<string, string> = {
 const attachmentAliases: Record<string, string> = {
   LowerThumbGrip: "엄지 그립",
   LowerTiltedGrip: "틸티드 그립",
+  Magazine_Extended_Large: "대용량 탄창",
   Magazine_Extended_Medium: "대용량 탄창",
   Magazine_ExtendedQuickDraw_Medium: "대용량 퀵드로우 탄창",
   Magazine_QuickDraw_Large: "퀵드로우 탄창",
+  Muzzle_AR_MuzzleBrake: "총구 제동기",
   Muzzle_Compensator_Medium: "보정기",
   Muzzle_FlashHider_Large: "소염기",
   Muzzle_Suppressor_SniperRifle: "저격소총용 소음기",
@@ -66,7 +68,8 @@ const attachmentAliases: Record<string, string> = {
 
 function label(value: string, aliases: Record<string, string>) {
   const normalized = value.replace(/_C$/, "");
-  return aliases[value] ?? aliases[normalized] ?? normalized.replace(/^Item_(Weapon|Attach_Weapon)_/, "").replaceAll("_", " ");
+  const itemName = normalized.replace(/^Item_(Weapon|Attach_Weapon)_/, "");
+  return aliases[value] ?? aliases[normalized] ?? aliases[itemName] ?? itemName.replaceAll("_", " ");
 }
 
 async function query<T>(table: string, search: URLSearchParams): Promise<T[]> {
