@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import SiteFooter from "../../components/SiteFooter";
 import SiteHeader from "../../components/SiteHeader";
+
+export const metadata: Metadata = {
+  title: "PUBG 플레이 가이드",
+  description: "입문, 근거리, 중거리, 장거리 상황별 PUBG 총기 조합과 추천 파츠, DPS·TTK 계산 기준을 확인하세요.",
+  alternates: { canonical: "/guides" },
+};
 
 const guideGroups = [
   {

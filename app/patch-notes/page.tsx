@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import SiteFooter from "../../components/SiteFooter";
 import SiteHeader from "../../components/SiteHeader";
+
+export const metadata: Metadata = {
+  title: "PUBG 패치노트",
+  description: "PUBG PC·콘솔 공식 패치노트의 총기, 맵, 시스템 핵심 변경사항을 버전별로 확인하세요.",
+  alternates: { canonical: "/patch-notes" },
+};
 
 const patches = [
   { version: "42.2", date: "2026.07.14", pc: "07.15", console: "07.23", title: "기본 훈련 전면 개편", points: ["17개 훈련 챕터와 초심자 훈련소", "태이고·론도 비밀의 방 스폰 변경", "총기 기본 성능 변경 없음"], url: "https://www.pubg.com/ko/news/10459" },

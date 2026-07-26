@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import SiteFooter from "../../components/SiteFooter";
 import SiteHeader from "../../components/SiteHeader";
+
+export const metadata: Metadata = {
+  title: "PUBG 메타 통계",
+  description: "PUBG 공식 건 플레이 지표와 패치 전후 총기 사용률, 킬 비율, 평균 교전 거리 변화를 확인하세요.",
+  alternates: { canonical: "/meta" },
+};
 
 const officialStats = [
   { name: "일반전 DMR 사용률", before: "16.3%", after: "10.5%", change: "-5.8%p" },
