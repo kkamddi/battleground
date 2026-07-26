@@ -50,7 +50,7 @@ def main() -> None:
         for item in seasons.get("data", [])
         if item.get("attributes", {}).get("isCurrentSeason") and not item.get("attributes", {}).get("isOffseason")
     )
-    leaderboard_shard = os.getenv("LEADERBOARD_SHARD", PLATFORM)
+    leaderboard_shard = os.getenv("LEADERBOARD_SHARD", "pc-as")
     leaderboard = api_json(f"https://api.pubg.com/shards/{leaderboard_shard}/leaderboards/{current}/{GAME_MODE}")
     included = [item for item in leaderboard.get("included", []) if item.get("type") == "player"]
     limit = max(1, min(int(os.getenv("TOP_PLAYER_LIMIT", "10")), 25))
@@ -105,4 +105,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
