@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 };
 
 const patches = [
-  { version: "42.2", date: "2026.07.14", pc: "07.15", console: "07.23", title: "기본 훈련 전면 개편", points: ["17개 훈련 챕터와 초심자 훈련소", "태이고·론도 비밀의 방 스폰 변경", "총기 기본 성능 변경 없음"], url: "https://www.pubg.com/ko/news/10459" },
-  { version: "42.1", date: "2026.06.16", pc: "06.17", console: "06.25", title: "SLR 상향과 월드 스폰 정리", points: ["SLR 탄속 840 → 870m/s", "수평 반동 약 10% 감소", "일부 무기 월드 스폰 제외"], url: "https://www.pubg.com/ko/news/10179" },
-  { version: "41.2", date: "2026.05.12", pc: "05.13", console: "05.21", title: "PAYDAY 모드와 시스템 업데이트", points: ["PAYDAY 신규 모드", "게임 플레이 및 서비스 개선", "버그 수정"], url: "https://www.pubg.com/ko/news/10080" },
-  { version: "41.1", date: "2026.04.08", pc: "04.08", console: "04.16", title: "시즌 업데이트와 무기 정리 예고", points: ["시즌 콘텐츠 업데이트", "42.1 무기 삭제 사전 안내", "맵 서비스 변경"], url: "https://www.pubg.com/ko/news/9926" },
+  { version: "42.2", date: "2026.07.14", pc: "07.15", console: "07.23", title: "기본 훈련·월드맵 개편", points: ["기본 훈련 17개 챕터·초보자 훈련장 추가", "태이고·론도 비밀의 방 총기 구성 변경", "월드맵에 지도·미션·매치 로그 탭 추가", "솔로 데스매치 기간 한정 운영"], url: "https://www.pubg.com/ko/news/10459" },
+  { version: "42.1", date: "2026.06.16", pc: "06.17", console: "06.25", title: "SLR 상향과 무기 6종 삭제", points: ["SLR 탄속 840 → 870m/s", "SLR 수평 반동 10% 감소", "SLR 초·중반 수직 반동 증가량 완화", "모신 나강·R45·DP-28·비존·P1911·QBU 삭제"], url: "https://www.pubg.com/ko/news/10179" },
+  { version: "41.2", date: "2026.05.12", pc: "05.13", console: "05.21", title: "PAYDAY·미라마 업데이트", points: ["PAYDAY 컬래버레이션 모드", "미라마 비밀의 방 추가", "근접 무기 처형 모션 추가", "블루칩 송신기 보급 호출 조건 조정"], url: "https://www.pubg.com/ko/news/10080" },
+  { version: "41.1", date: "2026.04.08", pc: "04.08", console: "04.16", title: "신규 부착물·그립 밸런스", points: ["1배율·4배율 전환 하이브리드 스코프 추가", "틸티드 그립 추가·앵글 손잡이 삭제", "하프 그립 수평 반동 제어 8% → 16%", "드라구노프 수직 반동 20%·수평 반동 15% 감소"], url: "https://www.pubg.com/ko/news/9926" },
   { version: "40.2", date: "2026.03.10", pc: "03.11", console: "03.19", title: "PUBG 9주년 업데이트", points: ["9주년 콘텐츠", "월드 및 시스템 개선", "서비스 업데이트"], url: "https://www.pubg.com/ko/news/9809" },
   { version: "40.1", date: "2026.02.03", pc: "02.04", console: "02.12", title: "Mk12 하향·SLR 상향", points: ["Mk12 피해량 44 → 43", "Mk12 수평 반동 8% 증가", "SLR 수평 반동 4% 감소"], url: "https://www.pubg.com/ko/news/9690" },
   { version: "39.2", date: "2026.01.06", pc: "01.07", console: "01.15", title: "에란겔: 서브제로 심화", points: ["위성체와 특수 내열 수트", "론도 스폰 재조정", "PC 2차 비밀번호"], url: "https://www.pubg.com/ko/news/9635" },

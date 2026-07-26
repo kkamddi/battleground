@@ -35,7 +35,7 @@ export default function MetaPage() {
         </header>
         <div className="status-panel">
           <span>공식 공개 자료</span><strong>업데이트 37.1 전후 비교</strong>
-          <p>2025년 8월 데이터 · PUBG 개발일지 2025.10.13 공개</p>
+          <p>2026.07.26 기준 최신 공식 정량 분석 · PUBG 개발일지 2025.10.13 공개</p>
         </div>
         <section className="meta-stat-grid">
           {officialStats.map((stat) => (

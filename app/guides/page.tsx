@@ -25,7 +25,7 @@ const guideGroups = [
     label: "MID",
     title: "중거리 범용형",
     copy: "한 자리를 지키기보다 이동과 연속 교전을 함께 고려합니다.",
-    items: [["주무기", "AUG 또는 M416"], ["보조무기", "미니14 또는 SLR"], ["AR 파츠", "보정기 · 수직/하프 그립"], ["운용", "짧은 연사 후 재조준"]],
+    items: [["주무기", "AUG 또는 M416"], ["보조무기", "미니14 또는 SLR"], ["AR 파츠", "보정기 · 수직/하프/틸티드 그립"], ["조준경", "하이브리드 스코프 또는 3~4배율"]],
   },
   {
     label: "LONG",
@@ -63,6 +63,7 @@ export default function GuidesPage() {
           <div>
             <a href="https://pubg.com/ko/game-info/weapons/ar" target="_blank" rel="noreferrer">공식 무기 분류 ↗</a>
             <a href="https://www.pubg.com/ko/news/9273?category=patch_notes" target="_blank" rel="noreferrer">38.1 건 플레이 변경 ↗</a>
+            <a href="https://pubg.com/ko/news/9926" target="_blank" rel="noreferrer">41.1 부착물 변경 ↗</a>
           </div>
         </section>
       </div>

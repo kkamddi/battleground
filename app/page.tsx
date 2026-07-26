@@ -5,7 +5,7 @@ const weaponImageBase =
   "https://wstatic-prod.pubg.com/web/live/static/game-info/weapons/images/viewer";
 
 const recentPatches = [
-  { version: "42.2", date: "2026.07.14", title: "기본 훈련 개편", summary: "태이고·론도 비밀의 방 스폰 변경", href: "/patch-notes" },
+  { version: "42.2", date: "2026.07.14", title: "기본 훈련·월드맵 개편", summary: "17개 훈련 챕터와 솔로 데스매치", href: "/patch-notes" },
   { version: "42.1", date: "2026.06.16", title: "SLR 상향", summary: "탄속 증가와 수평 반동 감소", href: "/patch-notes" },
   { version: "41.2", date: "2026.05.12", title: "신규 모드와 시스템 개선", summary: "PAYDAY 모드 및 서비스 업데이트", href: "/patch-notes" },
 ];
@@ -35,7 +35,7 @@ export default function Home() {
           <a className="lead-action" href="/patch-notes">
             <span>최신 패치</span>
             <strong>42.2</strong>
-            <p>기본 훈련 개편 · 비밀의 방 스폰 변경</p>
+            <p>17개 훈련 챕터 · 월드맵 개편</p>
             <b>요약 보기 →</b>
           </a>
         </section>
@@ -60,7 +60,7 @@ export default function Home() {
         <section className="home-section">
           <div className="home-section-head">
             <div><span>WEAPON INDEX</span><h2>총기 빠르게 보기</h2></div>
-            <a href="/weapons">54종 전체 보기 →</a>
+            <a href="/weapons">48종 전체 보기 →</a>
           </div>
           <div className="featured-weapons">
             {featuredWeapons.map((weapon) => (
