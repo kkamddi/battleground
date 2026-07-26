@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 const navigation = [
   { href: "/patch-notes", label: "패치노트" },
   { href: "/weapons", label: "총기 도감" },
+  { href: "/calculator", label: "TTK 계산기" },
   { href: "/meta", label: "메타" },
   { href: "/guides", label: "가이드" },
 ];

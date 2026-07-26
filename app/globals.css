@@ -571,6 +571,54 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 }
 .weapon-thumb img { height: 100%; object-fit: contain; width: 100%; }
 
+.calculator-panel { margin-top: 35px; }
+.calculator-controls { border-bottom: 1px solid var(--line); border-top: 2px solid var(--ink); display: grid; gap: 16px; grid-template-columns: 1fr 1fr 1fr 2fr; padding: 18px 0; }
+.calculator-controls label { color: var(--muted); display: grid; font-size: 12px; font-weight: 700; gap: 8px; }
+.calculator-controls select { background: transparent; border: 1px solid var(--line); color: var(--ink); font: inherit; font-size: 14px; padding: 11px; }
+.distance-control span { display: flex; justify-content: space-between; }
+.distance-control b { color: var(--point); }
+.distance-control input { accent-color: var(--point); width: 100%; }
+.calculator-results { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); margin-top: 30px; }
+.calculator-results article { border: 1px solid var(--line); padding: 25px; }
+.calculator-results article > span, .damage-chart > div > span { color: var(--point); font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+.calculator-results h2 { font-size: 30px; margin: 8px 0 22px; }
+.calculator-results dl { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; }
+.calculator-results dl div { border-left: 1px solid var(--line); padding-left: 14px; }
+.calculator-results dl div:first-child { border-left: 0; padding-left: 0; }
+.calculator-results dt { color: var(--muted); font-size: 11px; }
+.calculator-results dd { font-size: 20px; font-weight: 800; margin: 6px 0 0; }
+.damage-chart { border-top: 2px solid var(--ink); margin-top: 45px; padding-top: 22px; }
+.damage-chart h2 { font-size: 25px; margin: 7px 0 15px; }
+.damage-chart svg { height: auto; overflow: visible; width: 100%; }
+.damage-chart line { stroke: var(--line); stroke-width: 1; }
+.damage-chart polyline { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 3; }
+.damage-chart .line-a { stroke: var(--point); }
+.damage-chart .line-b { stroke: var(--ink); stroke-dasharray: 7 5; }
+.damage-chart text { fill: var(--muted); font-size: 10px; }
+.damage-chart > p { align-items: center; display: flex; font-size: 12px; gap: 8px; justify-content: flex-end; }
+.damage-chart i { display: inline-block; height: 3px; margin-left: 12px; width: 18px; }
+.legend-a { background: var(--point); }
+.legend-b { background: var(--ink); }
+.calculation-notice { background: var(--soft); display: grid; gap: 20px; grid-template-columns: 110px 1fr; margin-top: 25px; padding: 20px; }
+.calculation-notice p { color: var(--muted); font-size: 13px; line-height: 1.7; margin: 0; }
+.live-meta { border-top: 2px solid var(--ink); margin-top: 55px; padding-top: 25px; }
+.live-meta .home-section-head { align-items: end; }
+.live-meta .home-section-head > p { color: var(--muted); font-size: 13px; margin: 0; text-align: right; }
+.live-meta-grid { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); margin-top: 22px; }
+.live-meta-grid > article { border: 1px solid var(--line); padding: 22px; }
+.live-meta-grid article > span { color: var(--point); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.live-meta-grid h3 { font-size: 19px; margin: 8px 0 18px; }
+.live-meta-grid ul { list-style: none; margin: 0; padding: 0; }
+.live-meta-grid li { border-top: 1px solid var(--line); display: grid; gap: 5px; grid-template-columns: 1fr auto; padding: 11px 0; }
+.live-meta-grid li strong, .live-meta-grid li b { font-size: 13px; }
+.live-meta-grid li b.positive { color: var(--point); }
+.live-meta-grid li b.negative { color: #b2473e; }
+.live-meta-grid li small { color: var(--muted); font-size: 10px; grid-column: 1 / -1; line-height: 1.5; }
+.collection-empty { color: var(--muted); font-size: 13px; line-height: 1.7; }
+.live-meta-note { color: var(--muted); font-size: 12px; line-height: 1.7; }
+.live-meta.unavailable { background: var(--soft); padding: 22px; }
+.live-meta.unavailable p { color: var(--muted); font-size: 13px; margin-bottom: 0; }
+
 @media (max-width: 820px) {
   .site-header {
     align-items: start;
@@ -600,6 +648,9 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .meta-stat-grid, .meta-detail { grid-template-columns: repeat(2, 1fr); }
   .guide-source { align-items: flex-start; display: grid; gap: 15px; }
   .weapon-toolbar { align-items: stretch; display: grid; gap: 10px; }
+  .calculator-controls { grid-template-columns: repeat(2, 1fr); }
+  .calculator-results dl { grid-template-columns: repeat(2, 1fr); row-gap: 18px; }
+  .live-meta-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 520px) {
@@ -616,6 +667,8 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .guide-grid li { display: grid; grid-template-columns: 65px minmax(0, 1fr); }
   .guide-grid li > span { min-width: 0; }
   .guide-source div { align-items: flex-start; flex-direction: column; }
+  .calculator-controls, .calculator-results { grid-template-columns: 1fr; }
+  .calculation-notice { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 820px) {

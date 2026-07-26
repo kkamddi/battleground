@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SiteFooter from "../../components/SiteFooter";
 import SiteHeader from "../../components/SiteHeader";
+import LiveMetaPanels from "./LiveMetaPanels";
 
 export const metadata: Metadata = {
   title: "PUBG 시즌 42 메타 통계",
@@ -57,6 +58,7 @@ export default function MetaPage() {
             ))}
           </dl>
         </section>
+        <LiveMetaPanels />
         <section className="method-box">
           <h2>표본 통계 안내</h2>
           <p>PUBG.ARMY가 수집한 시즌 42 매치의 킬 텔레메트리 스냅샷입니다. 전체 PUBG 이용자나 특정 지역·모드의 모집단 통계가 아니며, 수집 범위에 따라 편향될 수 있습니다.</p>

@@ -1,0 +1,44 @@
+name: BGI data sync
+
+on:
+  schedule:
+    - cron: "17 18 * * *"
+  workflow_dispatch:
+    inputs:
+      max_matches:
+        description: Maximum sampled matches to process
+        required: false
+        default: "100"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bgi-data-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      PUBG_API_KEY: ${{ secrets.PUBG_API_KEY }}
+      MAX_MATCHES: ${{ inputs.max_matches || '100' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Detect official patch notes
+        run: python scripts/patch_sync.py
+      - name: Aggregate PUBG telemetry sample
+        if: ${{ env.PUBG_API_KEY != '' }}
+        run: python scripts/telemetry_sync.py
+      - name: Sample official leaderboard player loadouts
+        if: ${{ env.PUBG_API_KEY != '' }}
+        run: python scripts/leaderboard_loadouts.py
+      - name: Generate patch before and after comparisons
+        if: ${{ env.PUBG_API_KEY != '' }}
+        run: python scripts/meta_compare.py
