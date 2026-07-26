@@ -25,6 +25,8 @@ type PlayerRow = {
 
 const weaponAliases: Record<string, string> = {
   WeapAK47: "AKM",
+  WeapAWM: "AWM",
+  WeapHK416: "M416",
   WeapKar98k: "Kar98k",
   WeapMP5K: "MP5K",
   WeapMk12: "Mk12",
@@ -63,7 +65,8 @@ const attachmentAliases: Record<string, string> = {
 };
 
 function label(value: string, aliases: Record<string, string>) {
-  return aliases[value] ?? value.replace(/^Item_(Weapon|Attach_Weapon)_/, "").replace(/_C$/, "").replaceAll("_", " ");
+  const normalized = value.replace(/_C$/, "");
+  return aliases[value] ?? aliases[normalized] ?? normalized.replace(/^Item_(Weapon|Attach_Weapon)_/, "").replaceAll("_", " ");
 }
 
 async function query<T>(table: string, search: URLSearchParams): Promise<T[]> {
