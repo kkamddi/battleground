@@ -3,24 +3,20 @@ import SiteFooter from "../../components/SiteFooter";
 import SiteHeader from "../../components/SiteHeader";
 
 export const metadata: Metadata = {
-  title: "PUBG 메타 통계",
-  description: "PUBG 공식 건 플레이 지표와 패치 전후 총기 사용률, 킬 비율, 평균 교전 거리 변화를 확인하세요.",
+  title: "PUBG 시즌 42 메타 통계",
+  description: "PUBG 시즌 42 텔레메트리 표본의 총기별 킬 점유율, 헤드샷 비율과 평균 교전 거리를 확인하세요.",
   alternates: { canonical: "/meta" },
 };
 
-const officialStats = [
-  { name: "일반전 DMR 사용률", before: "16.3%", after: "10.5%", change: "-5.8%p" },
-  { name: "경쟁전 DMR 사용률", before: "20.6%", after: "13.0%", change: "-7.6%p" },
-  { name: "일반전 SR 사용률", before: "13.1%", after: "16.4%", change: "+3.3%p" },
-  { name: "평균 교전 거리", before: "59.4m", after: "55.7m", change: "-3.7m" },
-];
-
-const matchImpact = [
-  ["22분 시점 DMR 킬 비율", "26.9% → 18.6%"],
-  ["22분 시점 SR 킬 비율", "12.7% → 17.6%"],
-  ["업데이트 후 AR 피해 비율", "30.3%"],
-  ["업데이트 후 DMR 피해 비율", "29.3%"],
-  ["업데이트 후 SR 피해 비율", "27.6%"],
+const currentMeta = [
+  { rank: 1, name: "AUG", share: "13.1%", kills: "172.2K", headshot: "26%", distance: "32m" },
+  { rank: 2, name: "M416", share: "9.5%", kills: "124.0K", headshot: "22%", distance: "29m" },
+  { rank: 3, name: "MP5K", share: "7.8%", kills: "101.6K", headshot: "17%", distance: "20m" },
+  { rank: 4, name: "Beryl M762", share: "7.6%", kills: "99.7K", headshot: "24%", distance: "26m" },
+  { rank: 5, name: "ACE32", share: "6.7%", kills: "88.2K", headshot: "24%", distance: "27m" },
+  { rank: 6, name: "M24", share: "6.4%", kills: "84.2K", headshot: "45%", distance: "114m" },
+  { rank: 7, name: "UMP45", share: "5.2%", kills: "67.6K", headshot: "19%", distance: "22m" },
+  { rank: 8, name: "AKM", share: "5.0%", kills: "65.7K", headshot: "24%", distance: "25m" },
 ];
 
 export default function MetaPage() {
@@ -30,41 +26,41 @@ export default function MetaPage() {
       <div className="page-shell subpage-shell">
         <header className="page-heading">
           <span>META DATA</span>
-          <h1>메타 통계</h1>
-          <p>PUBG가 공개한 건 플레이 지표와 향후 BGI 표본 통계를 출처별로 구분합니다.</p>
+          <h1>시즌 42 메타 통계</h1>
+          <p>42.2 라이브 시점의 시즌 42 누적 킬을 기준으로 총기 점유율과 교전 특성을 비교합니다.</p>
         </header>
         <div className="status-panel">
-          <span>공식 공개 자료</span><strong>업데이트 37.1 전후 비교</strong>
-          <p>2026.07.26 기준 최신 공식 정량 분석 · PUBG 개발일지 2025.10.13 공개</p>
+          <span>외부 텔레메트리 표본</span><strong>시즌 42 · 42.2 라이브 시점</strong>
+          <p>2026.07.26 조회 · 추적된 킬 1,311,521건 · 원본 서비스는 5분 주기 갱신</p>
         </div>
         <section className="meta-stat-grid">
-          {officialStats.map((stat) => (
+          {currentMeta.slice(0, 4).map((stat) => (
             <article key={stat.name}>
-              <span>{stat.name}</span>
-              <div><small>전</small><strong>{stat.before}</strong></div>
-              <b>→</b>
-              <div><small>후</small><strong>{stat.after}</strong></div>
-              <p>{stat.change}</p>
+              <span>#{stat.rank} · {stat.name}</span>
+              <div><small>킬 점유율</small><strong>{stat.share}</strong></div>
+              <b>·</b>
+              <div><small>기록된 킬</small><strong>{stat.kills}</strong></div>
+              <p>HS {stat.headshot} · 평균 {stat.distance}</p>
             </article>
           ))}
         </section>
         <section className="meta-detail">
           <div>
-            <span>공식 분석</span>
-            <h2>DMR 중심 장거리 교전에서 근접 교전으로 이동</h2>
-            <p>DMR 사용률과 중후반 영향력이 낮아지고 SR 비중이 상승했습니다. 평균 교전 거리도 3.7m 감소해 장거리 대치보다 가까운 거리의 교전이 늘어난 것으로 분석됐습니다.</p>
-            <a href="https://pubg.com/ko/news/9275" target="_blank" rel="noreferrer">공식 개발일지 원문 ↗</a>
+            <span>현재 표본 요약</span>
+            <h2>AUG가 킬 점유율 13.1%로 선두</h2>
+            <p>AUG와 M416이 상위 두 자리를 차지했고, MP5K와 Beryl M762가 뒤를 이었습니다. 이 수치는 획득률이 아니라 추적 매치에서 해당 수단으로 발생한 전체 킬의 비중입니다.</p>
+            <a href="https://www.pubg.army/de/weapons" target="_blank" rel="noreferrer">시즌 42 텔레메트리 원문 ↗</a>
           </div>
           <dl>
-            {matchImpact.map(([name, value]) => (
-              <div key={name}><dt>{name}</dt><dd>{value}</dd></div>
+            {currentMeta.slice(4).map((stat) => (
+              <div key={stat.name}><dt>#{stat.rank} {stat.name}</dt><dd>{stat.share} · {stat.kills}</dd></div>
             ))}
           </dl>
         </section>
         <section className="method-box">
-          <h2>BGI 실시간 표본 통계</h2>
-          <p>현재 공식 API·텔레메트리 수집 파이프라인을 준비 중입니다. 수집 전에는 최신 사용률이나 파츠 점유율을 추정해 표시하지 않습니다.</p>
-          <div><span>수집 기간</span><span>표본 매치·플레이어 수</span><span>플랫폼과 모드</span><span>맵</span><span>갱신 시각</span></div>
+          <h2>표본 통계 안내</h2>
+          <p>PUBG.ARMY가 수집한 시즌 42 매치의 킬 텔레메트리 스냅샷입니다. 전체 PUBG 이용자나 특정 지역·모드의 모집단 통계가 아니며, 수집 범위에 따라 편향될 수 있습니다.</p>
+          <div><span>시즌 42 누적</span><span>킬 1,311,521건</span><span>외부 수집 표본</span><span>42.2 라이브 시점</span><span>조회 2026.07.26</span></div>
         </section>
       </div>
       <SiteFooter />

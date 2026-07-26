@@ -21,7 +21,7 @@ const imageBase = "https://wstatic-prod.pubg.com/web/live/static/game-info/weapo
 
 const weaponRows = [
   "M416|AR|5.56mm|40|700|880|30 / 40|m416",
-  "AUG|AR|5.56mm|40|750|890|30 / 40|aug_a3",
+  "AUG|AR|5.56mm|40|750|940|30 / 40|aug_a3",
   "SCAR-L|AR|5.56mm|42|625|870|30 / 40|scar-l",
   "G36C|AR|5.56mm|41|750|870|30 / 40|g36c",
   "QBZ|AR|5.56mm|42|750|870|30 / 40|qbz95",
@@ -39,7 +39,7 @@ const weaponRows = [
   "SLR|DMR|7.62mm|49|반자동|870|10 / 20|slr|42.1 탄속 +30m/s · 수평 반동 -10%|up",
   "Mk14|DMR|7.62mm|54|600|853|10 / 20|mk14|37.1 피해량·연사 속도 감소|down",
   "Dragunov|DMR|7.62mm|53|반자동|830|10 / 20|dragunov|41.1 수직 반동 -20% · 수평 반동 -15%|up",
-  "VSS|DMR|9mm|43|700|330|10 / 20|vss|42.2 태이고·론도 비밀의 방 제외|spawn",
+  "VSS|DMR|9mm|45|700|430|10 / 20|vss|39.1 수직·수평 반동 증가|down",
   "Lynx AMR|SR|.50 Cal|118|단발|1100|10|lynx_amr",
   "AWM|SR|.300|105|볼트액션|945|5 / 7|awm",
   "M24|SR|7.62mm|75|볼트액션|790|5 / 7|m24|42.2 태이고 비밀의 방 추가|spawn",
@@ -51,7 +51,7 @@ const weaponRows = [
   "P90|SMG|5.7mm|35|1000|715|50|p90",
   "JS9|SMG|9mm|32|900|400|30 / 40|js9|42.2 론도 비밀의 방 추가|spawn",
   "MP9|SMG|9mm|31|1000|400|30 / 40|mp9",
-  "MP5K|SMG|9mm|32|800|400|30 / 40|mp5k|38.1 피해량 34 → 32|down",
+  "MP5K|SMG|9mm|32|900|400|30 / 40|mp5k|38.1 피해량 34 → 32|down",
   "Vector|SMG|9mm|31|1100|350|19 / 33|vector|42.2 태이고 비밀의 방 추가|spawn",
   "Micro UZI|SMG|9mm|26|1250|350|25 / 35|micro_uzi|42.2 태이고 비밀의 방 추가|spawn",
   "UMP45|SMG|.45 ACP|42|670|360|25 / 35|ump45|42.2 태이고·론도 비밀의 방 추가|spawn",
@@ -77,6 +77,22 @@ const weapons: Weapon[] = weaponRows.map((row) => {
 
 const categories = ["전체", "AR", "DMR", "SR", "LMG", "SMG", "SG", "HG", "ETC"];
 const featuredNames = ["M416", "AUG", "SLR", "Beryl M762"];
+
+const attachments = [
+  ["틸티드 그립", "그립", "AR·SMG·DMR 다수", "수직 12% · 수평 6% · 화면 흔들림 25% 제어", "연사 범용", "41.1 신규"],
+  ["하프 그립", "그립", "AR·SMG·DMR 다수", "수직 8% · 수평 16% · 단발 반동 회복 10%", "연사·수평 반동", "41.1 수평 8% → 16%"],
+  ["수직 손잡이", "그립", "AR·SMG·DMR 다수", "수직 반동 15% 제어", "초보자·수직 반동", "현행"],
+  ["엄지 그립", "그립", "AR·SMG·DMR 다수", "수직 10% · ADS 속도 40% · 단발 반동 회복 10%", "근거리·빠른 조준", "31.1 상향"],
+  ["라이트웨이트 그립", "그립", "AR·SMG·DMR 다수", "초탄 반동 30% · 단발 반동 회복 20%", "단발·DMR", "31.1 조정"],
+  ["레이저 사이트", "그립", "권총·AR·SMG 일부", "비조준 탄 퍼짐 감소", "근거리 비조준", "현행"],
+  ["총구 제동기", "총구", "AR·DMR·SG 일부", "수직 10% · 수평 8% · 화면 흔들림 35% 제어", "연사 시야 안정", "36.1 수직 제어 상향"],
+  ["보정기", "총구", "AR·SMG·DMR·SR", "수직·수평 반동 감소", "순수 반동 제어", "현행"],
+  ["소음기", "총구", "다수 총기", "총성과 총구 화염 감소", "은폐 사격", "현행"],
+  ["헤비 스톡", "개머리판", "AR·SMG·M249 일부", "수직·수평 10% · 반동 회복 5%, ADS 10% 감소", "지속 연사 안정", "31.1 상향"],
+  ["전술 개머리판", "개머리판", "M416·Vector 등", "반동 회복과 흔들림 제어", "범용 안정", "현행"],
+  ["하이브리드 스코프", "조준경", "조준경 장착 총기", "1배율 ↔ 4배율 즉시 전환", "근·중거리 전환", "41.1 신규"],
+  ["대용량 퀵드로우 탄창", "탄창", "AR·SMG·DMR·SR 등", "탄창 용량 증가 · 재장전 시간 감소", "범용", "현행"],
+];
 
 export default function WeaponsPage() {
   const [activeCategory, setActiveCategory] = useState("전체");
@@ -158,6 +174,31 @@ export default function WeaponsPage() {
           <div className="data-source">
             <p><strong>이미지·분류</strong> PUBG 공식 PC·콘솔 게임 정보 페이지</p>
             <p><strong>수치 스펙</strong> <a href="https://pubgstatistics.com/weapons" target="_blank" rel="noreferrer">최신 매치 기반 외부 자료</a>를 공식 패치 이력과 교차 검증했습니다. 공식 제공 수치가 아니며 게임 빌드와 차이가 있을 수 있습니다.</p>
+          </div>
+        </section>
+
+        <section className="weapon-catalog">
+          <div className="home-section-head">
+            <div><span>ATTACHMENT INDEX · 42.2</span><h2>파츠 도감</h2></div>
+          </div>
+          <div className="weapon-table-wrap">
+            <table className="weapon-table">
+              <thead><tr><th>파츠</th><th>분류</th><th>호환 범위</th><th>핵심 효과</th><th>추천 용도</th><th>최근 변경</th></tr></thead>
+              <tbody>
+                {attachments.map(([name, category, compatible, effect, use, change]) => (
+                  <tr key={name}>
+                    <td><strong>{name}</strong></td>
+                    <td><span className="category-code">{category}</span></td>
+                    <td>{compatible}</td><td>{effect}</td><td>{use}</td>
+                    <td><span className="change spawn">{change}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="data-source">
+            <p><strong>파츠 수치</strong> PUBG 공식 20.1·31.1·32.1·36.1·41.1 패치노트의 누적 변경 기준입니다.</p>
+            <p>총기별 실제 장착 가능 여부와 체감 효과는 게임 빌드·사격 자세에 따라 달라질 수 있습니다.</p>
           </div>
         </section>
       </div>
