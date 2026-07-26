@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import collections
 import datetime as dt
+import gzip
 import hashlib
 import json
 import os
@@ -26,7 +27,10 @@ def api_json(url: str, *, authenticated: bool = True) -> dict[str, Any] | list[d
     for attempt in range(5):
         try:
             with urllib.request.urlopen(request, timeout=90) as response:
-                return json.loads(response.read())
+                payload = response.read()
+                if response.headers.get("Content-Encoding") == "gzip" or payload.startswith(b"\x1f\x8b"):
+                    payload = gzip.decompress(payload)
+                return json.loads(payload)
         except urllib.error.HTTPError as error:
             if error.code not in (429, 500, 502, 503, 504) or attempt == 4:
                 raise
