@@ -81,6 +81,7 @@ kbd {
   margin: 0 auto;
   max-width: 1180px;
   padding: 0 24px 90px;
+  width: 100%;
 }
 
 .briefing {
@@ -612,7 +613,8 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .metric-plan { grid-template-columns: 1fr; }
   .meta-stat-grid, .meta-detail, .guide-formulas { grid-template-columns: 1fr; }
   .guide-formulas article { border-bottom: 1px solid var(--line); border-right: 0; }
-  .guide-grid li > span { flex: 0 0 65px; }
+  .guide-grid li { display: grid; grid-template-columns: 65px minmax(0, 1fr); }
+  .guide-grid li > span { min-width: 0; }
   .guide-source div { align-items: flex-start; flex-direction: column; }
 }
 
