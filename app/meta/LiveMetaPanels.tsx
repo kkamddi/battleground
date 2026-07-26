@@ -121,6 +121,7 @@ export default async function LiveMetaPanels() {
     }
     const rankedLoadouts = [...combined.values()].sort((a, b) => b.kill_count - a.kill_count).slice(0, 6);
     const totalLoadoutKills = [...combined.values()].reduce((sum, row) => sum + row.kill_count, 0);
+    const representativePlayers = players.filter((row) => row.attachment_keys.length >= 2);
 
     return (
       <section className="live-meta">
@@ -146,9 +147,9 @@ export default async function LiveMetaPanels() {
           <article>
             <span>경쟁전 상위권</span>
             <h3>상위 플레이어 최근 세팅</h3>
-            {players.length ? (
-              <ul>{players.slice(0, 6).map((row) => <li key={`${row.player_name}-${row.weapon_key}`}><strong>#{row.rank_value} {row.player_name}</strong><b>{label(row.weapon_key, weaponAliases)}</b><small>{row.attachment_keys.map((item) => label(item, attachmentAliases)).join(" · ") || "파츠 없음"} · 동일 조합 {row.sample_matches}경기</small></li>)}</ul>
-            ) : <div className="collection-empty"><strong>반복 세팅 수집 중</strong><p>최근 경쟁전에서 2경기 이상 반복된 장비 조합만 표시합니다.</p></div>}
+            {representativePlayers.length ? (
+              <ul>{representativePlayers.slice(0, 6).map((row) => <li key={`${row.player_name}-${row.weapon_key}`}><strong>#{row.rank_value} {row.player_name}</strong><b>{label(row.weapon_key, weaponAliases)}</b><small>{row.attachment_keys.map((item) => label(item, attachmentAliases)).join(" · ")} · 해당 총기 {row.sample_matches}경기 관측</small></li>)}</ul>
+            ) : <div className="collection-empty"><strong>대표 세팅 수집 중</strong><p>최근 경쟁전에서 2경기 이상 사용된 총기의 선호 파츠를 집계합니다.</p></div>}
           </article>
         </div>
         <p className="live-meta-note">표본 매치에서 확인된 결과이며 전체 이용자 통계가 아닙니다. 파츠 비중은 킬 당시 장착 정보가 확인된 조합끼리 비교합니다.</p>

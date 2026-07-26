@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 import os
-from collections import Counter
+from collections import Counter, defaultdict
 from typing import Any
 
 from supabase_rest import SupabaseRest
@@ -55,6 +55,14 @@ def terminal_loadout(events: list[dict[str, Any]], account_id: str) -> dict[str,
     return death_loadout or snapshot()
 
 
+def attachment_slot(attachment: str) -> str:
+    item_name = attachment.removeprefix("Item_Attach_Weapon_").removesuffix("_C")
+    for prefix in ("Muzzle", "Lower", "Magazine", "Stock", "Upper"):
+        if item_name.startswith(prefix):
+            return prefix
+    return item_name.split("_", 1)[0]
+
+
 def main() -> None:
     database = SupabaseRest()
     seasons = api_json(f"https://api.pubg.com/shards/{PLATFORM}/seasons")
@@ -88,7 +96,7 @@ def main() -> None:
     telemetry_cache: dict[str, list[dict[str, Any]]] = {}
     rows = []
     for leader in leaders:
-        loadout_counts: Counter[tuple[str, tuple[str, ...]]] = Counter()
+        attachment_counts: dict[str, Counter[str]] = defaultdict(Counter)
         weapon_matches: Counter[str] = Counter()
         sampled_matches = 0
         for match_id in match_ids.get(leader["id"], []):
@@ -117,20 +125,15 @@ def main() -> None:
             for weapon, attachments in loadout.items():
                 if weapon == "unknown":
                     continue
-                loadout_counts[(weapon, tuple(attachments))] += 1
                 weapon_matches[weapon] += 1
+                attachment_counts[weapon].update(attachments)
             if sampled_matches >= matches_per_player:
                 break
 
-        for weapon, _sample_count in weapon_matches.most_common(2):
-            attachments, repeat_count = max(
-                (
-                    (attachment_keys, count)
-                    for (candidate_weapon, attachment_keys), count in loadout_counts.items()
-                    if candidate_weapon == weapon
-                ),
-                key=lambda item: item[1],
-            )
+        for weapon, sample_count in weapon_matches.most_common(2):
+            representative: dict[str, str] = {}
+            for attachment, _count in attachment_counts[weapon].most_common():
+                representative.setdefault(attachment_slot(attachment), attachment)
             rows.append(
                 {
                     "snapshot_date": dt.datetime.now(dt.timezone.utc).date().isoformat(),
@@ -138,7 +141,7 @@ def main() -> None:
                     "player_name": names.get(leader["id"], leader["name"]),
                     "account_id": leader["id"], "rank_metric": "official_leaderboard",
                     "rank_value": leader["rank"], "weapon_key": weapon,
-                    "attachment_keys": list(attachments), "sample_matches": repeat_count,
+                    "attachment_keys": sorted(representative.values()), "sample_matches": sample_count,
                     "source_kind": "official_leaderboard_recent_match",
                 }
             )
@@ -148,7 +151,7 @@ def main() -> None:
         on_conflict="snapshot_date,platform,game_mode,account_id,weapon_key",
     )
     print(
-        f"Stored {len(rows)} repeated loadout rows from up to "
+        f"Stored {len(rows)} representative loadout rows from up to "
         f"{matches_per_player} competitive matches for {len(leaders)} official leaderboard players."
     )
 
