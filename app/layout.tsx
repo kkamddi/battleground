@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   keywords: ["배틀그라운드", "PUBG", "패치노트", "총기 스펙", "총기 도감", "메타 통계", "플레이 가이드"],
   creator: "BGI",
   publisher: "BGI",
+  verification: { google: "73w1RX9gnTnkQ5xPTdZ2a4jRl9pQJCwEET4LPf9KExI" },
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
