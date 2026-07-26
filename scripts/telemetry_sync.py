@@ -173,7 +173,11 @@ def aggregate(
     attachment_rows = [
         {
             "stat_date": key[0], "platform": key[1], "game_mode": key[2], "map_name": key[3],
-            "weapon_key": key[4], "attachment_key": key[5], "match_count": 1, **counts,
+            "weapon_key": key[4], "attachment_key": key[5],
+            "attach_events": counts["attach_events"],
+            "detach_events": counts["detach_events"],
+            "kill_equipped_count": counts["kill_equipped_count"],
+            "match_count": 1,
         }
         for key, counts in attachment_stats.items()
     ]
