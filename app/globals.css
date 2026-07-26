@@ -501,12 +501,12 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   padding-top: 35px;
 }
 .guide-grid article { border: 1px solid var(--line); min-width: 0; padding: 28px; }
-.guide-grid article > span { color: var(--point); font-size: 9px; font-weight: 800; letter-spacing: .1em; }
-.guide-grid h2 { font-size: 24px; margin: 11px 0; }
-.guide-grid article > p { color: var(--muted); font-size: 11px; line-height: 1.7; }
+.guide-grid article > span { color: var(--point); font-size: 12px; font-weight: 800; letter-spacing: .1em; }
+.guide-grid h2 { font-size: 28px; margin: 11px 0; }
+.guide-grid article > p { color: var(--muted); font-size: 15px; line-height: 1.7; }
 .guide-grid ul { border-top: 1px solid var(--line); list-style: none; margin: 25px 0 0; padding: 0; }
-.guide-grid li { border-bottom: 1px solid var(--line); display: flex; font-size: 11px; justify-content: space-between; padding: 11px 0; }
-.guide-grid li b { color: #a2a6a1; font-size: 9px; }
+.guide-grid li { border-bottom: 1px solid var(--line); display: flex; font-size: 14px; justify-content: space-between; padding: 13px 0; }
+.guide-grid li b { color: #a2a6a1; font-size: 13px; }
 
 .meta-stat-grid {
   display: grid;
@@ -531,17 +531,17 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .meta-detail dt { color: var(--muted); font-size: 13px; }
 .meta-detail dd { font-size: 15px; font-weight: 800; margin: 0; }
 .guide-grid li { align-items: center; gap: 18px; }
-.guide-grid li b { color: var(--ink); flex: 1; font-size: 10px; min-width: 0; overflow-wrap: anywhere; text-align: right; white-space: normal; }
+.guide-grid li b { color: var(--ink); flex: 1; font-size: 13px; min-width: 0; overflow-wrap: anywhere; text-align: right; white-space: normal; }
 .guide-formulas { border-top: 2px solid var(--ink); display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 55px; }
 .guide-formulas article { border-right: 1px solid var(--line); padding: 24px; }
 .guide-formulas article:last-child { border-right: 0; }
-.guide-formulas span { color: var(--point); display: block; font-size: 9px; font-weight: 800; margin-bottom: 20px; }
-.guide-formulas strong { font-size: 15px; }
-.guide-formulas p, .guide-source p { color: var(--muted); font-size: 10px; line-height: 1.7; }
+.guide-formulas span { color: var(--point); display: block; font-size: 12px; font-weight: 800; margin-bottom: 20px; }
+.guide-formulas strong { font-size: 18px; }
+.guide-formulas p, .guide-source p { color: var(--muted); font-size: 14px; line-height: 1.7; }
 .guide-source { align-items: center; background: var(--soft); display: flex; justify-content: space-between; margin-top: 30px; padding: 18px 22px; }
 .guide-source p { margin: 0; max-width: 690px; }
 .guide-source div { display: flex; gap: 15px; }
-.guide-source a { font-size: 9px; font-weight: 700; white-space: nowrap; }
+.guide-source a { font-size: 12px; font-weight: 700; white-space: nowrap; }
 
 .weapon-page-heading { margin-bottom: 30px; }
 .weapon-feature-grid { margin-bottom: 50px; }
