@@ -618,6 +618,17 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .live-meta-note { color: var(--muted); font-size: 12px; line-height: 1.7; }
 .live-meta.unavailable { background: var(--soft); padding: 22px; }
 .live-meta.unavailable p { color: var(--muted); font-size: 13px; margin-bottom: 0; }
+.approved-patch-feed { border-top: 2px solid var(--ink); margin: 35px 0 50px; padding-top: 22px; }
+.approved-patch-feed .home-section-head > p { color: var(--muted); font-size: 12px; margin: 0; }
+.approved-patch-feed article { border: 1px solid var(--line); margin-top: 14px; padding: 20px; }
+.approved-patch-feed article > strong { font-size: 18px; }
+.approved-patch-feed ul { list-style: none; margin: 15px 0; padding: 0; }
+.approved-patch-feed li { align-items: start; border-top: 1px solid var(--line); display: grid; gap: 10px; grid-template-columns: 65px 45px 1fr; padding: 10px 0; }
+.approved-patch-feed li span, .approved-patch-feed li b { font-size: 11px; }
+.approved-patch-feed li b { color: var(--point); }
+.approved-patch-feed li b.nerf, .approved-patch-feed li b.removed { color: #b2473e; }
+.approved-patch-feed li p { font-size: 13px; margin: 0; }
+.approved-patch-feed article > a { font-size: 12px; font-weight: 700; }
 
 @media (max-width: 820px) {
   .site-header {

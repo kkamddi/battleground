@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SiteFooter from "../../components/SiteFooter";
 import SiteHeader from "../../components/SiteHeader";
+import ApprovedPatchFeed from "./ApprovedPatchFeed";
 
 export const metadata: Metadata = {
   title: "PUBG 패치노트",
@@ -33,6 +34,7 @@ export default function PatchNotesPage() {
           <h1>패치노트</h1>
           <p>PUBG 공식 PC·콘솔 패치노트에서 플레이에 영향을 주는 내용만 버전별로 정리합니다.</p>
         </header>
+        <ApprovedPatchFeed />
         <section className="patch-archive">
           {patches.map((patch, index) => (
             <article className={index === 0 ? "current" : ""} key={patch.version}>
