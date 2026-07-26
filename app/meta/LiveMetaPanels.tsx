@@ -79,7 +79,7 @@ async function query<T>(table: string, search: URLSearchParams): Promise<T[]> {
   if (!url || !key) return [];
   const response = await fetch(`${url}/rest/v1/${table}?${search}`, {
     headers: { apikey: key, Authorization: `Bearer ${key}` },
-    next: { revalidate: 3600 },
+    next: { revalidate: 900 },
   });
   if (!response.ok) throw new Error(`Supabase ${table} query failed`);
   return response.json();
