@@ -29,8 +29,8 @@ export default function Home() {
               <span>UPDATE 42.2</span>
               <span>PC 07.15 · CONSOLE 07.23</span>
             </div>
-            <h1>배틀그라운드의 변화를<br />필요한 만큼만.</h1>
-            <p>최신 패치, 총기 스펙과 변경 이력을 한곳에서 확인합니다.</p>
+            <h1>PUBG 패치와<br />총기 데이터</h1>
+            <p>라이브 버전 · 적용 일정 · 총기 스펙 · 변경 이력</p>
           </div>
           <a className="lead-action" href="/patch-notes">
             <span>최신 패치</span>

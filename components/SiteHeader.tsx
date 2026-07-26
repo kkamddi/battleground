@@ -16,7 +16,6 @@ export default function SiteHeader() {
     <header className="site-header">
       <a className="brand" href="/" aria-label="BGN 홈">
         <strong>BGN</strong>
-        <span>BATTLEGROUND<br />NEWS</span>
       </a>
       <nav aria-label="주요 메뉴">
         {navigation.map((item) => (

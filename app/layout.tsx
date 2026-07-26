@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "BGN — 배틀그라운드 뉴스와 총기 데이터",
-  description: "PUBG 패치노트, 전체 총기 스펙과 변경 이력을 간결하게 확인하세요.",
+  title: "BGN | PUBG 패치와 총기 데이터",
+  description: "PUBG 패치노트, 총기 스펙과 변경 이력을 확인하는 정보 서비스입니다.",
 };
 
 export default function RootLayout({
