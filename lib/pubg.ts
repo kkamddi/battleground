@@ -309,7 +309,7 @@ const playerStats = unstable_cache(
     };
   },
   ["pubg-player-stats"],
-  { revalidate: 900 },
+  { revalidate: 1800 },
 );
 
 export async function getPlayerProfile(nickname: string): Promise<PlayerProfile | null> {
