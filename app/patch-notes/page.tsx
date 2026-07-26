@@ -10,6 +10,10 @@ const patches = [
   { version: "40.1", date: "2026.02.03", pc: "02.04", console: "02.12", title: "Mk12 하향·SLR 상향", points: ["Mk12 피해량 44 → 43", "Mk12 수평 반동 8% 증가", "SLR 수평 반동 4% 감소"], url: "https://www.pubg.com/ko/news/9690" },
   { version: "39.2", date: "2026.01.06", pc: "01.07", console: "01.15", title: "에란겔: 서브제로 심화", points: ["위성체와 특수 내열 수트", "론도 스폰 재조정", "PC 2차 비밀번호"], url: "https://www.pubg.com/ko/news/9635" },
   { version: "39.1", date: "2025.12.02", pc: "12.03", console: "12.11", title: "에란겔: 서브제로", points: ["겨울 에란겔 시즈널 변화", "신규 월드 피처", "시즌 콘텐츠"], url: "https://www.pubg.com/ko/news/9466?category=patch_notes" },
+  { version: "38.2", date: "2025.11.04", pc: "11.05", console: "11.13", title: "론도 개편과 현세대 콘솔 전환", points: ["론도 마켓·필라 가드·BR 코인 제거", "Lo Hua Xing·Rin Jiang·Test Track 개편", "PS5·Xbox Series X|S 중심 콘솔 서비스 전환"], url: "https://www.pubg.com/ko/news/9356" },
+  { version: "38.1", date: "2025.10.14", pc: "10.15", console: "10.23", title: "SMG 하향과 미라마 지형 파괴", points: ["P90 제외 SMG 비조준 정확도 57% 감소", "MP5K 피해량 34 → 32", "미라마 지형 파괴 기능과 곡괭이 추가"], url: "https://www.pubg.com/ko/news/9273?category=patch_notes" },
+  { version: "37.2", date: "2025.09.09", pc: "09.10", console: "09.18", title: "미라마 지역 개편", points: ["Minas Generales 레이아웃·지형 개편", "자판기와 파괴 가능한 항아리 추가", "PUBG x G-DRAGON 월드 콘텐츠"], url: "https://www.pubg.com/ko/news/9087?category=patch_notes" },
+  { version: "37.1", date: "2025.08.12", pc: "08.13", console: "08.21", title: "DMR 전면 리밸런스", points: ["DMR 피해량 약 12% 감소", "일부 예외를 제외한 DMR 발사 속도 약 45% 감소", "캔티드 사이트 전체 스폰 제거"], url: "https://www.pubg.com/ko/news/9002?category=patch_notes" },
 ];
 
 export default function PatchNotesPage() {
