@@ -51,6 +51,7 @@ const attachmentAliases: Record<string, string> = {
   Magazine_Extended_SniperRifle: "저격소총용 대용량 탄창",
   Magazine_ExtendedQuickDraw_Large: "대용량 퀵드로우 탄창",
   Magazine_ExtendedQuickDraw_Medium: "대용량 퀵드로우 탄창",
+  Magazine_ExtendedQuickDraw_SniperRifle: "저격소총용 대용량 퀵드로우 탄창",
   Magazine_QuickDraw_Large: "퀵드로우 탄창",
   Muzzle_AR_MuzzleBrake: "총구 제동기",
   Muzzle_Compensator_Medium: "보정기",
