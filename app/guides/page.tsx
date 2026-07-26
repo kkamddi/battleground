@@ -52,7 +52,7 @@ export default function GuidesPage() {
           <article><span>실전 보정</span><strong>방어구 · 거리 · 피격 부위</strong><p>실제 피해와 TTK는 방어구, 거리별 감소와 팔·다리 피격에 따라 달라집니다.</p></article>
         </section>
         <section className="guide-source">
-          <p>추천 조합은 BGN 편집 기준이며 유일한 정답이 아닙니다. SMG는 공식 분류상 근거리·기동성 무기, DMR은 중거리 이상, SR은 장거리 특화 무기입니다.</p>
+          <p>추천 조합은 BGI 편집 기준이며 유일한 정답이 아닙니다. SMG는 공식 분류상 근거리·기동성 무기, DMR은 중거리 이상, SR은 장거리 특화 무기입니다.</p>
           <div>
             <a href="https://pubg.com/ko/game-info/weapons/ar" target="_blank" rel="noreferrer">공식 무기 분류 ↗</a>
             <a href="https://www.pubg.com/ko/news/9273?category=patch_notes" target="_blank" rel="noreferrer">38.1 건 플레이 변경 ↗</a>

@@ -14,8 +14,9 @@ export default function SiteHeader() {
 
   return (
     <header className="site-header">
-      <a className="brand" href="/" aria-label="BGN 홈">
-        <strong>BGN</strong>
+      <a className="brand" href="/" aria-label="BGI 홈">
+        <strong>BGI</strong>
+        <span>BATTLEGROUND<br />INFORMATION</span>
       </a>
       <nav aria-label="주요 메뉴">
         {navigation.map((item) => (
