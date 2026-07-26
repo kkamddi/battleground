@@ -20,6 +20,7 @@ type PlayerRow = {
   rank_value: number;
   weapon_key: string;
   attachment_keys: string[];
+  sample_matches: number;
   snapshot_date: string;
 };
 
@@ -104,15 +105,16 @@ export default async function LiveMetaPanels() {
         limit: "1000",
       })),
       query<PlayerRow>("top_player_loadouts", new URLSearchParams({
-        select: "player_name,rank_value,weapon_key,attachment_keys,snapshot_date",
+        select: "player_name,rank_value,weapon_key,attachment_keys,sample_matches,snapshot_date",
         source_kind: "eq.official_leaderboard_recent_match",
+        sample_matches: "gte.2",
         order: "snapshot_date.desc,rank_value.asc",
         limit: "20",
       })),
     ]);
 
     const combined = new Map<string, LoadoutRow>();
-    for (const row of loadouts.filter((item) => item.weapon_key !== "unknown")) {
+    for (const row of loadouts.filter((item) => item.weapon_key !== "unknown" && item.attachment_keys.length >= 2)) {
       const key = `${row.weapon_key}:${row.loadout_hash}`;
       const current = combined.get(key);
       combined.set(key, current ? { ...current, kill_count: current.kill_count + row.kill_count } : row);
@@ -145,8 +147,8 @@ export default async function LiveMetaPanels() {
             <span>경쟁전 상위권</span>
             <h3>상위 플레이어 최근 세팅</h3>
             {players.length ? (
-              <ul>{players.slice(0, 6).map((row) => <li key={`${row.player_name}-${row.weapon_key}`}><strong>#{row.rank_value} {row.player_name}</strong><b>{label(row.weapon_key, weaponAliases)}</b><small>{row.attachment_keys.map((item) => label(item, attachmentAliases)).join(" · ") || "파츠 없음"}</small></li>)}</ul>
-            ) : <div className="collection-empty"><strong>표본 수집 중</strong><p>공식 리더보드 상위 10명의 최근 매치 장비를 매일 확인합니다.</p></div>}
+              <ul>{players.slice(0, 6).map((row) => <li key={`${row.player_name}-${row.weapon_key}`}><strong>#{row.rank_value} {row.player_name}</strong><b>{label(row.weapon_key, weaponAliases)}</b><small>{row.attachment_keys.map((item) => label(item, attachmentAliases)).join(" · ") || "파츠 없음"} · 동일 조합 {row.sample_matches}경기</small></li>)}</ul>
+            ) : <div className="collection-empty"><strong>반복 세팅 수집 중</strong><p>최근 경쟁전에서 2경기 이상 반복된 장비 조합만 표시합니다.</p></div>}
           </article>
         </div>
         <p className="live-meta-note">표본 매치에서 확인된 결과이며 전체 이용자 통계가 아닙니다. 파츠 비중은 킬 당시 장착 정보가 확인된 조합끼리 비교합니다.</p>
