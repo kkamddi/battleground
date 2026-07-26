@@ -126,7 +126,7 @@ const lookupPlayer = unstable_cache(
     };
   },
   ["pubg-player-by-name"],
-  { revalidate: 86400 },
+  { revalidate: 3600 },
 );
 
 function modeStats(payload: JsonRecord | null, key: "rankedGameModeStats" | "gameModeStats") {
@@ -276,29 +276,40 @@ async function telemetryStats(matches: RecentMatch[], accountId: string) {
 
 const playerStats = unstable_cache(
   async (accountId: string, seasonId: string, matchIds: string[]) => {
-    const [ranked, season, matches] = await Promise.all([
-      apiJson(`/players/${encodeURIComponent(accountId)}/seasons/${encodeURIComponent(seasonId)}/ranked`, true),
-      apiJson(`/players/${encodeURIComponent(accountId)}/seasons/${encodeURIComponent(seasonId)}`, true),
-      Promise.all(
-        matchIds.map((matchId) =>
-          apiJson(`/matches/${encodeURIComponent(matchId)}`, true).catch(() => null),
-        ),
+    const matchesPromise = Promise.all(
+      matchIds.map((matchId) =>
+        apiJson(`/matches/${encodeURIComponent(matchId)}`, true).catch(() => null),
       ),
-    ]);
+    );
+    const ranked = await apiJson(
+      `/players/${encodeURIComponent(accountId)}/seasons/${encodeURIComponent(seasonId)}/ranked`,
+      true,
+    );
+    const rankedModes = modeStats(ranked, "rankedGameModeStats");
+    const hasRankedGames = Object.values(rankedModes).some(
+      (stats) => Number(stats.roundsPlayed ?? 0) > 0,
+    );
+    const season = hasRankedGames
+      ? null
+      : await apiJson(
+          `/players/${encodeURIComponent(accountId)}/seasons/${encodeURIComponent(seasonId)}`,
+          true,
+        );
+    const matches = await matchesPromise;
     const recentMatches = matches
       .filter((match): match is JsonRecord => match !== null)
       .map((match) => matchSummary(match, accountId))
       .filter((match): match is RecentMatch => match !== null);
     const telemetry = await telemetryStats(recentMatches, accountId);
     return {
-      rankedModes: modeStats(ranked, "rankedGameModeStats"),
+      rankedModes,
       seasonModes: modeStats(season, "gameModeStats"),
       recentMatches: recentMatches.map(({ telemetryUrl: _telemetryUrl, ...match }) => match),
       ...telemetry,
     };
   },
   ["pubg-player-stats"],
-  { revalidate: 600 },
+  { revalidate: 900 },
 );
 
 export async function getPlayerProfile(nickname: string): Promise<PlayerProfile | null> {
