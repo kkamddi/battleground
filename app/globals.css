@@ -530,7 +530,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .meta-detail dt { color: var(--muted); font-size: 10px; }
 .meta-detail dd { font-size: 12px; font-weight: 800; margin: 0; }
 .guide-grid li { align-items: center; gap: 18px; }
-.guide-grid li b { color: var(--ink); font-size: 10px; min-width: 0; overflow-wrap: anywhere; text-align: right; }
+.guide-grid li b { color: var(--ink); flex: 1; font-size: 10px; min-width: 0; overflow-wrap: anywhere; text-align: right; white-space: normal; }
 .guide-formulas { border-top: 2px solid var(--ink); display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 55px; }
 .guide-formulas article { border-right: 1px solid var(--line); padding: 24px; }
 .guide-formulas article:last-child { border-right: 0; }
@@ -602,6 +602,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 }
 
 @media (max-width: 520px) {
+  .page-heading p { overflow-wrap: anywhere; }
   .home-lead h1 { font-size: 42px; }
   .recent-patch-list > a { gap: 10px; grid-template-columns: 62px 48px 1fr auto; }
   .recent-patch-list p { display: none; }
@@ -611,6 +612,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .metric-plan { grid-template-columns: 1fr; }
   .meta-stat-grid, .meta-detail, .guide-formulas { grid-template-columns: 1fr; }
   .guide-formulas article { border-bottom: 1px solid var(--line); border-right: 0; }
+  .guide-grid li > span { flex: 0 0 65px; }
   .guide-source div { align-items: flex-start; flex-direction: column; }
 }
 
