@@ -496,10 +496,10 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .guide-grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   padding-top: 35px;
 }
-.guide-grid article { border: 1px solid var(--line); padding: 28px; }
+.guide-grid article { border: 1px solid var(--line); min-width: 0; padding: 28px; }
 .guide-grid article > span { color: var(--point); font-size: 9px; font-weight: 800; letter-spacing: .1em; }
 .guide-grid h2 { font-size: 24px; margin: 11px 0; }
 .guide-grid article > p { color: var(--muted); font-size: 11px; line-height: 1.7; }
@@ -530,7 +530,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .meta-detail dt { color: var(--muted); font-size: 10px; }
 .meta-detail dd { font-size: 12px; font-weight: 800; margin: 0; }
 .guide-grid li { align-items: center; gap: 18px; }
-.guide-grid li b { color: var(--ink); font-size: 10px; text-align: right; }
+.guide-grid li b { color: var(--ink); font-size: 10px; min-width: 0; overflow-wrap: anywhere; text-align: right; }
 .guide-formulas { border-top: 2px solid var(--ink); display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 55px; }
 .guide-formulas article { border-right: 1px solid var(--line); padding: 24px; }
 .guide-formulas article:last-child { border-right: 0; }
@@ -605,7 +605,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .home-lead h1 { font-size: 42px; }
   .recent-patch-list > a { gap: 10px; grid-template-columns: 62px 48px 1fr auto; }
   .recent-patch-list p { display: none; }
-  .featured-weapons, .weapon-feature-grid, .home-destinations, .guide-grid { grid-template-columns: 1fr; }
+  .featured-weapons, .weapon-feature-grid, .home-destinations, .guide-grid { grid-template-columns: minmax(0, 1fr); }
   .patch-archive article { gap: 18px; grid-template-columns: 72px 1fr; }
   .patch-version strong { font-size: 29px; }
   .metric-plan { grid-template-columns: 1fr; }
