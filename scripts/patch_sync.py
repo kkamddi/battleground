@@ -48,6 +48,7 @@ def page_text(document: str) -> str:
 
 def patch_links(document: str) -> list[str]:
     links = re.findall(r'href=["\'](?:https://pubg\.com)?(/en/news/\d+)[^"\']*["\']', document, re.I)
+    links.extend(f"/en/news/{post_id}" for post_id in re.findall(r"\bpostId\s*:\s*(\d+)", document))
     unique: list[str] = []
     for link in links:
         url = f"https://pubg.com{link}"
@@ -129,4 +130,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
