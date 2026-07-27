@@ -223,7 +223,7 @@ export default async function PlayerPage({
       <div className="page-shell player-shell">
         <section className="player-heading">
           <div>
-            <span>{platformName.toUpperCase()} PUBG PLAYER</span>
+            <span>BGI PLAYER REPORT · {platformName.toUpperCase()}</span>
             <h1>{profile.name}</h1>
             <p>현재 시즌 · {modeNames[modeKey] ?? modeKey}</p>
           </div>
@@ -272,9 +272,15 @@ export default async function PlayerPage({
           </section>
         ) : null}
 
+        <section className="player-report-intro">
+          <span>PERSONAL REPORT</span>
+          <h2>{profile.name}의 플레이 리포트</h2>
+          <p>최근 경기 {profile.recentMatches.length}개를 기준으로 플레이 성향과 맞춤 장비를 분석했습니다.</p>
+        </section>
+
         <section className="player-analysis-grid">
           <article className="style-card">
-            <span>PLAY STYLE</span>
+            <span>BGI PLAY STYLE</span>
             <h2>{style.name}</h2>
             <p>{style.description}</p>
             <dl>
@@ -294,7 +300,7 @@ export default async function PlayerPage({
             <small>최근 5경기와 그 이전 5경기를 비교한 값입니다.</small>
           </article>
           <article className="recommend-card">
-            <span>PERSONAL PICK</span>
+            <span>BGI PERSONAL PICK</span>
             <h2>맞춤 추천</h2>
             <p>
               {topWeapon
@@ -343,7 +349,7 @@ export default async function PlayerPage({
         <section className="player-loadout-report">
           <div className="home-section-head">
             <div><span>TELEMETRY REPORT</span><h2>내 총기·파츠 리포트</h2></div>
-            <p>최근 최대 5경기의 킬·장착 이벤트 기준</p>
+            <p>최근 최대 10경기의 킬·장착 이벤트 기준</p>
           </div>
           <div className="loadout-columns">
             <div>

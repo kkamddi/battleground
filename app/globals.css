@@ -536,7 +536,11 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .comparison-table > div { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid var(--line); padding: 13px 4px; }
 .comparison-table span { color: var(--muted); font-size: 12px; }
 .comparison-table strong { font-size: 16px; }
-.player-analysis-grid { display: grid; gap: 0; grid-template-columns: repeat(3, 1fr); margin-top: 55px; }
+.player-report-intro { border-bottom: 2px solid var(--ink); margin-top: 60px; padding-bottom: 18px; }
+.player-report-intro > span { color: var(--point); font-size: 11px; font-weight: 800; letter-spacing: .1em; }
+.player-report-intro h2 { font-size: 32px; letter-spacing: -.04em; margin: 10px 0 6px; }
+.player-report-intro p { color: var(--muted); font-size: 14px; margin: 0; }
+.player-analysis-grid { display: grid; gap: 0; grid-template-columns: repeat(3, 1fr); margin-top: 18px; }
 .player-analysis-grid article { border: 1px solid var(--line); min-height: 245px; padding: 25px; }
 .player-analysis-grid article + article { border-left: 0; }
 .player-analysis-grid article > span { color: var(--point); font-size: 11px; font-weight: 800; letter-spacing: .1em; }

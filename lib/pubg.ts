@@ -228,7 +228,7 @@ async function telemetryStats(matches: RecentMatch[], accountId: string) {
   const attachmentMap = new Map<string, number>();
   const payloads = await Promise.all(
     matches
-      .slice(0, 5)
+      .slice(0, 10)
       .map((match) =>
         match.telemetryUrl
           ? fetch(match.telemetryUrl, { next: { revalidate: 600 } })

@@ -30,8 +30,8 @@ export default function Home() {
               <span>UPDATE 42.2</span>
               <span>PC 07.15 · CONSOLE 07.23</span>
             </div>
-            <h1>PUBG 패치와<br />총기 데이터</h1>
-            <p>라이브 버전 · 적용 일정 · 총기 스펙 · 변경 이력</p>
+            <h1>나의 PUBG<br />플레이 리포트</h1>
+            <p>플레이 스타일 · 주력 무기 · 파츠 성향 · 맞춤 추천</p>
           </div>
           <a className="lead-action" href="/patch-notes">
             <span>최신 패치</span>
@@ -44,8 +44,8 @@ export default function Home() {
         <section className="home-player-search" id="player-search">
           <div>
             <span>PLAYER SEARCH</span>
-            <h2>게임 닉네임으로 전적 검색</h2>
-            <p>Steam·Kakao PUBG의 현재 시즌 경쟁전과 최근 매치를 확인합니다.</p>
+            <h2>닉네임 하나로 확인하는 나의 PUBG 리포트</h2>
+            <p>Steam·Kakao 최근 경기에서 플레이 스타일과 무기·파츠 성향을 분석합니다.</p>
           </div>
           <PlayerSearchForm />
         </section>
