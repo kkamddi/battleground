@@ -24,14 +24,18 @@ export default function Home() {
       <SiteHeader />
       <div className="page-shell home-shell">
         <section className="home-lead">
-          <div>
+          <div className="home-search-hero">
             <div className="eyebrow-row">
-              <span className="live-badge">LIVE</span>
-              <span>UPDATE 42.2</span>
-              <span>PC 07.15 · CONSOLE 07.23</span>
+              <span className="live-badge">PLAYER REPORT</span>
+              <span>STEAM · KAKAO</span>
             </div>
-            <h1>나의 PUBG<br />플레이 리포트</h1>
-            <p>플레이 스타일 · 주력 무기 · 파츠 성향 · 맞춤 추천</p>
+            <h1>PUBG<br />전적 검색</h1>
+            <p>닉네임 하나로 최근 전적부터 플레이 스타일과 맞춤 추천까지 확인하세요.</p>
+            <div className="home-hero-search-form">
+              <PlayerSearchForm />
+              <span>최근 최대 32경기 · 맵별 성과 · 주력 무기와 파츠 · 맞춤 추천</span>
+            </div>
+            <a className="home-ranker-link" href="/players">Steam·Kakao 경쟁전 상위 플레이어 보기 →</a>
           </div>
           <a className="lead-action" href="/patch-notes">
             <span>최신 패치</span>
@@ -39,18 +43,6 @@ export default function Home() {
             <p>17개 훈련 챕터 · 월드맵 개편</p>
             <b>요약 보기 →</b>
           </a>
-        </section>
-
-        <section className="home-player-search">
-          <div>
-            <span>PLAYER SEARCH</span>
-            <h2>닉네임으로 바로 보는 PUBG 전적 리포트</h2>
-            <p>최근 최대 32경기의 전적, 플레이 스타일, 맵별 성과, 주력 무기와 파츠, 맞춤 추천을 한 번에 확인하세요.</p>
-          </div>
-          <div className="home-player-search-actions">
-            <PlayerSearchForm />
-            <a href="/players">Steam·Kakao 경쟁전 상위 플레이어 보기 →</a>
-          </div>
         </section>
 
         <section className="home-section">
