@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/lab", changeFrequency: "weekly" as const, priority: 0.8 },
     { path: "/lab/ttk", changeFrequency: "monthly" as const, priority: 0.8 },
     { path: "/lab/loadouts", changeFrequency: "daily" as const, priority: 0.8 },
-    { path: "/lab/progressive", changeFrequency: "weekly" as const, priority: 0.7 },
+    { path: "/weapons/progressive", changeFrequency: "weekly" as const, priority: 0.7 },
     { path: "/meta", changeFrequency: "weekly" as const, priority: 0.8 },
     { path: "/guides", changeFrequency: "monthly" as const, priority: 0.8 },
   ];
