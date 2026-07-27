@@ -376,12 +376,12 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .lead-action b { display: block; font-size: 11px; margin-top: 28px; }
 
 .home-player-search {
-  align-items: end;
+  align-items: center;
   background: var(--ink);
   color: white;
   display: grid;
   gap: 50px;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: .9fr 1.1fr;
   margin-top: 28px;
   padding: 28px 32px;
 }
@@ -392,8 +392,17 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   font-size: 10px;
   font-weight: 800;
 }
-.home-player-search h2 { font-size: 25px; margin: 8px 0 10px; }
-.home-player-search p { color: #bfc5bf; font-size: 12px; margin: 0; }
+.home-player-search h2 { font-size: 27px; letter-spacing: -.035em; margin: 8px 0 10px; }
+.home-player-search p { color: #bfc5bf; font-size: 13px; line-height: 1.65; margin: 0; }
+.home-player-search-actions { min-width: 0; }
+.home-player-search-actions > a {
+  color: #bfc5bf;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 11px;
+}
+.home-player-search-actions > a:hover { color: white; }
 .player-search-link {
   align-items: center;
   border-bottom: 1px solid #59615b;
@@ -1023,7 +1032,12 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 @media (max-width: 520px) {
   .page-heading p { overflow-wrap: anywhere; }
   .home-lead h1 { font-size: 42px; }
-  .home-player-search { gap: 24px; padding: 24px 20px; }
+  .home-player-search { gap: 24px; max-width: calc(100vw - 36px); min-width: 0; overflow: hidden; padding: 24px 20px; width: calc(100vw - 36px); }
+  .home-player-search > div { min-width: 0; width: 100%; }
+  .home-player-search h2 { font-size: 25px; line-height: 1.3; overflow-wrap: anywhere; }
+  .home-player-search p { overflow-wrap: anywhere; }
+  .home-player-search .player-search > div { grid-template-columns: 82px minmax(0, 1fr); }
+  .home-player-search .player-search button { grid-column: 1 / -1; min-height: 44px; }
   .players-search-box { padding: 22px 18px; }
   .ranker-table-head, .ranker-list a {
     grid-template-columns: 28px minmax(100px, 1fr) 76px 48px;
@@ -1092,6 +1106,8 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 }
 
 @media (max-width: 520px) {
+  .site-header { grid-template-columns: minmax(0, 1fr); overflow: hidden; }
+  .site-header nav { min-width: 0; }
   .page-shell { padding-left: 18px; padding-right: 18px; }
   .briefing h1 { font-size: 43px; }
   .briefing-main > p { font-size: 13px; }
