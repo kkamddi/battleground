@@ -24,7 +24,8 @@ export default function ProgressiveCatalog({ skins }: { skins: ProgressiveSkin[]
       && (year === "전체" || skin.released.startsWith(year));
   });
   const selected = skins.find((skin) => skin.slug === selectedSlug) ?? filtered[0] ?? skins[0];
-  const selectedImage = selected?.officialImageUrl ?? selected?.baseImageUrl;
+  const selectedImage = selected?.officialImageUrl ?? selected?.catalogImageUrl ?? selected?.baseImageUrl;
+  const isItemRender = Boolean(selected?.catalogImageUrl && !selected?.officialImageUrl);
 
   const choose = (slug: string) => {
     setSelectedSlug(slug);
@@ -75,9 +76,9 @@ export default function ProgressiveCatalog({ skins }: { skins: ProgressiveSkin[]
         <section className="progressive-skin-detail" id="progressive-skin-detail">
           <div className={`progressive-skin-image ${selectedImage ? "" : "placeholder"}`}>
             {selectedImage
-              ? <img src={selectedImage} alt={`${selected.name} 대표 이미지`} />
+              ? <img className={isItemRender ? "item-render" : ""} src={selectedImage} alt={`${selected.name} 대표 이미지`} />
               : <div><span>{selected.weapon}</span><strong>{selected.name}</strong></div>}
-            <small>{selectedImage ? "대표 이미지 · 레벨별 외형 이미지 아님" : "대표 이미지 확인 중"}</small>
+            <small>{selectedImage ? "아이템 대표 렌더 · 레벨별 외형 이미지 아님" : "대표 이미지 확인 중"}</small>
           </div>
           <div className="progressive-skin-copy">
             <span>{selected.released} · {selected.weapon}</span>
@@ -111,9 +112,7 @@ export default function ProgressiveCatalog({ skins }: { skins: ProgressiveSkin[]
 
             <div className="progressive-detail-links">
               {selected.officialUrl && <a href={selected.officialUrl} target="_blank" rel="noreferrer">PUBG 공식 공지 ↗</a>}
-              {!selected.officialUrl && selected.baseImageSourceUrl && (
-                <a href={selected.baseImageSourceUrl} target="_blank" rel="noreferrer">아이템 출처 ↗</a>
-              )}
+              {selected.catalogSourceUrl && <a href={selected.catalogSourceUrl} target="_blank" rel="noreferrer">아이템 이미지 출처 ↗</a>}
             </div>
           </div>
         </section>

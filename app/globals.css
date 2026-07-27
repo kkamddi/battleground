@@ -932,6 +932,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .progressive-skin-detail { border-top: 2px solid var(--ink); display: grid; gap: 36px; grid-template-columns: minmax(0, 42%) 1fr; margin-top: 45px; padding: 28px 0 55px; scroll-margin-top: 90px; }
 .progressive-skin-image { background: #171917; min-height: 390px; overflow: hidden; position: relative; }
 .progressive-skin-image img { height: 100%; object-fit: cover; width: 100%; }
+.progressive-skin-image img.item-render { object-fit: contain; padding: 28px; }
 .progressive-skin-image.placeholder { align-items: center; color: white; display: flex; justify-content: center; padding: 30px; }
 .progressive-skin-image.placeholder div { text-align: center; }
 .progressive-skin-image.placeholder div span { color: #b9c0b9; display: block; font-size: 12px; font-weight: 800; }

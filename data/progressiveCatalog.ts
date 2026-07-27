@@ -15,13 +15,15 @@ export type ProgressiveSkin = {
   officialImageUrl?: string;
   baseImageUrl?: string;
   baseImageSourceUrl?: string;
+  catalogImageUrl?: string;
+  catalogSourceUrl?: string;
   levels?: ProgressiveLevel[];
 };
 
 const levels = (items: Array<[string, ProgressiveLevel["kind"], ProgressiveLevel["preview"]?]>) =>
   items.map(([description, kind, preview], index) => ({ level: index + 1, description, kind, preview }));
 
-export const progressiveCatalog: ProgressiveSkin[] = [
+const progressiveCatalogBase: ProgressiveSkin[] = [
   {
     slug: "pretend-prototype-slr",
     name: "상상력 풀가동",
@@ -160,3 +162,36 @@ export const progressiveCatalog: ProgressiveSkin[] = [
   },
   { slug: "gear-head-beryl-m762", name: "Gear Head", weapon: "Beryl M762", released: "2021", maxLevel: null },
 ];
+
+const catalogCategoryByWeapon: Record<string, string> = {
+  SLR: "dmr",
+  M249: "lmg",
+  Kar98k: "sr",
+  프라이팬: "melee",
+  Groza: "ar",
+  M416: "ar",
+  Mk12: "dmr",
+  AWM: "sr",
+  MP5K: "smg",
+  M24: "sr",
+  AUG: "ar",
+  S1897: "shotgun",
+  ACE32: "ar",
+  SKS: "dmr",
+  "Beryl M762": "ar",
+  Dragunov: "dmr",
+  Mini14: "dmr",
+  AKM: "ar",
+  DBS: "shotgun",
+};
+
+export const progressiveCatalog: ProgressiveSkin[] = progressiveCatalogBase.map((skin, index) => {
+  const itemNumber = progressiveCatalogBase.length - index;
+  const itemId = `120120${String(itemNumber).padStart(2, "0")}`;
+  const category = catalogCategoryByWeapon[skin.weapon];
+  return {
+    ...skin,
+    catalogImageUrl: `https://cdn.pubgitems.info/i-large/${itemId}.png`,
+    catalogSourceUrl: `https://pubgitems.info/weapons/${category}/${itemId}-${skin.slug}`,
+  };
+});
