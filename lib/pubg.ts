@@ -345,9 +345,19 @@ const leaderboard = unstable_cache(
     const included = (payload?.included as JsonRecord[] | undefined) ?? [];
     return included
       .filter((item) => item.type === "player")
-      .map((item) => {
+      .map((item, index) => {
         const attributes = (item.attributes as JsonRecord | undefined) ?? {};
         const stats = (attributes.stats as JsonRecord | undefined) ?? {};
+        if (index === 0) {
+          console.info("PUBG_LEADERBOARD_STATS_SCHEMA", {
+            fields: Object.keys(stats),
+            kda: stats.kda,
+            killDeathRatio: stats.killDeathRatio,
+            kills: stats.kills,
+            games: stats.games,
+            wins: stats.wins,
+          });
+        }
         const games = Number(stats.games ?? stats.roundsPlayed ?? 0);
         const wins = Number(stats.wins ?? 0);
         const kills = Number(stats.kills ?? 0);
@@ -367,7 +377,7 @@ const leaderboard = unstable_cache(
       .sort((a, b) => a.rank - b.rank)
       .slice(0, 10);
   },
-  ["pubg-leaderboard-v2"],
+  ["pubg-leaderboard-v3-debug"],
   { revalidate: 7200 },
 );
 
