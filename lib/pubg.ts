@@ -345,29 +345,20 @@ const leaderboard = unstable_cache(
     const included = (payload?.included as JsonRecord[] | undefined) ?? [];
     return included
       .filter((item) => item.type === "player")
-      .map((item, index) => {
+      .map((item) => {
         const attributes = (item.attributes as JsonRecord | undefined) ?? {};
         const stats = (attributes.stats as JsonRecord | undefined) ?? {};
-        if (index === 0) {
-          console.info("PUBG_LEADERBOARD_STATS_SCHEMA", {
-            fields: Object.keys(stats),
-            kda: stats.kda,
-            killDeathRatio: stats.killDeathRatio,
-            kills: stats.kills,
-            games: stats.games,
-            wins: stats.wins,
-          });
-        }
         const games = Number(stats.games ?? stats.roundsPlayed ?? 0);
         const wins = Number(stats.wins ?? 0);
         const kills = Number(stats.kills ?? 0);
         const deaths = Math.max(games - wins, 1);
+        const apiKd = Number(stats.killDeathRatio ?? stats.kdr ?? 0);
         return {
           accountId: String(item.id ?? ""),
           name: String(attributes.name ?? "이름 비공개"),
           rank: Number(attributes.rank ?? stats.rank ?? 0),
           rankPoints: Number(stats.rankPoints ?? 0),
-          kd: Number(stats.killDeathRatio ?? stats.kdr ?? stats.kda ?? (kills / deaths)),
+          kd: apiKd > 0 ? apiKd : kills / deaths,
           averageDamage: Number(stats.averageDamage ?? (games ? Number(stats.damageDealt ?? 0) / games : 0)),
           wins,
           games,
@@ -377,7 +368,7 @@ const leaderboard = unstable_cache(
       .sort((a, b) => a.rank - b.rank)
       .slice(0, 10);
   },
-  ["pubg-leaderboard-v3-debug"],
+  ["pubg-leaderboard-v4"],
   { revalidate: 7200 },
 );
 
