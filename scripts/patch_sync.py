@@ -169,6 +169,8 @@ def candidates(url: str, document: str) -> list[dict[str, object]]:
             continue
         seen.add(digest)
         subject = subject_key(normalized)
+        if subject and subject.startswith("Item_Attach_"):
+            category = "attachment"
         stat, stat_label = stat_key(normalized)
         before, after, unit = before_after(normalized)
         result.append(
