@@ -75,6 +75,8 @@ export default async function WeaponDetailPage({ params }: { params: Promise<{ s
       select: "attachment_keys,kill_count,sample_matches,top_player_observations,popularity_score,confidence,window_days,stat_date",
       weapon_key: `eq.${weapon.key}`,
       window_days: "eq.30",
+      kill_count: "gte.5",
+      unique_players: "gte.3",
       order: "stat_date.desc,popularity_score.desc",
       limit: "6",
     })),

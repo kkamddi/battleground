@@ -92,7 +92,7 @@ export default async function LiveMetaPanels() {
       const current = combined.get(key);
       combined.set(key, current ? { ...current, kill_count: current.kill_count + row.kill_count } : row);
     }
-    const rankedLoadouts = [...combined.values()].sort((a, b) => b.kill_count - a.kill_count).slice(0, 6);
+    const rankedLoadouts = [...combined.values()].filter((row) => row.kill_count >= 5).sort((a, b) => b.kill_count - a.kill_count).slice(0, 6);
     const totalLoadoutKills = [...combined.values()].reduce((sum, row) => sum + row.kill_count, 0);
     const representativePlayers = players.filter((row) => row.attachment_keys.length >= 2);
 

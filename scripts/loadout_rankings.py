@@ -63,9 +63,9 @@ def main() -> None:
             observations = counts["kills"] + counts["top"]
             confidence = min(1, math.log1p(observations) / math.log(101))
             score = (
-                (counts["kills"] / max(weapon_totals[weapon], 1)) * 0.65
+                (counts["kills"] / max(weapon_totals[weapon], 1)) * 0.80
                 + min(counts["winners"] / max(counts["matches"], 1), 1) * 0.15
-                + min(counts["top"] / 20, 1) * 0.20
+                + min(counts["top"] / 20, 1) * 0.05
             )
             output.append(
                 {

@@ -8,7 +8,7 @@ on:
       max_matches:
         description: Maximum sampled matches to process
         required: false
-        default: "100"
+        default: "500"
       top_player_matches:
         description: Competitive matches to inspect per leaderboard player
         required: false
@@ -29,7 +29,7 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       PUBG_API_KEY: ${{ secrets.PUBG_API_KEY }}
-      MAX_MATCHES: ${{ inputs.max_matches || '100' }}
+      MAX_MATCHES: ${{ inputs.max_matches || '500' }}
       TOP_PLAYER_MATCHES: ${{ inputs.top_player_matches || '10' }}
     steps:
       - uses: actions/checkout@v4
