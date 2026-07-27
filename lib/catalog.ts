@@ -36,7 +36,25 @@ export const attachments = attachmentData as AttachmentCatalogItem[];
 export const weaponImageBase = "https://wstatic-prod.pubg.com/web/live/static/game-info/weapons/images/viewer";
 
 export function weaponName(key: string) {
-  return weapons.find((weapon) => weapon.key === key)?.name ?? key.replace(/^Item_Weapon_|_C$/g, "");
+  const direct = weapons.find((weapon) => weapon.key === key);
+  if (direct) return direct.name;
+
+  const normalized = key.replace(/^Item_Weapon_/, "").replace(/^Weap/, "").replace(/_C$/, "");
+  const internalMatch = weapons.find(
+    (weapon) => weapon.key.replace(/^Item_Weapon_/, "").replace(/_C$/, "") === normalized,
+  );
+  if (internalMatch) return internalMatch.name;
+
+  const aliases: Record<string, string> = {
+    AK47: "AKM",
+    AUG: "AUG",
+    BerylM762: "Beryl M762",
+    HK416: "M416",
+    SLR: "SLR",
+    Win94: "Win94",
+    Mads_QBU88: "QBU",
+  };
+  return aliases[normalized] ?? normalized;
 }
 
 export function attachmentName(key: string) {
