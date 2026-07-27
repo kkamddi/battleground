@@ -6,8 +6,8 @@ const navigation = [
   { href: "/players", label: "전적 검색" },
   { href: "/patch-notes", label: "패치노트" },
   { href: "/weapons", label: "총기 도감" },
+  { href: "/meta", label: "통계" },
   { href: "/lab", label: "실험실" },
-  { href: "/meta", label: "메타" },
   { href: "/guides", label: "가이드" },
 ];
 
