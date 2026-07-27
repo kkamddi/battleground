@@ -37,6 +37,7 @@ export async function archivePlayerProfile(profile: PlayerProfile) {
 
   const now = new Date();
   const refreshUntil = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const snapshotDate = `${now.toISOString().slice(0, 7)}-01`;
   const identity = {
     platform: profile.platform,
     account_id: profile.accountId,
@@ -82,9 +83,9 @@ export async function archivePlayerProfile(profile: PlayerProfile) {
           ride_distance: match.rideDistance,
           walk_distance: match.walkDistance,
           captured_at: now.toISOString(),
-        }))),
+      }))),
       upsert("player_report_snapshots", "snapshot_date,platform,account_id", [{
-        snapshot_date: now.toISOString().slice(0, 10),
+        snapshot_date: snapshotDate,
         ...identity,
         weapon_stats: profile.weaponStats,
         attachment_stats: profile.attachmentStats,
