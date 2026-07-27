@@ -932,17 +932,21 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .progressive-detail { border-top: 2px solid var(--ink); display: grid; gap: 36px; grid-template-columns: minmax(0, 42%) 1fr; margin-top: 55px; padding: 28px 0 55px; scroll-margin-top: 90px; }
 .progressive-detail-visual { background: #171917; min-height: 390px; overflow: hidden; position: relative; }
 .progressive-detail-visual img { height: 100%; object-fit: cover; width: 100%; }
+.progressive-detail-visual img.item-render { object-fit: contain; padding: 26px; }
 .progressive-detail-visual.placeholder { align-items: center; color: white; display: flex; justify-content: center; padding: 30px; }
 .progressive-detail-visual.placeholder div { text-align: center; }
 .progressive-detail-visual.placeholder div span { color: #b9c0b9; display: block; font-size: 12px; font-weight: 800; }
-.progressive-detail-visual.placeholder div strong { display: block; font-size: 38px; letter-spacing: -.05em; margin-top: 8px; }
+.progressive-detail-visual.placeholder div strong { display: block; font-size: 30px; letter-spacing: -.04em; margin-top: 8px; }
+.progressive-detail-visual.placeholder div p { color: #b9c0b9; font-size: 11px; line-height: 1.6; margin: 12px auto 0; max-width: 270px; }
 .progressive-detail-visual > small { background: rgba(0, 0, 0, .75); bottom: 12px; color: white; font-size: 10px; left: 12px; padding: 7px 9px; position: absolute; }
+.progressive-detail-visual > small a { color: white; text-decoration: none; }
 .progressive-detail-copy > span { color: var(--point); font-size: 11px; font-weight: 800; }
 .progressive-detail-copy h2 { font-size: 36px; margin: 7px 0; }
 .progressive-detail-copy > p { color: var(--muted); font-size: 13px; line-height: 1.65; }
 .progressive-level-tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 22px; }
 .progressive-level-tabs button { background: transparent; border: 1px solid var(--line); color: var(--ink); cursor: pointer; font-size: 11px; font-weight: 800; padding: 8px 10px; }
 .progressive-level-tabs button.active { background: var(--ink); border-color: var(--ink); color: white; }
+.progressive-level-tabs button.has-preview::after { background: var(--point); border-radius: 50%; content: ""; display: inline-block; height: 5px; margin-left: 5px; vertical-align: 1px; width: 5px; }
 .progressive-level-focus { border-left: 3px solid var(--point); margin: 18px 0 10px; padding: 5px 0 5px 16px; }
 .progressive-level-focus span { color: var(--point); display: block; font-size: 10px; font-weight: 800; }
 .progressive-level-focus strong { display: block; font-size: 22px; margin-top: 2px; }

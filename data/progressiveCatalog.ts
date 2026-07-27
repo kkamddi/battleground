@@ -2,6 +2,7 @@ export type ProgressiveLevel = {
   level: number;
   description: string;
   kind: "외형 변화" | "기능 해금";
+  preview?: "base" | "official";
 };
 
 export type ProgressiveSkin = {
@@ -11,11 +12,14 @@ export type ProgressiveSkin = {
   released: string;
   maxLevel: number | null;
   officialUrl?: string;
+  officialImageUrl?: string;
+  baseImageUrl?: string;
+  baseImageSourceUrl?: string;
   levels?: ProgressiveLevel[];
 };
 
-const levels = (items: Array<[string, ProgressiveLevel["kind"]]>) =>
-  items.map(([description, kind], index) => ({ level: index + 1, description, kind }));
+const levels = (items: Array<[string, ProgressiveLevel["kind"], ProgressiveLevel["preview"]?]>) =>
+  items.map(([description, kind, preview], index) => ({ level: index + 1, description, kind, preview }));
 
 export const progressiveCatalog: ProgressiveSkin[] = [
   {
@@ -25,12 +29,15 @@ export const progressiveCatalog: ProgressiveSkin[] = [
     released: "2026.07",
     maxLevel: 10,
     officialUrl: "https://www.pubg.com/ko/news/10427",
+    officialImageUrl: "https://wstatic-prod-boc.krafton.com/common/news/20260714/0BLcjwHD.jpg",
+    baseImageUrl: "https://cdn.pubgitems.info/i-large/12012046.png",
+    baseImageSourceUrl: "https://pubgitems.info/weapons/dmr/12012046-pretend-prototype-slr",
     levels: levels([
-      ["기본 스킨 외형", "외형 변화"], ["헤드샷 킬 배틀스탯", "기능 해금"],
+      ["기본 스킨 외형", "외형 변화", "base"], ["헤드샷 킬 배틀스탯", "기능 해금"],
       ["무기 살펴보기 애니메이션", "기능 해금"], ["탄창 / 총구 스킨", "외형 변화"],
       ["중급 스킨 외형", "외형 변화"], ["킬피드 스킨", "기능 해금"],
       ["스코프 / 개머리판 스킨", "외형 변화"], ["전리품 상자 스킨", "외형 변화"],
-      ["고급 스킨 외형", "외형 변화"], ["킬 이펙트", "기능 해금"],
+      ["고급 스킨 외형", "외형 변화", "official"], ["킬 이펙트", "기능 해금"],
     ]),
   },
   {
@@ -40,10 +47,13 @@ export const progressiveCatalog: ProgressiveSkin[] = [
     released: "2026.05",
     maxLevel: 6,
     officialUrl: "https://www.pubg.com/ko/news/10041",
+    officialImageUrl: "https://wstatic-prod-boc.krafton.com/common/news/20260512/O77JyKWI.jpg",
+    baseImageUrl: "https://cdn.pubgitems.info/i-large/12012045.png",
+    baseImageSourceUrl: "https://pubgitems.info/weapons/lmg/12012045-ride-or-die-m249",
     levels: levels([
-      ["기본 스킨 외형", "외형 변화"], ["탄창 / 개머리판 스킨", "외형 변화"],
+      ["기본 스킨 외형", "외형 변화", "base"], ["탄창 / 개머리판 스킨", "외형 변화"],
       ["헤드샷 킬 배틀스탯", "기능 해금"], ["스코프 스킨", "외형 변화"],
-      ["킬피드 스킨", "기능 해금"], ["중급 스킨 외형", "외형 변화"],
+      ["킬피드 스킨", "기능 해금"], ["중급 스킨 외형", "외형 변화", "official"],
     ]),
   },
   { slug: "cosmic-caliber-kar98k", name: "코스믹 캘리버", weapon: "Kar98k", released: "2026.04", maxLevel: 10, officialUrl: "https://www.pubg.com/ko/news/9892" },
@@ -56,12 +66,15 @@ export const progressiveCatalog: ProgressiveSkin[] = [
     released: "2026.02",
     maxLevel: 10,
     officialUrl: "https://pubg.com/ko/news/9707",
+    officialImageUrl: "https://wstatic-prod-boc.krafton.com/common/news/20260129/6435pixJ.jpg",
+    baseImageUrl: "https://cdn.pubgitems.info/i-large/12012041.png",
+    baseImageSourceUrl: "https://pubgitems.info/weapons/ar/12012041-time-keeper-m416",
     levels: levels([
-      ["기본 스킨 외형", "외형 변화"], ["헤드샷 킬 배틀스탯", "기능 해금"],
+      ["기본 스킨 외형", "외형 변화", "base"], ["헤드샷 킬 배틀스탯", "기능 해금"],
       ["무기 살펴보기 애니메이션", "기능 해금"], ["탄창 / 총구 스킨", "외형 변화"],
       ["중급 스킨 외형", "외형 변화"], ["킬피드 스킨", "기능 해금"],
       ["손잡이 / 개머리판 스킨", "외형 변화"], ["전리품 상자 스킨", "외형 변화"],
-      ["스코프 스킨", "외형 변화"], ["고급 스킨 외형 / 상시 이펙트", "외형 변화"],
+      ["스코프 스킨", "외형 변화"], ["고급 스킨 외형 / 상시 이펙트", "외형 변화", "official"],
     ]),
   },
   { slug: "obscura-mk12", name: "Obscura", weapon: "Mk12", released: "2025", maxLevel: null },
@@ -147,4 +160,3 @@ export const progressiveCatalog: ProgressiveSkin[] = [
   },
   { slug: "gear-head-beryl-m762", name: "Gear Head", weapon: "Beryl M762", released: "2021", maxLevel: null },
 ];
-

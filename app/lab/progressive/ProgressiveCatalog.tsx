@@ -33,6 +33,21 @@ export default function ProgressiveCatalog({
   const selected = skins.find((skin) => skin.slug === selectedSlug) ?? filtered[0] ?? skins[0];
   const level = selected?.levels?.find((item) => item.level === selectedLevel)
     ?? selected?.levels?.[0];
+  const appearance = selected?.levels
+    ?.filter((item) => item.kind === "외형 변화" && item.level <= (level?.level ?? 1))
+    .at(-1);
+  const previewUrl = appearance?.preview === "base"
+    ? selected?.baseImageUrl
+    : appearance?.preview === "official"
+      ? selected?.officialImageUrl ?? images[selected.slug]
+      : selected?.levels
+        ? undefined
+        : selected?.officialImageUrl ?? images[selected.slug];
+  const previewLabel = appearance?.preview === "base"
+    ? appearance.level === level?.level ? "기본 외형" : `LV.${appearance.level} 외형 유지`
+    : appearance?.preview === "official"
+      ? appearance.level === level?.level ? "최종 외형" : `LV.${appearance.level} 외형 유지`
+      : "단독 외형 이미지 확인 중";
 
   const choose = (skin: ProgressiveSkin) => {
     setSelectedSlug(skin.slug);
@@ -89,11 +104,29 @@ export default function ProgressiveCatalog({
 
       {selected && (
         <section className="progressive-detail" id="progressive-detail">
-          <div className={`progressive-detail-visual ${images[selected.slug] ? "" : "placeholder"}`}>
-            {images[selected.slug]
-              ? <img src={images[selected.slug]} alt={`${selected.name} 공식 대표 이미지`} />
-              : <div><span>{selected.weapon}</span><strong>{selected.name}</strong></div>}
-            <small>{images[selected.slug] ? "PUBG 공식 대표 이미지" : "공식 대표 이미지 연결 준비 중"}</small>
+          <div className={`progressive-detail-visual ${previewUrl ? "" : "placeholder"}`}>
+            {previewUrl ? (
+              <img
+                className={appearance?.preview === "base" ? "item-render" : ""}
+                src={previewUrl}
+                alt={`${selected.name} ${previewLabel}`}
+              />
+            ) : (
+              <div>
+                <span>LV.{level?.level ?? 1} · {selected.weapon}</span>
+                <strong>{previewLabel}</strong>
+                <p>공식 또는 검증 가능한 단독 이미지가 확보되면 자동으로 연결됩니다.</p>
+              </div>
+            )}
+            <small>
+              {appearance?.preview === "base" && selected.baseImageSourceUrl ? (
+                <a href={selected.baseImageSourceUrl} target="_blank" rel="noreferrer">
+                  {previewLabel} · PUBGItems.info ↗
+                </a>
+              ) : appearance?.preview === "official" ? (
+                `${previewLabel} · PUBG 공식`
+              ) : previewLabel}
+            </small>
           </div>
           <div className="progressive-detail-copy">
             <span>{selected.released} · {selected.weapon}</span>
@@ -106,8 +139,9 @@ export default function ProgressiveCatalog({
                     <button
                       type="button"
                       key={item.level}
-                      className={level?.level === item.level ? "active" : ""}
+                      className={`${level?.level === item.level ? "active" : ""} ${item.preview ? "has-preview" : ""}`.trim()}
                       onClick={() => setSelectedLevel(item.level)}
+                      title={item.preview ? "실제 외형 이미지 제공" : item.description}
                     >
                       LV.{item.level}
                     </button>
@@ -143,4 +177,3 @@ export default function ProgressiveCatalog({
     </>
   );
 }
-
