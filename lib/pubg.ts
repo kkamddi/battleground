@@ -367,7 +367,7 @@ const leaderboard = unstable_cache(
       .sort((a, b) => a.rank - b.rank)
       .slice(0, 10);
   },
-  ["pubg-leaderboard"],
+  ["pubg-leaderboard-v2"],
   { revalidate: 7200 },
 );
 
