@@ -2,32 +2,40 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { PubgPlatform } from "../lib/pubg";
 
-export default function PlayerTools({ nickname }: { nickname: string }) {
+export default function PlayerTools({
+  nickname,
+  platform,
+}: {
+  nickname: string;
+  platform: PubgPlatform;
+}) {
   const router = useRouter();
   const [compareName, setCompareName] = useState("");
   const [favorite, setFavorite] = useState(false);
   const storageKey = "bgi-favorite-players";
+  const playerKey = `${platform}:${nickname}`;
 
   useEffect(() => {
     const players = JSON.parse(localStorage.getItem(storageKey) ?? "[]") as string[];
-    setFavorite(players.includes(nickname));
-  }, [nickname]);
+    setFavorite(players.includes(playerKey));
+  }, [playerKey]);
 
   function compare(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const value = compareName.trim();
     if (!value || value.toLowerCase() === nickname.toLowerCase()) return;
-    router.push(`/player/steam/${encodeURIComponent(nickname)}?compare=${encodeURIComponent(value)}`);
+    router.push(`/player/${platform}/${encodeURIComponent(nickname)}?compare=${encodeURIComponent(value)}`);
   }
 
   function toggleFavorite() {
     const players = JSON.parse(localStorage.getItem(storageKey) ?? "[]") as string[];
-    const next = players.includes(nickname)
-      ? players.filter((player) => player !== nickname)
-      : [nickname, ...players].slice(0, 10);
+    const next = players.includes(playerKey)
+      ? players.filter((player) => player !== playerKey)
+      : [playerKey, ...players].slice(0, 10);
     localStorage.setItem(storageKey, JSON.stringify(next));
-    setFavorite(next.includes(nickname));
+    setFavorite(next.includes(playerKey));
   }
 
   async function share() {

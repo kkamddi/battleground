@@ -45,7 +45,7 @@ export default function Home() {
           <div>
             <span>PLAYER SEARCH</span>
             <h2>게임 닉네임으로 전적 검색</h2>
-            <p>Steam PUBG의 현재 시즌 경쟁전과 최근 매치를 확인합니다.</p>
+            <p>Steam·Kakao PUBG의 현재 시즌 경쟁전과 최근 매치를 확인합니다.</p>
           </div>
           <PlayerSearchForm />
         </section>

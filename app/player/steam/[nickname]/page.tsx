@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import SiteFooter from "../../../../components/SiteFooter";
 import SiteHeader from "../../../../components/SiteHeader";
 import PlayerSearchForm from "../../../../components/PlayerSearchForm";
@@ -6,6 +7,7 @@ import PlayerTools from "../../../../components/PlayerTools";
 import {
   getPlayerProfile,
   PlayerModeStats,
+  PubgPlatform,
   PlayerProfile,
   PubgApiError,
   RecentMatch,
@@ -149,13 +151,14 @@ function profileMetrics(profile: PlayerProfile) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ nickname: string }>;
+  params: Promise<{ nickname: string; platform?: string }>;
 }): Promise<Metadata> {
-  const { nickname } = await params;
+  const { nickname, platform } = await params;
   const decoded = decodeURIComponent(nickname);
+  const platformName = platform === "kakao" ? "Kakao" : "Steam";
   return {
-    title: `${decoded} PUBG 전적`,
-    description: `${decoded}의 PUBG 현재 시즌 경쟁전과 최근 매치 전적을 확인하세요.`,
+    title: `${decoded} ${platformName} PUBG 전적`,
+    description: `${decoded}의 ${platformName} PUBG 현재 시즌 경쟁전과 최근 매치 전적을 확인하세요.`,
   };
 }
 
@@ -163,18 +166,21 @@ export default async function PlayerPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ nickname: string }>;
+  params: Promise<{ nickname: string; platform?: string }>;
   searchParams: Promise<{ compare?: string }>;
 }) {
-  const { nickname } = await params;
+  const { nickname, platform: routePlatform } = await params;
   const { compare } = await searchParams;
+  if (routePlatform && routePlatform !== "kakao") notFound();
+  const platform: PubgPlatform = routePlatform === "kakao" ? "kakao" : "steam";
+  const platformName = platform === "kakao" ? "Kakao" : "Steam";
   const decoded = decodeURIComponent(nickname);
   let profile: PlayerProfile | null = null;
   let comparison: PlayerProfile | null = null;
   let error = "";
   try {
-    profile = await getPlayerProfile(decoded);
-    if (compare) comparison = await getPlayerProfile(decodeURIComponent(compare));
+    profile = await getPlayerProfile(decoded, platform);
+    if (compare) comparison = await getPlayerProfile(decodeURIComponent(compare), platform);
   } catch (cause) {
     if (cause instanceof PubgApiError && cause.status === 429) {
       error = "현재 검색 요청이 많습니다. 잠시 후 다시 시도해 주세요.";
@@ -193,8 +199,8 @@ export default async function PlayerPage({
           <section className="player-empty">
             <span>PLAYER SEARCH</span>
             <h1>{error ? "전적을 불러오지 못했습니다" : "플레이어를 찾을 수 없습니다"}</h1>
-            <p>{error || "Steam PUBG의 정확한 게임 내 닉네임을 확인해 주세요."}</p>
-            <PlayerSearchForm />
+            <p>{error || `${platformName} PUBG의 정확한 게임 내 닉네임을 확인해 주세요.`}</p>
+            <PlayerSearchForm platform={platform} />
           </section>
         </div>
         <SiteFooter />
@@ -217,13 +223,13 @@ export default async function PlayerPage({
       <div className="page-shell player-shell">
         <section className="player-heading">
           <div>
-            <span>STEAM PUBG PLAYER</span>
+            <span>{platformName.toUpperCase()} PUBG PLAYER</span>
             <h1>{profile.name}</h1>
             <p>현재 시즌 · {modeNames[modeKey] ?? modeKey}</p>
           </div>
-          <PlayerSearchForm compact />
+          <PlayerSearchForm compact platform={platform} />
         </section>
-        <PlayerTools nickname={profile.name} />
+        <PlayerTools nickname={profile.name} platform={platform} />
 
         <section className="player-summary">
           <article className="player-tier">
@@ -304,7 +310,7 @@ export default async function PlayerPage({
         <section className="player-breakdown">
           <div className="home-section-head">
             <div><span>RECENT BREAKDOWN</span><h2>맵·모드별 전적</h2></div>
-            <p>최근 최대 10경기 표본</p>
+            <p>최근 14일 내 최대 32경기 표본</p>
           </div>
           <div className="breakdown-columns">
             <div>
@@ -397,7 +403,7 @@ export default async function PlayerPage({
         </section>
 
         <p className="player-data-note">
-          PUBG 공식 API와 텔레메트리의 Steam PC 데이터입니다. 플레이 스타일과 추천은 최근 표본을 바탕으로 계산한 BGI 분석이며 공식 PUBG 평가가 아닙니다. 최근 매치는 최대 10개를 표시하며 API 갱신 시점에 따라 게임 직후 기록이 늦게 보일 수 있습니다.
+          PUBG 공식 API와 텔레메트리의 {platformName} PC 데이터입니다. 플레이 스타일과 추천은 최근 표본을 바탕으로 계산한 BGI 분석이며 공식 PUBG 평가가 아닙니다. 최근 매치는 공식 API 보존 범위인 최근 14일 내 최대 32개를 표시하며 API 갱신 시점에 따라 게임 직후 기록이 늦게 보일 수 있습니다.
         </p>
       </div>
       <SiteFooter />

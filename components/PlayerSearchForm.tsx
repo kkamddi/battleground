@@ -2,16 +2,24 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { PubgPlatform } from "../lib/pubg";
 
-export default function PlayerSearchForm({ compact = false }: { compact?: boolean }) {
+export default function PlayerSearchForm({
+  compact = false,
+  platform: initialPlatform = "steam",
+}: {
+  compact?: boolean;
+  platform?: PubgPlatform;
+}) {
   const router = useRouter();
   const [nickname, setNickname] = useState("");
+  const [platform, setPlatform] = useState<PubgPlatform>(initialPlatform);
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const value = nickname.trim();
     if (!value) return;
-    router.push(`/player/steam/${encodeURIComponent(value)}`);
+    router.push(`/player/${platform}/${encodeURIComponent(value)}`);
   }
 
   return (
@@ -20,6 +28,14 @@ export default function PlayerSearchForm({ compact = false }: { compact?: boolea
         {compact ? "닉네임" : "PUBG 게임 닉네임"}
       </label>
       <div>
+        <select
+          aria-label="PUBG 플랫폼"
+          onChange={(event) => setPlatform(event.target.value as PubgPlatform)}
+          value={platform}
+        >
+          <option value="steam">Steam</option>
+          <option value="kakao">Kakao</option>
+        </select>
         <input
           id={compact ? "header-player-name" : "player-name"}
           maxLength={32}

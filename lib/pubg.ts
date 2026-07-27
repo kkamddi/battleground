@@ -1,8 +1,9 @@
 import { unstable_cache } from "next/cache";
 
-const API_ROOT = "https://api.pubg.com/shards/steam";
+const API_ROOT = "https://api.pubg.com/shards";
 
 type JsonRecord = Record<string, unknown>;
+export type PubgPlatform = "steam" | "kakao";
 
 export type PlayerModeStats = {
   assists?: number;
@@ -61,6 +62,7 @@ export type AttachmentStat = {
 export type PlayerProfile = {
   accountId: string;
   name: string;
+  platform: PubgPlatform;
   seasonId: string;
   rankedModes: Record<string, PlayerModeStats>;
   seasonModes: Record<string, PlayerModeStats>;
@@ -78,11 +80,15 @@ export class PubgApiError extends Error {
   }
 }
 
-async function apiJson(path: string, allowNotFound = false): Promise<JsonRecord | null> {
+async function apiJson(
+  platform: PubgPlatform,
+  path: string,
+  allowNotFound = false,
+): Promise<JsonRecord | null> {
   const key = process.env.PUBG_API_KEY;
   if (!key) throw new PubgApiError("PUBG_API_KEY_NOT_CONFIGURED", 503);
 
-  const response = await fetch(`${API_ROOT}${path}`, {
+  const response = await fetch(`${API_ROOT}/${platform}${path}`, {
     headers: {
       Accept: "application/vnd.api+json",
       Authorization: `Bearer ${key}`,
@@ -96,8 +102,8 @@ async function apiJson(path: string, allowNotFound = false): Promise<JsonRecord 
 }
 
 const currentSeason = unstable_cache(
-  async () => {
-    const payload = await apiJson("/seasons");
+  async (platform: PubgPlatform) => {
+    const payload = await apiJson(platform, "/seasons");
     const seasons = (payload?.data as JsonRecord[] | undefined) ?? [];
     const current = seasons.find((season) => {
       const attributes = season.attributes as JsonRecord | undefined;
@@ -111,9 +117,9 @@ const currentSeason = unstable_cache(
 );
 
 const lookupPlayer = unstable_cache(
-  async (nickname: string) => {
+  async (platform: PubgPlatform, nickname: string) => {
     const search = new URLSearchParams({ "filter[playerNames]": nickname });
-    const payload = await apiJson(`/players?${search}`);
+    const payload = await apiJson(platform, `/players?${search}`);
     const player = ((payload?.data as JsonRecord[] | undefined) ?? [])[0];
     if (!player?.id) return null;
     const attributes = (player.attributes as JsonRecord | undefined) ?? {};
@@ -122,7 +128,7 @@ const lookupPlayer = unstable_cache(
     return {
       accountId: String(player.id),
       name: String(attributes.name ?? nickname),
-      matchIds: (matches ?? []).slice(0, 10).map((match) => String(match.id)),
+      matchIds: (matches ?? []).slice(0, 32).map((match) => String(match.id)),
     };
   },
   ["pubg-player-by-name"],
@@ -275,13 +281,19 @@ async function telemetryStats(matches: RecentMatch[], accountId: string) {
 }
 
 const playerStats = unstable_cache(
-  async (accountId: string, seasonId: string, matchIds: string[]) => {
+  async (
+    platform: PubgPlatform,
+    accountId: string,
+    seasonId: string,
+    matchIds: string[],
+  ) => {
     const matchesPromise = Promise.all(
       matchIds.map((matchId) =>
-        apiJson(`/matches/${encodeURIComponent(matchId)}`, true).catch(() => null),
+        apiJson(platform, `/matches/${encodeURIComponent(matchId)}`, true).catch(() => null),
       ),
     );
     const ranked = await apiJson(
+      platform,
       `/players/${encodeURIComponent(accountId)}/seasons/${encodeURIComponent(seasonId)}/ranked`,
       true,
     );
@@ -291,7 +303,8 @@ const playerStats = unstable_cache(
     );
     const season = hasRankedGames
       ? null
-      : await apiJson(
+        : await apiJson(
+          platform,
           `/players/${encodeURIComponent(accountId)}/seasons/${encodeURIComponent(seasonId)}`,
           true,
         );
@@ -312,15 +325,22 @@ const playerStats = unstable_cache(
   { revalidate: 1800 },
 );
 
-export async function getPlayerProfile(nickname: string): Promise<PlayerProfile | null> {
+export async function getPlayerProfile(
+  nickname: string,
+  platform: PubgPlatform = "steam",
+): Promise<PlayerProfile | null> {
   const normalized = nickname.trim();
   if (normalized.length < 2 || normalized.length > 32) return null;
-  const [player, seasonId] = await Promise.all([lookupPlayer(normalized), currentSeason()]);
+  const [player, seasonId] = await Promise.all([
+    lookupPlayer(platform, normalized),
+    currentSeason(platform),
+  ]);
   if (!player) return null;
-  const stats = await playerStats(player.accountId, seasonId, player.matchIds);
+  const stats = await playerStats(platform, player.accountId, seasonId, player.matchIds);
   return {
     accountId: player.accountId,
     name: player.name,
+    platform,
     seasonId,
     ...stats,
   };
