@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { weapons as catalogWeapons } from "../../lib/catalog";
 
 type Weapon = {
   name: string;
@@ -12,18 +13,17 @@ type Weapon = {
   minimumMultiplier: number;
 };
 
-const weapons: Weapon[] = [
-  { name: "AUG", category: "AR", damage: 40, rpm: 750, falloffStart: 70, falloffEnd: 450, minimumMultiplier: 0.55 },
-  { name: "M416", category: "AR", damage: 40, rpm: 700, falloffStart: 60, falloffEnd: 445, minimumMultiplier: 0.55 },
-  { name: "Beryl M762", category: "AR", damage: 44, rpm: 700, falloffStart: 60, falloffEnd: 445, minimumMultiplier: 0.55 },
-  { name: "ACE32", category: "AR", damage: 43, rpm: 680, falloffStart: 60, falloffEnd: 445, minimumMultiplier: 0.55 },
-  { name: "AKM", category: "AR", damage: 48, rpm: 600, falloffStart: 60, falloffEnd: 445, minimumMultiplier: 0.55 },
-  { name: "MP5K", category: "SMG", damage: 32, rpm: 900, falloffStart: 35, falloffEnd: 250, minimumMultiplier: 0.55 },
-  { name: "UMP45", category: "SMG", damage: 42, rpm: 670, falloffStart: 30, falloffEnd: 250, minimumMultiplier: 0.55 },
-  { name: "Mini14", category: "DMR", damage: 42, rpm: 600, falloffStart: 90, falloffEnd: 500, minimumMultiplier: 0.70 },
-  { name: "Mk12", category: "DMR", damage: 43, rpm: 600, falloffStart: 90, falloffEnd: 500, minimumMultiplier: 0.70 },
-  { name: "SLR", category: "DMR", damage: 49, rpm: 600, falloffStart: 100, falloffEnd: 500, minimumMultiplier: 0.70 },
-];
+const weapons: Weapon[] = catalogWeapons
+  .filter((weapon) => weapon.rpm && weapon.damage > 0)
+  .map((weapon) => ({
+    name: weapon.name,
+    category: weapon.category,
+    damage: weapon.damage,
+    rpm: weapon.rpm as number,
+    falloffStart: weapon.falloffStart ?? (weapon.category === "SMG" ? 35 : weapon.category === "DMR" ? 90 : 60),
+    falloffEnd: weapon.falloffEnd ?? (weapon.category === "SMG" ? 250 : weapon.category === "DMR" ? 500 : 445),
+    minimumMultiplier: weapon.minimumMultiplier ?? (weapon.category === "DMR" ? 0.7 : 0.55),
+  }));
 
 const armorReduction = [0, 0.3, 0.4, 0.55];
 const chartDistances = [0, 25, 50, 75, 100, 150, 200, 250, 300];
@@ -102,4 +102,3 @@ export default function TtkCalculator() {
     </section>
   );
 }
-

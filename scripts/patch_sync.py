@@ -22,6 +22,38 @@ CATEGORY_RULES = (
     ("bug_fix", re.compile(r"\b(fix|fixed|issue|bug)\b", re.I)),
 )
 
+SUBJECT_ALIASES = {
+    "m416": "Item_Weapon_HK416_C",
+    "aug": "Item_Weapon_AUG_C",
+    "slr": "Item_Weapon_FNFal_C",
+    "beryl m762": "Item_Weapon_BerylM762_C",
+    "beryl": "Item_Weapon_BerylM762_C",
+    "ace32": "Item_Weapon_ACE32_C",
+    "akm": "Item_Weapon_AK47_C",
+    "mk12": "Item_Weapon_Mk12_C",
+    "mini14": "Item_Weapon_Mini14_C",
+    "dragunov": "Item_Weapon_Dragunov_C",
+    "mp5k": "Item_Weapon_MP5K_C",
+    "ump45": "Item_Weapon_UMP_C",
+    "vertical foregrip": "Item_Attach_Weapon_Lower_VerticalForeGrip_C",
+    "half grip": "Item_Attach_Weapon_Lower_HalfGrip_C",
+    "thumb grip": "Item_Attach_Weapon_Lower_ThumbGrip_C",
+    "lightweight grip": "Item_Attach_Weapon_Lower_LightweightForeGrip_C",
+    "angled foregrip": "Item_Attach_Weapon_Lower_AngledForeGrip_C",
+    "compensator": "Item_Attach_Weapon_Muzzle_Compensator_Large_C",
+    "muzzle brake": "Item_Attach_Weapon_Muzzle_AR_MuzzleBrake_C",
+}
+
+STAT_ALIASES = (
+    ("muzzle_velocity", re.compile(r"\b(bullet|muzzle)?\s*velocity\b", re.I), "탄속"),
+    ("base_damage", re.compile(r"\b(base\s+)?damage\b", re.I), "피해량"),
+    ("rpm", re.compile(r"\b(rpm|rate of fire|firing rate)\b", re.I), "연사 속도"),
+    ("horizontal_recoil", re.compile(r"\bhorizontal recoil\b", re.I), "수평 반동"),
+    ("vertical_recoil", re.compile(r"\bvertical recoil\b", re.I), "수직 반동"),
+    ("magazine_size", re.compile(r"\bmagazine (capacity|size)\b", re.I), "탄창 용량"),
+    ("reload_seconds", re.compile(r"\breload(ing)? (time|speed)\b", re.I), "재장전"),
+)
+
 
 class TextExtractor(HTMLParser):
     def __init__(self) -> None:
@@ -54,7 +86,7 @@ def patch_links(document: str) -> list[str]:
         url = f"https://pubg.com{link}"
         if url not in unique:
             unique.append(url)
-    return unique[:12]
+    return unique[:3]
 
 
 def classify(line: str) -> str | None:
@@ -74,6 +106,45 @@ def change_type(line: str) -> str:
     if re.search(r"\b(decreas|increas(?:ed)? recoil|slower)", line, re.I):
         return "nerf"
     return "neutral"
+
+def subject_key(line: str) -> str | None:
+    lowered = line.lower()
+    for alias in sorted(SUBJECT_ALIASES, key=len, reverse=True):
+        if re.search(rf"(?<![a-z0-9]){re.escape(alias)}(?![a-z0-9])", lowered):
+            return SUBJECT_ALIASES[alias]
+    return None
+
+
+def stat_key(line: str) -> tuple[str | None, str | None]:
+    for key, pattern, label in STAT_ALIASES:
+        if pattern.search(line):
+            return key, label
+    return None, None
+
+
+def before_after(line: str) -> tuple[str | None, str | None, str | None]:
+    arrow = re.search(
+        r"(?P<before>-?\d+(?:\.\d+)?)\s*(?P<unit>%|m/s|ms|seconds?|s|rounds?)?\s*"
+        r"(?:→|->|to)\s*(?P<after>-?\d+(?:\.\d+)?)\s*(?P<after_unit>%|m/s|ms|seconds?|s|rounds?)?",
+        line,
+        re.I,
+    )
+    if not arrow:
+        return None, None, None
+    return (
+        arrow.group("before"),
+        arrow.group("after"),
+        arrow.group("after_unit") or arrow.group("unit"),
+    )
+
+
+def korean_summary(line: str, subject: str | None, stat_label: str | None) -> str | None:
+    before, after, unit = before_after(line)
+    if not subject or not stat_label or before is None or after is None:
+        return None
+    display_subject = next((name.upper() if len(name) <= 5 else name.title() for name, key in SUBJECT_ALIASES.items() if key == subject and " " not in name), subject)
+    suffix = unit or ""
+    return f"{display_subject} {stat_label} {before}{suffix} → {after}{suffix}"
 
 
 def candidates(url: str, document: str) -> list[dict[str, object]]:
@@ -97,6 +168,9 @@ def candidates(url: str, document: str) -> list[dict[str, object]]:
         if digest in seen:
             continue
         seen.add(digest)
+        subject = subject_key(normalized)
+        stat, stat_label = stat_key(normalized)
+        before, after, unit = before_after(normalized)
         result.append(
             {
                 "source_url": url,
@@ -104,10 +178,16 @@ def candidates(url: str, document: str) -> list[dict[str, object]]:
                 "title": title,
                 "detected_version": version,
                 "category": category,
+                "subject_key": subject,
+                "stat_key": stat,
                 "change_type": change_type(normalized),
                 "summary": normalized[:240],
+                "summary_ko": korean_summary(normalized, subject, stat_label),
+                "before_value": before,
+                "after_value": after,
+                "unit": unit,
                 "evidence_text": normalized,
-                "confidence": 0.55,
+                "confidence": 0.82 if subject and (before or stat) else 0.55,
                 "review_status": "pending",
             }
         )
@@ -118,7 +198,21 @@ def main() -> None:
     database = SupabaseRest()
     detected: list[dict[str, object]] = []
     for url in patch_links(fetch(NEWS_URL)):
-        detected.extend(candidates(url, fetch(url)))
+        page_candidates = candidates(url, fetch(url))
+        detected.extend(page_candidates)
+        if page_candidates:
+            first = page_candidates[0]
+            database.upsert(
+                "patch_versions",
+                [{
+                    "version": first["detected_version"],
+                    "title": first["title"],
+                    "source_url": url,
+                    "status": "draft",
+                }],
+                on_conflict="version",
+                ignore_duplicates=True,
+            )
     database.upsert(
         "patch_candidates",
         detected,

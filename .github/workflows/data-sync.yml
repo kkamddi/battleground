@@ -36,14 +36,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Seed the curated catalog
+        run: python scripts/catalog_seed.py
       - name: Detect official patch notes
         run: python scripts/patch_sync.py
+      - name: Refresh official progressive-skin references
+        run: python scripts/progressive_sync.py
       - name: Aggregate PUBG telemetry sample
         if: ${{ env.PUBG_API_KEY != '' }}
         run: python scripts/telemetry_sync.py
       - name: Sample official leaderboard player loadouts
         if: ${{ env.PUBG_API_KEY != '' }}
         run: python scripts/leaderboard_loadouts.py
+      - name: Build weapon attachment recommendations
+        if: ${{ env.PUBG_API_KEY != '' }}
+        run: python scripts/loadout_rankings.py
       - name: Generate patch before and after comparisons
         if: ${{ env.PUBG_API_KEY != '' }}
         run: python scripts/meta_compare.py

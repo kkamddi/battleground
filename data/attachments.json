@@ -1,0 +1,15 @@
+[
+  {"key":"Item_Attach_Weapon_Lower_TiltedGrip_C","name":"틸티드 그립","category":"그립","compatible":"AR·SMG·DMR 다수","effect":"수직 12% · 수평 6% · 화면 흔들림 25% 제어","recommendedFor":["연사","범용"],"change":"41.1 신규"},
+  {"key":"Item_Attach_Weapon_Lower_HalfGrip_C","name":"하프 그립","category":"그립","compatible":"AR·SMG·DMR 다수","effect":"수직 8% · 수평 16% · 단발 반동 회복 10%","recommendedFor":["연사","수평 반동"],"change":"41.1 수평 8% → 16%"},
+  {"key":"Item_Attach_Weapon_Lower_VerticalForeGrip_C","name":"수직 손잡이","category":"그립","compatible":"AR·SMG·DMR 다수","effect":"수직 반동 15% 제어","recommendedFor":["초보자","수직 반동"],"change":"현행"},
+  {"key":"Item_Attach_Weapon_Lower_ThumbGrip_C","name":"엄지 그립","category":"그립","compatible":"AR·SMG·DMR 다수","effect":"수직 10% · ADS 속도 40% · 단발 반동 회복 10%","recommendedFor":["근거리","빠른 조준"],"change":"31.1 상향"},
+  {"key":"Item_Attach_Weapon_Lower_LightweightForeGrip_C","name":"라이트웨이트 그립","category":"그립","compatible":"AR·SMG·DMR 다수","effect":"초탄 반동 30% · 단발 반동 회복 20%","recommendedFor":["단발","DMR"],"change":"31.1 조정"},
+  {"key":"Item_Attach_Weapon_Lower_LaserPointer_C","name":"레이저 사이트","category":"그립","compatible":"권총·AR·SMG 일부","effect":"비조준 탄 퍼짐 감소","recommendedFor":["근거리","비조준"],"change":"현행"},
+  {"key":"Item_Attach_Weapon_Muzzle_AR_MuzzleBrake_C","name":"총구 제동기","category":"총구","compatible":"AR·DMR·SG 일부","effect":"수직 10% · 수평 8% · 화면 흔들림 35% 제어","recommendedFor":["연사","시야 안정"],"change":"36.1 수직 제어 상향"},
+  {"key":"Item_Attach_Weapon_Muzzle_Compensator_Large_C","name":"보정기","category":"총구","compatible":"AR·SMG·DMR·SR","effect":"수직·수평 반동 감소","recommendedFor":["반동 제어"],"change":"현행"},
+  {"key":"Item_Attach_Weapon_Muzzle_Suppressor_Large_C","name":"소음기","category":"총구","compatible":"다수 총기","effect":"총성과 총구 화염 감소","recommendedFor":["은폐 사격"],"change":"현행"},
+  {"key":"Item_Attach_Weapon_Stock_AR_HeavyStock_C","name":"헤비 스톡","category":"개머리판","compatible":"AR·SMG·M249 일부","effect":"수직·수평 10% · 반동 회복 5%, ADS 10% 감소","recommendedFor":["지속 연사"],"change":"31.1 상향"},
+  {"key":"Item_Attach_Weapon_Stock_AR_Composite_C","name":"전술 개머리판","category":"개머리판","compatible":"M416·Vector 등","effect":"반동 회복과 흔들림 제어","recommendedFor":["범용 안정"],"change":"현행"},
+  {"key":"Item_Attach_Weapon_Upper_DualOptic_4x1x_C","name":"하이브리드 스코프","category":"조준경","compatible":"조준경 장착 총기","effect":"1배율 ↔ 4배율 즉시 전환","recommendedFor":["근거리","중거리"],"change":"41.1 신규"},
+  {"key":"Item_Attach_Weapon_Magazine_ExtendedQuickDraw_Large_C","name":"대용량 퀵드로우 탄창","category":"탄창","compatible":"AR·SMG·DMR·SR 등","effect":"탄창 용량 증가 · 재장전 시간 감소","recommendedFor":["범용"],"change":"현행"}
+]

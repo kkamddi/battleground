@@ -3,6 +3,7 @@ type ApprovedChange = {
   category: string;
   change_type: string | null;
   summary: string;
+  summary_ko: string | null;
   source_url: string;
 };
 
@@ -28,7 +29,7 @@ async function approvedChanges() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return [];
   const search = new URLSearchParams({
-    select: "detected_version,category,change_type,summary,source_url",
+    select: "detected_version,category,change_type,summary,summary_ko,source_url",
     review_status: "eq.approved",
     order: "reviewed_at.desc",
     limit: "100",
@@ -64,7 +65,7 @@ export default async function ApprovedPatchFeed() {
               <li key={`${change.category}-${change.summary}`}>
                 <span>{categoryLabels[change.category] ?? change.category}</span>
                 <b className={change.change_type ?? "neutral"}>{changeLabels[change.change_type ?? "neutral"] ?? "변경"}</b>
-                <p>{change.summary}</p>
+                <p>{change.summary_ko ?? change.summary}</p>
               </li>
             ))}
           </ul>
@@ -74,4 +75,3 @@ export default async function ApprovedPatchFeed() {
     </section>
   );
 }
-

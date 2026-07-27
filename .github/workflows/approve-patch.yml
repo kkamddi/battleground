@@ -1,0 +1,52 @@
+name: Review staged patch change
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_id:
+        description: Supabase patch_candidates ID
+        required: true
+        type: string
+      decision:
+        description: Review decision
+        required: true
+        default: approve
+        type: choice
+        options:
+          - approve
+          - reject
+      summary_ko:
+        description: Optional reviewed Korean summary
+        required: false
+        type: string
+      pc_applied_at:
+        description: PC application date (YYYY-MM-DD)
+        required: false
+        type: string
+      console_applied_at:
+        description: Console application date (YYYY-MM-DD)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      CANDIDATE_ID: ${{ inputs.candidate_id }}
+      DECISION: ${{ inputs.decision }}
+      SUMMARY_KO: ${{ inputs.summary_ko }}
+      PC_APPLIED_AT: ${{ inputs.pc_applied_at }}
+      CONSOLE_APPLIED_AT: ${{ inputs.console_applied_at }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Apply reviewed patch change
+        run: python scripts/review_patch.py
