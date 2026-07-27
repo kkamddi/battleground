@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache";
+import { attachmentName } from "./catalog";
 
 const API_ROOT = "https://api.pubg.com/shards";
 
@@ -255,6 +256,7 @@ const itemNames: Record<string, string> = {
 
 function itemName(value: unknown) {
   const id = String(value ?? "");
+  if (id.startsWith("Item_Attach_Weapon_")) return attachmentName(id);
   return itemNames[id] ?? id.replace(/^Weap/, "").replace(/^Item_Attach_Weapon_/, "").replace(/_C$/, "");
 }
 

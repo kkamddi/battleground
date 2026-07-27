@@ -40,41 +40,6 @@ const weaponAliases: Record<string, string> = {
   Item_Weapon_FNFal_C: "SLR",
 };
 
-const attachmentAliases: Record<string, string> = {
-  LowerThumbGrip: "엄지 그립",
-  LowerTiltedGrip: "틸티드 그립",
-  Lower_Foregrip: "수직 손잡이",
-  Lower_ThumbGrip: "엄지 그립",
-  Lower_TiltedGrip: "틸티드 그립",
-  Magazine_Extended_Large: "대용량 탄창",
-  Magazine_Extended_Medium: "대용량 탄창",
-  Magazine_Extended_SniperRifle: "저격소총용 대용량 탄창",
-  Magazine_ExtendedQuickDraw_Large: "대용량 퀵드로우 탄창",
-  Magazine_ExtendedQuickDraw_Medium: "대용량 퀵드로우 탄창",
-  Magazine_ExtendedQuickDraw_SniperRifle: "저격소총용 대용량 퀵드로우 탄창",
-  Magazine_QuickDraw_Large: "퀵드로우 탄창",
-  Muzzle_AR_MuzzleBrake: "총구 제동기",
-  Muzzle_Compensator_Medium: "보정기",
-  Muzzle_FlashHider_Large: "소염기",
-  Muzzle_Suppressor_SniperRifle: "저격소총용 소음기",
-  Stock_AR_HeavyStock: "중량형 개머리판",
-  Stock_AR_HeavyStock_C: "중량형 개머리판",
-  Stock_SniperRifle_CheekPad: "칙패드",
-  Upper_CQBSS: "6배율 스코프",
-  Upper_DotSight_01: "레드 도트 사이트",
-  Upper_DualOptic_4x1x: "4배율 스코프",
-  Upper_Scope3x: "3배율 스코프",
-  Upper_Scope6x: "6배율 스코프",
-  Item_Attach_Weapon_Muzzle_Compensator_Large_C: "보정기",
-  Item_Attach_Weapon_Muzzle_Suppressor_Large_C: "소음기",
-  Item_Attach_Weapon_Upper_VerticalForeGrip_C: "수직 손잡이",
-  Item_Attach_Weapon_Upper_AngledForeGrip_C: "앵글 손잡이",
-  Item_Attach_Weapon_Upper_HalfGrip_C: "하프 그립",
-  Item_Attach_Weapon_Upper_LightweightForeGrip_C: "라이트웨이트 그립",
-  Item_Attach_Weapon_Lower_ExtendedQuickDrawMag_Large_C: "대용량 퀵드로우",
-  Item_Attach_Weapon_Stock_AR_Composite_C: "전술 개머리판",
-};
-
 function label(value: string, aliases: Record<string, string>) {
   const normalized = value.replace(/_C$/, "");
   const itemName = normalized.replace(/^Item_(Weapon|Attach_Weapon)_/, "");
@@ -149,14 +114,14 @@ export default async function LiveMetaPanels() {
             <span>파츠 조합</span>
             <h3>킬 발생 당시 장착 조합</h3>
             {rankedLoadouts.length ? (
-              <ul>{rankedLoadouts.map((row) => <li key={`${row.weapon_key}-${row.loadout_hash}`}><strong>{label(row.weapon_key, weaponAliases)}</strong><b>{totalLoadoutKills ? ((row.kill_count / totalLoadoutKills) * 100).toFixed(1) : "0.0"}%</b><small>{row.attachment_keys.map((item) => label(item, attachmentAliases)).join(" · ") || "파츠 없음"}</small></li>)}</ul>
+              <ul>{rankedLoadouts.map((row) => <li key={`${row.weapon_key}-${row.loadout_hash}`}><strong>{label(row.weapon_key, weaponAliases)}</strong><b>{totalLoadoutKills ? ((row.kill_count / totalLoadoutKills) * 100).toFixed(1) : "0.0"}%</b><small>{row.attachment_keys.map(attachmentName).join(" · ") || "파츠 없음"}</small></li>)}</ul>
             ) : <div className="collection-empty"><strong>표본 수집 중</strong><p>킬 당시 장착 정보가 확인된 조합부터 순차적으로 표시합니다.</p></div>}
           </article>
           <article>
             <span>경쟁전 상위권</span>
             <h3>상위 플레이어 최근 세팅</h3>
             {representativePlayers.length ? (
-              <ul>{representativePlayers.slice(0, 6).map((row) => <li key={`${row.player_name}-${row.weapon_key}`}><strong>#{row.rank_value} {row.player_name}</strong><b>{label(row.weapon_key, weaponAliases)}</b><small>{row.attachment_keys.map((item) => label(item, attachmentAliases)).join(" · ")} · 해당 총기 {row.sample_matches}경기 관측</small></li>)}</ul>
+              <ul>{representativePlayers.slice(0, 6).map((row) => <li key={`${row.player_name}-${row.weapon_key}`}><strong>#{row.rank_value} {row.player_name}</strong><b>{label(row.weapon_key, weaponAliases)}</b><small>{row.attachment_keys.map(attachmentName).join(" · ")} · 해당 총기 {row.sample_matches}경기 관측</small></li>)}</ul>
             ) : <div className="collection-empty"><strong>대표 세팅 수집 중</strong><p>최근 경쟁전에서 2경기 이상 사용된 총기의 선호 파츠를 집계합니다.</p></div>}
           </article>
         </div>
@@ -167,3 +132,4 @@ export default async function LiveMetaPanels() {
     return <section className="live-meta unavailable"><strong>실전 메타</strong><p>데이터를 갱신하고 있습니다. 잠시 후 다시 확인해 주세요.</p></section>;
   }
 }
+import { attachmentName } from "../../lib/catalog";
