@@ -4,6 +4,7 @@ import SiteFooter from "../../../../components/SiteFooter";
 import SiteHeader from "../../../../components/SiteHeader";
 import PlayerSearchForm from "../../../../components/PlayerSearchForm";
 import PlayerTools from "../../../../components/PlayerTools";
+import { weapons } from "../../../../lib/catalog";
 import {
   getPlayerProfile,
   PlayerModeStats,
@@ -223,6 +224,10 @@ export default async function PlayerPage({
   const recentKills = recentSample.reduce((sum, match) => sum + match.kills, 0);
   const recentHeadshots = recentSample.reduce((sum, match) => sum + match.headshotKills, 0);
   const teamActions = recentSample.reduce((sum, match) => sum + match.assists + match.revives, 0);
+  const topWeaponCatalog = topWeapon
+    ? weapons.find((weapon) => weapon.name.toLowerCase() === topWeapon.name.toLowerCase())
+    : undefined;
+  const reportConfidence = Math.min(100, Math.round((profile.recentMatches.length / 32) * 100));
 
   return (
     <main>
@@ -282,7 +287,7 @@ export default async function PlayerPage({
         <section className="player-report-intro">
           <span>PERSONAL REPORT</span>
           <h2>{profile.name}의 플레이 리포트</h2>
-          <p>최근 경기 {profile.recentMatches.length}개를 기준으로 플레이 성향과 맞춤 장비를 분석했습니다.</p>
+          <p>최근 경기 {profile.recentMatches.length}개를 기준으로 플레이 성향과 맞춤 장비를 분석했습니다. 표본 충족도 {reportConfidence}%.</p>
         </section>
 
         <section className="player-report-facts" aria-label="최근 플레이 핵심 지표">
@@ -330,6 +335,7 @@ export default async function PlayerPage({
                 {topLoadout.attachments.length ? ` + ${topLoadout.attachments.join(" · ")}` : " · 파츠 없음"}
               </small>
             ) : null}
+            {topWeaponCatalog ? <a href={`/weapons/${topWeaponCatalog.slug}`}>{topWeaponCatalog.name} 스펙·실전 추천 보기 →</a> : null}
           </article>
         </section>
 

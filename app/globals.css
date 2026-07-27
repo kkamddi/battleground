@@ -891,6 +891,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .recommendation-grid dl div:first-child { border-left: 0; padding-left: 0; }
 .recommendation-grid dt { color: var(--muted); font-size: 10px; }
 .recommendation-grid dd { font-size: 15px; font-weight: 800; margin: 6px 0 0; }
+.recommend-card > a { border-bottom: 1px solid var(--ink); display: inline-block; font-size: 12px; font-weight: 800; margin-top: 16px; padding-bottom: 3px; }
 .history-list article { align-items: center; border-bottom: 1px solid var(--line); display: grid; gap: 20px; grid-template-columns: 130px 1fr 100px; padding: 16px 2px; }
 .history-list article > strong { color: var(--point); font-size: 12px; }
 .history-list p { font-size: 15px; margin: 0; }
