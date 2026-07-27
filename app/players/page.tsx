@@ -59,7 +59,7 @@ function Leaderboard({
         <span>2시간마다 갱신</span>
       </div>
       <div className="ranker-table-head">
-        <span>#</span><span>플레이어</span><span>RP</span><span>K/D</span><span>ADR</span>
+        <span>#</span><span>플레이어</span><span>RP</span><span>KDA</span><span>ADR</span>
       </div>
       <div className="ranker-list">
         {players.length ? players.map((player) => (

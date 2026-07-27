@@ -357,7 +357,7 @@ const leaderboard = unstable_cache(
           name: String(attributes.name ?? "이름 비공개"),
           rank: Number(attributes.rank ?? stats.rank ?? 0),
           rankPoints: Number(stats.rankPoints ?? 0),
-          kd: Number(stats.killDeathRatio ?? stats.kdr ?? (kills / deaths)),
+          kd: Number(stats.killDeathRatio ?? stats.kdr ?? stats.kda ?? (kills / deaths)),
           averageDamage: Number(stats.averageDamage ?? (games ? Number(stats.damageDealt ?? 0) / games : 0)),
           wins,
           games,
