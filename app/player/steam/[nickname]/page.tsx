@@ -216,6 +216,13 @@ export default async function PlayerPage({
   const previous = recentAverage(profile.recentMatches.slice(5, 10));
   const topWeapon = profile.weaponStats[0];
   const topAttachment = profile.attachmentStats[0];
+  const killLoadouts = profile.killLoadoutStats ?? [];
+  const topLoadout = killLoadouts[0];
+  const recentSample = profile.recentMatches.slice(0, 10);
+  const recentGames = recentSample.length || 1;
+  const recentKills = recentSample.reduce((sum, match) => sum + match.kills, 0);
+  const recentHeadshots = recentSample.reduce((sum, match) => sum + match.headshotKills, 0);
+  const teamActions = recentSample.reduce((sum, match) => sum + match.assists + match.revives, 0);
 
   return (
     <main>
@@ -278,6 +285,13 @@ export default async function PlayerPage({
           <p>최근 경기 {profile.recentMatches.length}개를 기준으로 플레이 성향과 맞춤 장비를 분석했습니다.</p>
         </section>
 
+        <section className="player-report-facts" aria-label="최근 플레이 핵심 지표">
+          <div><span>교전</span><strong>{number(recent.kills, 1)}킬 · ADR {number(recent.damage, 0)}</strong></div>
+          <div><span>헤드샷 비중</span><strong>{ratio(recentKills ? recentHeadshots / recentKills : 0)}</strong></div>
+          <div><span>팀 기여</span><strong>경기당 {number(teamActions / recentGames, 1)}회</strong></div>
+          <div><span>평균 이동</span><strong>{number(recent.movement / 1000, 1)}km</strong></div>
+        </section>
+
         <section className="player-analysis-grid">
           <article className="style-card">
             <span>BGI PLAY STYLE</span>
@@ -310,6 +324,12 @@ export default async function PlayerPage({
                   : "최근 킬 무기 표본이 더 쌓이면 개인 총기 추천이 표시됩니다."}
             </p>
             {topAttachment ? <b>자주 장착한 파츠 · {topAttachment.name}</b> : null}
+            {topLoadout ? (
+              <small>
+                킬 확인 조합 · {topLoadout.weapon}
+                {topLoadout.attachments.length ? ` + ${topLoadout.attachments.join(" · ")}` : " · 파츠 없음"}
+              </small>
+            ) : null}
           </article>
         </section>
 
@@ -372,6 +392,17 @@ export default async function PlayerPage({
                 </article>
               )) : <p className="player-no-matches">최근 표본에서 확인된 파츠 장착 기록이 없습니다.</p>}
             </div>
+          </div>
+          <div className="kill-loadout-report">
+            <h3>킬 발생 당시 파츠 조합</h3>
+            {killLoadouts.length ? killLoadouts.slice(0, 6).map((loadout, index) => (
+              <article key={`${loadout.weapon}-${loadout.attachments.join("-")}-${index}`}>
+                <span>{index + 1}</span>
+                <strong>{loadout.weapon}</strong>
+                <p>{loadout.attachments.length ? loadout.attachments.join(" · ") : "확인된 파츠 없음"}</p>
+                <b>{loadout.kills}킬</b>
+              </article>
+            )) : <p className="player-no-matches">최근 표본에서 킬 당시 파츠 조합을 확인하지 못했습니다.</p>}
           </div>
         </section>
 

@@ -1,6 +1,5 @@
 import SiteFooter from "../components/SiteFooter";
 import SiteHeader from "../components/SiteHeader";
-import PlayerSearchForm from "../components/PlayerSearchForm";
 
 const weaponImageBase =
   "https://wstatic-prod.pubg.com/web/live/static/game-info/weapons/images/viewer";
@@ -41,13 +40,15 @@ export default function Home() {
           </a>
         </section>
 
-        <section className="home-player-search" id="player-search">
+        <section className="home-player-search">
           <div>
             <span>PLAYER SEARCH</span>
             <h2>닉네임 하나로 확인하는 나의 PUBG 리포트</h2>
             <p>Steam·Kakao 최근 경기에서 플레이 스타일과 무기·파츠 성향을 분석합니다.</p>
           </div>
-          <PlayerSearchForm />
+          <a className="player-search-link" href="/players">
+            전적 검색과 상위 랭커 보기 <b>→</b>
+          </a>
         </section>
 
         <section className="home-section">

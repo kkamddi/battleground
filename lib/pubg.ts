@@ -59,6 +59,23 @@ export type AttachmentStat = {
   equips: number;
 };
 
+export type KillLoadoutStat = {
+  weapon: string;
+  attachments: string[];
+  kills: number;
+};
+
+export type LeaderboardPlayer = {
+  accountId: string;
+  name: string;
+  rank: number;
+  rankPoints: number;
+  kd: number;
+  averageDamage: number;
+  wins: number;
+  games: number;
+};
+
 export type PlayerProfile = {
   accountId: string;
   name: string;
@@ -69,6 +86,7 @@ export type PlayerProfile = {
   recentMatches: RecentMatch[];
   weaponStats: WeaponStat[];
   attachmentStats: AttachmentStat[];
+  killLoadoutStats: KillLoadoutStat[];
 };
 
 export class PubgApiError extends Error {
@@ -208,12 +226,29 @@ const itemNames: Record<string, string> = {
   Item_Attach_Weapon_Lower_LightweightForeGrip_C: "라이트웨이트 그립",
   Item_Attach_Weapon_Lower_ThumbGrip_C: "엄지 그립",
   Item_Attach_Weapon_Lower_VerticalForeGrip_C: "수직 손잡이",
+  Item_Attach_Weapon_Magazine_Extended_Large_C: "대용량 탄창",
+  Item_Attach_Weapon_Magazine_Extended_Medium_C: "대용량 탄창",
+  Item_Attach_Weapon_Magazine_ExtendedQuickDraw_Medium_C: "대용량 퀵드로우 탄창",
   Item_Attach_Weapon_Magazine_ExtendedQuickDraw_Large_C: "대용량 퀵드로우 탄창",
+  Item_Attach_Weapon_Magazine_QuickDraw_Large_C: "퀵드로우 탄창",
+  Item_Attach_Weapon_Magazine_QuickDraw_Medium_C: "퀵드로우 탄창",
   Item_Attach_Weapon_Muzzle_Compensator_Large_C: "보정기",
+  Item_Attach_Weapon_Muzzle_Compensator_Medium_C: "보정기",
+  Item_Attach_Weapon_Muzzle_Compensator_SniperRifle_C: "보정기",
+  Item_Attach_Weapon_Muzzle_FlashHider_Large_C: "소염기",
+  Item_Attach_Weapon_Muzzle_FlashHider_Medium_C: "소염기",
+  Item_Attach_Weapon_Muzzle_FlashHider_SniperRifle_C: "소염기",
   Item_Attach_Weapon_Muzzle_Suppressor_Large_C: "소음기",
+  Item_Attach_Weapon_Muzzle_Suppressor_Medium_C: "소음기",
+  Item_Attach_Weapon_Muzzle_Suppressor_SniperRifle_C: "소음기",
+  Item_Attach_Weapon_Stock_AR_Composite_C: "전술 개머리판",
+  Item_Attach_Weapon_Stock_SniperRifle_BulletLoops_C: "탄띠",
+  Item_Attach_Weapon_Stock_SniperRifle_CheekPad_C: "칙패드",
   Item_Attach_Weapon_Upper_ACOG_01_C: "4배율",
   Item_Attach_Weapon_Upper_CQBSS_C: "8배율",
   Item_Attach_Weapon_Upper_DotSight_01_C: "레드 도트",
+  Item_Attach_Weapon_Upper_Holosight_C: "홀로그램",
+  Item_Attach_Weapon_Upper_PM2_01_C: "15배율",
   Item_Attach_Weapon_Upper_Scope3x_C: "3배율",
   Item_Attach_Weapon_Upper_Scope6x_C: "6배율",
 };
@@ -226,6 +261,7 @@ function itemName(value: unknown) {
 async function telemetryStats(matches: RecentMatch[], accountId: string) {
   const weaponMap = new Map<string, { kills: number; distance: number; longest: number }>();
   const attachmentMap = new Map<string, number>();
+  const loadoutMap = new Map<string, KillLoadoutStat>();
   const payloads = await Promise.all(
     matches
       .slice(0, 10)
@@ -240,13 +276,33 @@ async function telemetryStats(matches: RecentMatch[], accountId: string) {
 
   for (const events of payloads) {
     if (!Array.isArray(events)) continue;
+    const equippedByWeapon = new Map<string, Set<string>>();
     for (const rawEvent of events) {
       const event = rawEvent as JsonRecord;
+      if (event._T === "LogItemAttach" || event._T === "LogItemDetach") {
+        const character = (event.character as JsonRecord | undefined) ?? {};
+        if (character.accountId !== accountId) continue;
+        const parentItem = (event.parentItem as JsonRecord | undefined) ?? {};
+        const childItem = (event.childItem as JsonRecord | undefined) ?? {};
+        const weaponId = String(parentItem.itemId ?? "").replace(/^Item_Weapon_/, "Weap");
+        const attachment = itemName(childItem.itemId);
+        if (!weaponId || !attachment) continue;
+        const equipped = equippedByWeapon.get(weaponId) ?? new Set<string>();
+        if (event._T === "LogItemAttach") {
+          equipped.add(attachment);
+          attachmentMap.set(attachment, (attachmentMap.get(attachment) ?? 0) + 1);
+        } else {
+          equipped.delete(attachment);
+        }
+        equippedByWeapon.set(weaponId, equipped);
+        continue;
+      }
       if (event._T === "LogPlayerKillV2") {
         const killer = (event.killer as JsonRecord | undefined) ?? {};
         if (killer.accountId !== accountId) continue;
         const damageInfo = (event.damageInfo as JsonRecord | undefined) ?? {};
-        const name = itemName(damageInfo.damageCauserName);
+        const weaponId = String(damageInfo.damageCauserName ?? "");
+        const name = itemName(weaponId);
         if (!name) continue;
         const distance = Number(damageInfo.distance ?? 0) / 100;
         const current = weaponMap.get(name) ?? { kills: 0, distance: 0, longest: 0 };
@@ -254,13 +310,11 @@ async function telemetryStats(matches: RecentMatch[], accountId: string) {
         current.distance += distance;
         current.longest = Math.max(current.longest, distance);
         weaponMap.set(name, current);
-      }
-      if (event._T === "LogItemEquip") {
-        const character = (event.character as JsonRecord | undefined) ?? {};
-        const item = (event.item as JsonRecord | undefined) ?? {};
-        if (character.accountId !== accountId || item.category !== "Attachment") continue;
-        const name = itemName(item.itemId);
-        if (name) attachmentMap.set(name, (attachmentMap.get(name) ?? 0) + 1);
+        const attachments = [...(equippedByWeapon.get(weaponId) ?? [])].sort();
+        const key = `${name}|${attachments.join("|")}`;
+        const loadout = loadoutMap.get(key) ?? { weapon: name, attachments, kills: 0 };
+        loadout.kills += 1;
+        loadoutMap.set(key, loadout);
       }
     }
   }
@@ -277,7 +331,51 @@ async function telemetryStats(matches: RecentMatch[], accountId: string) {
     attachmentStats: [...attachmentMap.entries()]
       .map(([name, equips]) => ({ name, equips }))
       .sort((a, b) => b.equips - a.equips),
+    killLoadoutStats: [...loadoutMap.values()].sort((a, b) => b.kills - a.kills),
   };
+}
+
+const leaderboard = unstable_cache(
+  async (platform: PubgPlatform, seasonId: string, gameMode: string) => {
+    const payload = await apiJson(
+      platform,
+      `/leaderboards/${encodeURIComponent(seasonId)}/${encodeURIComponent(gameMode)}`,
+    );
+    const included = (payload?.included as JsonRecord[] | undefined) ?? [];
+    return included
+      .filter((item) => item.type === "player")
+      .map((item) => {
+        const attributes = (item.attributes as JsonRecord | undefined) ?? {};
+        const stats = (attributes.stats as JsonRecord | undefined) ?? {};
+        const games = Number(stats.games ?? stats.roundsPlayed ?? 0);
+        const wins = Number(stats.wins ?? 0);
+        const kills = Number(stats.kills ?? 0);
+        const deaths = Math.max(games - wins, 1);
+        return {
+          accountId: String(item.id ?? ""),
+          name: String(attributes.name ?? "이름 비공개"),
+          rank: Number(attributes.rank ?? stats.rank ?? 0),
+          rankPoints: Number(stats.rankPoints ?? 0),
+          kd: Number(stats.killDeathRatio ?? stats.kdr ?? (kills / deaths)),
+          averageDamage: Number(stats.averageDamage ?? (games ? Number(stats.damageDealt ?? 0) / games : 0)),
+          wins,
+          games,
+        } satisfies LeaderboardPlayer;
+      })
+      .filter((player) => player.accountId && player.rank > 0)
+      .sort((a, b) => a.rank - b.rank)
+      .slice(0, 10);
+  },
+  ["pubg-leaderboard"],
+  { revalidate: 7200 },
+);
+
+export async function getLeaderboard(
+  platform: PubgPlatform,
+  gameMode = "squad",
+): Promise<LeaderboardPlayer[]> {
+  const seasonId = await currentSeason(platform);
+  return leaderboard(platform, seasonId, gameMode);
 }
 
 const playerStats = unstable_cache(
