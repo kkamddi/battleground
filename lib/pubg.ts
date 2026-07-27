@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { attachmentName } from "./catalog";
+import { archivePlayerProfile } from "./playerArchive";
 
 const API_ROOT = "https://api.pubg.com/shards";
 
@@ -439,11 +440,13 @@ export async function getPlayerProfile(
   ]);
   if (!player) return null;
   const stats = await playerStats(platform, player.accountId, seasonId, player.matchIds);
-  return {
+  const profile = {
     accountId: player.accountId,
     name: player.name,
     platform,
     seasonId,
     ...stats,
   };
+  await archivePlayerProfile(profile);
+  return profile;
 }
