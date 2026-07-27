@@ -99,7 +99,7 @@ export class PubgApiError extends Error {
 }
 
 async function apiJson(
-  platform: PubgPlatform,
+  platform: string,
   path: string,
   allowNotFound = false,
 ): Promise<JsonRecord | null> {
@@ -337,8 +337,9 @@ async function telemetryStats(matches: RecentMatch[], accountId: string) {
 
 const leaderboard = unstable_cache(
   async (platform: PubgPlatform, seasonId: string, gameMode: string) => {
+    const leaderboardShard = platform === "kakao" ? "pc-kakao" : "pc-as";
     const payload = await apiJson(
-      platform,
+      leaderboardShard,
       `/leaderboards/${encodeURIComponent(seasonId)}/${encodeURIComponent(gameMode)}`,
     );
     const included = (payload?.included as JsonRecord[] | undefined) ?? [];
