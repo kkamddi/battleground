@@ -798,6 +798,14 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .meta-detail dl div { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; padding: 11px 0; }
 .meta-detail dt { color: var(--muted); font-size: 13px; }
 .meta-detail dd { font-size: 15px; font-weight: 800; margin: 0; }
+.meta-category-rankings { border-top: 2px solid var(--ink); display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 55px; }
+.meta-category-rankings article { border-right: 1px solid var(--line); min-width: 0; padding: 22px; }
+.meta-category-rankings article:last-child { border-right: 0; }
+.meta-category-rankings article > span { color: var(--point); font-size: 12px; font-weight: 800; }
+.meta-category-rankings h2 { font-size: 21px; margin: 10px 0 18px; }
+.meta-category-rankings ol { list-style: none; margin: 0; padding: 0; }
+.meta-category-rankings li { align-items: center; border-bottom: 1px solid var(--line); display: flex; font-size: 13px; justify-content: space-between; padding: 11px 0; }
+.meta-category-rankings li b { color: var(--muted); font-size: 12px; }
 .guide-grid li { align-items: center; gap: 18px; }
 .guide-grid li b { color: var(--ink); flex: 1; font-size: 13px; min-width: 0; overflow-wrap: anywhere; text-align: right; white-space: normal; }
 .guide-formulas { border-top: 2px solid var(--ink); display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 55px; }
@@ -1034,7 +1042,9 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .status-panel { grid-template-columns: 1fr; }
   .status-panel p { text-align: left; }
   .metric-plan { grid-template-columns: repeat(2, 1fr); }
-  .meta-stat-grid, .meta-detail { grid-template-columns: repeat(2, 1fr); }
+  .meta-stat-grid, .meta-detail, .meta-category-rankings { grid-template-columns: repeat(2, 1fr); }
+  .meta-category-rankings article:nth-child(2) { border-right: 0; }
+  .meta-category-rankings article:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
   .guide-source { align-items: flex-start; display: grid; gap: 15px; }
   .weapon-toolbar { align-items: stretch; display: grid; gap: 10px; }
   .calculator-controls { grid-template-columns: repeat(2, 1fr); }
@@ -1086,7 +1096,9 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .patch-archive article { gap: 18px; grid-template-columns: 72px 1fr; }
   .patch-version strong { font-size: 29px; }
   .metric-plan { grid-template-columns: 1fr; }
-  .meta-stat-grid, .meta-detail, .guide-formulas { grid-template-columns: 1fr; }
+  .meta-stat-grid, .meta-detail, .meta-category-rankings, .guide-formulas { grid-template-columns: 1fr; }
+  .meta-category-rankings article, .meta-category-rankings article:nth-child(2) { border-bottom: 1px solid var(--line); border-right: 0; }
+  .meta-category-rankings article:last-child { border-bottom: 0; }
   .guide-formulas article { border-bottom: 1px solid var(--line); border-right: 0; }
   .guide-grid li { display: grid; grid-template-columns: 65px minmax(0, 1fr); }
   .guide-grid li > span { min-width: 0; }
