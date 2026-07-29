@@ -14,7 +14,12 @@ export const metadata: Metadata = {
   keywords: ["배틀그라운드", "PUBG", "패치노트", "총기 스펙", "총기 도감", "메타 통계", "플레이 가이드"],
   creator: "BGI",
   publisher: "BGI",
-  verification: { google: "73w1RX9gnTnkQ5xPTdZ2a4jRl9pQJCwEET4LPf9KExI" },
+  verification: {
+    google: "73w1RX9gnTnkQ5xPTdZ2a4jRl9pQJCwEET4LPf9KExI",
+    other: {
+      "naver-site-verification": "68e38f9c35d151935e91728b59562718afb17c61",
+    },
+  },
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
