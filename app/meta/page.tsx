@@ -4,10 +4,30 @@ import SiteHeader from "../../components/SiteHeader";
 import { weaponName, weapons } from "../../lib/catalog";
 import LiveMetaPanels from "./LiveMetaPanels";
 
+const siteUrl = "https://battleground-info.vercel.app";
+const pageTitle = "PUBG 총기별 실전 킬 순위";
+const pageDescription = "최근 7일 Steam 공식 API 표본으로 AR·SMG·DMR·SR 총기별 킬 순위, 헤드샷 비율과 평균 교전 거리를 비교하세요.";
+
 export const metadata: Metadata = {
-  title: "PUBG 시즌 42 메타 통계",
-  description: "PUBG 시즌 42 공식 API 표본의 병과별 킬 순위, 헤드샷 비율과 평균 교전 거리를 확인하세요.",
+  title: pageTitle,
+  description: pageDescription,
+  keywords: ["PUBG 총기 순위", "배틀그라운드 총기 순위", "PUBG 메타", "AR 순위", "SMG 순위", "DMR 순위", "SR 순위"],
   alternates: { canonical: "/meta" },
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    url: "/meta",
+    siteName: "BGI",
+    title: pageTitle,
+    description: pageDescription,
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "BGI PUBG 총기별 실전 킬 순위" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: pageTitle,
+    description: pageDescription,
+    images: ["/opengraph-image"],
+  },
 };
 
 const categories = ["AR", "SMG", "DMR", "SR"] as const;
@@ -139,6 +159,45 @@ export default async function MetaPage() {
   } catch {
     snapshot = null;
   }
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        name: pageTitle,
+        description: pageDescription,
+        url: `${siteUrl}/meta`,
+        inLanguage: "ko-KR",
+        ...(snapshot?.date ? { dateModified: snapshot.date } : {}),
+        isPartOf: {
+          "@type": "WebSite",
+          name: "BGI",
+          url: siteUrl,
+        },
+        about: categories.map((category) => ({
+          "@type": "Thing",
+          name: `PUBG ${category} 총기 순위`,
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "홈",
+            item: siteUrl,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "총기별 실전 킬 순위",
+            item: `${siteUrl}/meta`,
+          },
+        ],
+      },
+    ],
+  };
 
   return (
     <main>
@@ -193,6 +252,10 @@ export default async function MetaPage() {
         </section>
       </div>
       <SiteFooter />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }}
+      />
     </main>
   );
 }
