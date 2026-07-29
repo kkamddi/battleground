@@ -12,13 +12,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/lab/ttk", changeFrequency: "monthly" as const, priority: 0.8 },
     { path: "/lab/loadouts", changeFrequency: "daily" as const, priority: 0.8 },
     { path: "/weapons/progressive", changeFrequency: "weekly" as const, priority: 0.7 },
-    { path: "/meta", changeFrequency: "weekly" as const, priority: 0.8 },
+    { path: "/meta", changeFrequency: "daily" as const, priority: 0.9 },
     { path: "/guides", changeFrequency: "monthly" as const, priority: 0.8 },
   ];
 
   return routes.map((route) => ({
     url: `${siteUrl}${route.path}`,
-    lastModified: new Date("2026-07-26"),
     changeFrequency: route.changeFrequency,
     priority: route.priority,
   }));
