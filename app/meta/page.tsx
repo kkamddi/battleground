@@ -150,7 +150,7 @@ export default async function MetaPage() {
           <p>최신 적재일 기준 최근 7일 킬을 병과별로 나눠 총기 점유율과 교전 특성을 비교합니다.</p>
         </header>
         <div className="status-panel">
-          <span>최근 7일</span><strong>병과별 실전 킬 순위</strong>
+          <span>최근 7일</span><strong>총기별 실전 킬 순위</strong>
           <p>{snapshot ? `${formatDate(snapshot.date)} 조회 · 집계된 킬 ${snapshot.totalKills.toLocaleString("ko-KR")}건 · 매일 갱신` : "최신 통계를 불러오는 중입니다."}</p>
         </div>
         <section className="meta-stat-grid">
