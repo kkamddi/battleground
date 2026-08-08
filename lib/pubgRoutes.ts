@@ -21,19 +21,7 @@ export type OpeningRouteAnalysis = {
   sampledPlayers: number;
   sampledMatches: number;
   routes: OpeningRoute[];
-  endgames: FinalCircleAnalysis[];
   generatedAt: string;
-};
-
-export type FinalCircleAnalysis = {
-  matchId: string;
-  playedAt: string;
-  phase: number;
-  x: number;
-  y: number;
-  radius: number;
-  alivePlayers: number;
-  routes: OpeningRoute[];
 };
 
 const mapIds: Record<MapSlug, string[]> = {
@@ -102,7 +90,7 @@ function location(character: JsonRecord) {
   return { x: Number(value.x ?? 0), y: Number(value.y ?? 0) };
 }
 
-async function telemetryAnalysis(
+async function telemetryRoutes(
   match: NonNullable<ReturnType<typeof matchInfo>>,
   players: Map<string, { name: string; rank: number }>,
 ) {
@@ -110,28 +98,11 @@ async function telemetryAnalysis(
     cache: "no-store",
     signal: AbortSignal.timeout(20_000),
   });
-  if (!response.ok) return { openingRoutes: [], endgame: null };
+  if (!response.ok) return [];
   const events = await response.json() as JsonRecord[];
   const landings = new Map<string, { at: number; point: OpeningRoutePoint }>();
-  let finalCircle: Omit<FinalCircleAnalysis, "matchId" | "playedAt" | "routes"> | null = null;
 
   for (const event of events) {
-    if (event._T === "LogGameStatePeriodic") {
-      const gameState = (event.gameState as JsonRecord | undefined) ?? {};
-      const center = (gameState.safetyZonePosition as JsonRecord | undefined) ?? {};
-      const radius = Number(gameState.safetyZoneRadius ?? 0);
-      const x = Number(center.x ?? 0);
-      const y = Number(center.y ?? 0);
-      if (radius > 0 && x > 0 && y > 0 && (!finalCircle || radius <= finalCircle.radius)) {
-        finalCircle = {
-          phase: Math.floor(Number(((event.common as JsonRecord | undefined)?.isGame) ?? 0)),
-          x,
-          y,
-          radius,
-          alivePlayers: Number(gameState.numAlivePlayers ?? 0),
-        };
-      }
-    }
     if (event._T !== "LogParachuteLanding") continue;
     const character = (event.character as JsonRecord | undefined) ?? {};
     const accountId = String(character.accountId ?? "");
@@ -144,7 +115,6 @@ async function telemetryAnalysis(
   }
 
   const pointsByPlayer = new Map<string, OpeningRoutePoint[]>();
-  const latePointsByPlayer = new Map<string, OpeningRoutePoint[]>();
   for (const event of events) {
     if (event._T !== "LogPlayerPosition") continue;
     const character = (event.character as JsonRecord | undefined) ?? {};
@@ -153,21 +123,9 @@ async function telemetryAnalysis(
     if (!landing) continue;
     const at = Date.parse(String(event._D ?? ""));
     const elapsedSeconds = Math.round((at - landing.at) / 1000);
+    if (elapsedSeconds < 0 || elapsedSeconds > 600) continue;
     const point = location(character);
     if (point.x <= 0 || point.y <= 0) continue;
-
-    const phase = Number(((event.common as JsonRecord | undefined)?.isGame) ?? 0);
-    if (phase >= 3) {
-      const lateRoute = latePointsByPlayer.get(accountId) ?? [];
-      const matchElapsed = Math.round(Number(event.elapsedTime ?? 0));
-      const previousLate = lateRoute.at(-1);
-      if (!previousLate || matchElapsed - previousLate.elapsedSeconds >= 20) {
-        lateRoute.push({ ...point, elapsedSeconds: matchElapsed });
-        latePointsByPlayer.set(accountId, lateRoute);
-      }
-    }
-
-    if (elapsedSeconds < 0 || elapsedSeconds > 600) continue;
     const route = pointsByPlayer.get(accountId) ?? [landing.point];
     const previous = route.at(-1)!;
     if (elapsedSeconds - previous.elapsedSeconds >= 20 || elapsedSeconds === 600) {
@@ -176,7 +134,7 @@ async function telemetryAnalysis(
     }
   }
 
-  const toRoutes = (entries: IterableIterator<[string, OpeningRoutePoint[]]>) => [...entries]
+  return [...pointsByPlayer.entries()]
     .filter(([, points]) => points.length >= 3)
     .map(([accountId, points]) => ({
       matchId: match.id,
@@ -186,25 +144,13 @@ async function telemetryAnalysis(
       placement: match.placements.get(accountId) ?? 0,
       points,
     } satisfies OpeningRoute));
-
-  const openingRoutes = toRoutes(pointsByPlayer.entries());
-  const lateRoutes = toRoutes(latePointsByPlayer.entries());
-  return {
-    openingRoutes,
-    endgame: finalCircle ? {
-      matchId: match.id,
-      playedAt: match.playedAt,
-      ...finalCircle,
-      routes: lateRoutes,
-    } satisfies FinalCircleAnalysis : null,
-  };
 }
 
 const cachedAnalysis = unstable_cache(
   async (mapSlug: MapSlug): Promise<OpeningRouteAnalysis> => {
     const definition = mapCatalog[mapSlug];
     if (!definition.ranked) {
-      return { mapSlug, mode: "squad-fpp", sampledPlayers: 0, sampledMatches: 0, routes: [], endgames: [], generatedAt: new Date().toISOString() };
+      return { mapSlug, mode: "squad-fpp", sampledPlayers: 0, sampledMatches: 0, routes: [], generatedAt: new Date().toISOString() };
     }
 
     const leaderboard = await getLeaderboard("steam", "squad-fpp");
@@ -223,13 +169,9 @@ const cachedAnalysis = unstable_cache(
         match !== null && mapIds[mapSlug].includes(match.mapName)
       ))
       .slice(0, 18);
-    const telemetry = await Promise.all(matching.map((match) => telemetryAnalysis(match, players)));
-    const routes = telemetry
-      .flatMap((analysis) => analysis.openingRoutes)
+    const routes = (await Promise.all(matching.map((match) => telemetryRoutes(match, players))))
+      .flat()
       .slice(0, 24);
-    const endgames = telemetry
-      .map((analysis) => analysis.endgame)
-      .filter((analysis): analysis is FinalCircleAnalysis => analysis !== null);
 
     return {
       mapSlug,
@@ -237,11 +179,10 @@ const cachedAnalysis = unstable_cache(
       sampledPlayers: players.size,
       sampledMatches: matching.length,
       routes,
-      endgames,
       generatedAt: new Date().toISOString(),
     };
   },
-  ["pubg-ranked-opening-routes-v2"],
+  ["pubg-ranked-opening-routes-v1"],
   { revalidate: 21_600 },
 );
 
