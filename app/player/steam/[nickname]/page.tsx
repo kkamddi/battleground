@@ -112,21 +112,136 @@ function recentAverage(matches: RecentMatch[]) {
   };
 }
 
+function score(value: number, low: number, high: number) {
+  return Math.max(0, Math.min(100, ((value - low) / (high - low)) * 100));
+}
+
+function deviation(values: number[]) {
+  if (!values.length) return 0;
+  const average = values.reduce((sum, value) => sum + value, 0) / values.length;
+  return Math.sqrt(values.reduce((sum, value) => sum + (value - average) ** 2, 0) / values.length);
+}
+
 function playStyle(matches: RecentMatch[]) {
-  const average = recentAverage(matches);
-  if (average.kills >= 2 || average.damage >= 250) {
-    return { name: "교전 주도형", description: "최근 경기에서 킬과 피해량이 높습니다. 초반 교전과 주도권 확보에 강한 유형입니다." };
-  }
-  if (average.longestKill >= 150) {
-    return { name: "원거리 견제형", description: "장거리 킬 기록이 두드러집니다. DMR·SR을 활용한 거리 유지에 강점이 있습니다." };
-  }
-  if (average.placement <= 10 && average.survival >= 1_100) {
-    return { name: "생존 운영형", description: "생존 시간과 순위가 안정적입니다. 자기장 운영과 후반 진입을 중시하는 유형입니다." };
-  }
-  if (average.movement >= 5_000) {
-    return { name: "기동 운영형", description: "경기당 이동 거리가 깁니다. 차량과 로테이션을 적극적으로 활용하는 유형입니다." };
-  }
-  return { name: "균형 성장형", description: "교전과 생존 지표가 고르게 분포합니다. 최근 표본이 쌓일수록 유형이 더 정교해집니다." };
+  const sample = matches.slice(0, 10);
+  const games = sample.length || 1;
+  const average = recentAverage(sample);
+  const perGame = (key: "assists" | "boosts" | "dbnos" | "heals" | "revives") =>
+    sample.reduce((sum, match) => sum + match[key], 0) / games;
+  const totalKills = sample.reduce((sum, match) => sum + match.kills, 0);
+  const headshotRate = totalKills
+    ? sample.reduce((sum, match) => sum + match.headshotKills, 0) / totalKills
+    : 0;
+  const top10Rate = sample.filter((match) => match.placement > 0 && match.placement <= 10).length / games;
+  const longRangeRate = sample.filter((match) => match.longestKill >= 150).length / games;
+  const rideDistance = sample.reduce((sum, match) => sum + match.rideDistance, 0);
+  const totalDistance = sample.reduce((sum, match) => sum + match.rideDistance + match.walkDistance, 0);
+  const rideRate = totalDistance ? rideDistance / totalDistance : 0;
+  const killScore = score(average.kills, 0.5, 4);
+  const damageScore = score(average.damage, 80, 450);
+  const dbnoScore = score(perGame("dbnos"), 0.2, 3);
+  const combatScore = killScore * 0.4 + damageScore * 0.35 + dbnoScore * 0.25;
+  const survivalScore = score(average.survival, 500, 1_600) * 0.4
+    + top10Rate * 100 * 0.35
+    + (100 - score(average.placement, 5, 30)) * 0.25;
+  const supportScore = score(perGame("assists"), 0.1, 2) * 0.45
+    + score(perGame("revives"), 0, 1) * 0.35
+    + dbnoScore * 0.2;
+  const mobilityScore = score(average.movement, 1_500, 8_000) * 0.65 + rideRate * 100 * 0.35;
+  const coreScores = [combatScore, survivalScore, supportScore, mobilityScore];
+  const balanceScore = 35
+    + (coreScores.reduce((sum, value) => sum + value, 0) / coreScores.length) * 0.35
+    + (100 - (Math.max(...coreScores) - Math.min(...coreScores))) * 0.3;
+  const styles = [
+    {
+      name: "교전 주도형",
+      value: combatScore,
+      description: "킬·피해량·DBNO가 고르게 높아 교전의 주도권을 잡는 플레이가 두드러집니다.",
+    },
+    {
+      name: "화력 지원형",
+      value: damageScore * 0.45 + dbnoScore * 0.3 + Math.max(0, damageScore - killScore) * 0.25,
+      description: "높은 피해량과 DBNO로 적의 전력을 먼저 깎아 팀의 마무리를 돕는 플레이가 두드러집니다.",
+    },
+    {
+      name: "헤드헌터형",
+      value: headshotRate * 100 * 0.65 + killScore * 0.35,
+      description: "킬 중 헤드샷 비중과 킬 생산력이 높아 정밀한 조준 능력이 강점으로 나타납니다.",
+    },
+    {
+      name: "원거리 견제형",
+      value: longRangeRate * 100 * 0.7 + score(average.longestKill, 80, 300) * 0.3,
+      description: "장거리 킬이 반복적으로 확인되어 DMR·SR을 활용한 거리 유지에 강점이 있습니다.",
+    },
+    {
+      name: "생존 운영형",
+      value: survivalScore,
+      description: "생존 시간·평균 순위·Top 10 진입률이 높아 자기장 운영과 후반 진입이 안정적입니다.",
+    },
+    {
+      name: "기동 운영형",
+      value: mobilityScore,
+      description: "이동 거리와 차량 이동 비중이 높아 빠른 로테이션과 선점 플레이가 두드러집니다.",
+    },
+    {
+      name: "팀 서포터형",
+      value: supportScore,
+      description: "어시스트·부활·DBNO 기여도가 높아 스쿼드의 교전 지속력을 끌어올리는 유형입니다.",
+    },
+    {
+      name: "균형 성장형",
+      value: balanceScore,
+      description: "교전·생존·기동·지원 지표가 한쪽에 치우치지 않고 고르게 나타나는 유형입니다.",
+    },
+  ].sort((a, b) => b.value - a.value);
+
+  const top10Matches = sample.filter((match) => match.placement > 0 && match.placement <= 10);
+  const top10Average = recentAverage(top10Matches);
+  const recent = recentAverage(sample.slice(0, 5));
+  const previous = recentAverage(sample.slice(5, 10));
+  const stabilityScore = sample.length >= 5
+    ? 100 - (
+      score(deviation(sample.map((match) => match.kills)), 0, 2.5)
+      + score(deviation(sample.map((match) => match.damage)), 0, 250)
+      + score(deviation(sample.map((match) => match.placement)), 0, 20)
+    ) / 3
+    : 0;
+  const traits = [
+    {
+      name: "후반 클러치",
+      value: top10Rate * 40 + score(top10Average.kills, 1, 4) * 0.3 + score(top10Average.damage, 150, 500) * 0.3,
+    },
+    { name: "차량 로테이션", value: rideRate * 100 },
+    {
+      name: "회복 유지력",
+      value: score(perGame("heals") + perGame("boosts"), 2, 8) * 0.65
+        + score(average.survival, 600, 1_500) * 0.35,
+    },
+    { name: "안정적인 경기력", value: stabilityScore },
+    {
+      name: "폭발적인 고점",
+      value: Math.max(
+        score(Math.max(0, ...sample.map((match) => match.kills)) - average.kills, 1, 6),
+        score(Math.max(0, ...sample.map((match) => match.damage)) - average.damage, 100, 600),
+      ),
+    },
+    {
+      name: "최근 상승세",
+      value: sample.length >= 10
+        ? score((recent.kills - previous.kills) * 25 + (recent.damage - previous.damage) / 4 + (previous.placement - recent.placement) * 3, 5, 100)
+        : 0,
+    },
+  ]
+    .filter((trait) => trait.value >= 65)
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 2)
+    .map((trait) => trait.name);
+
+  return {
+    ...styles[0],
+    traits,
+    confidence: sample.length >= 10 ? "분석 신뢰도 높음" : sample.length >= 5 ? "예비 분석" : "분석 표본 부족",
+  };
 }
 
 function profileMetrics(profile: PlayerProfile) {
@@ -302,6 +417,10 @@ export default async function PlayerPage({
             <span>BGI PLAY STYLE</span>
             <h2>{style.name}</h2>
             <p>{style.description}</p>
+            <p className="style-traits">
+              <b>{style.confidence}</b>
+              {style.traits.length ? ` · ${style.traits.join(" · ")}` : " · 보조 특성 분석 중"}
+            </p>
             <dl>
               <div><dt>최근 평균 킬</dt><dd>{number(recent.kills, 1)}</dd></div>
               <div><dt>최근 평균 피해</dt><dd>{number(recent.damage, 0)}</dd></div>
