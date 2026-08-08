@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PubgMapExplorer from "../../../components/PubgMapExplorer";
+import SiteHeader from "../../../components/SiteHeader";
 import { mapCatalog, mapSlugs, type MapSlug } from "../../../lib/mapData";
 
 type MapPageProps = { params: Promise<{ slug: string }> };
@@ -22,5 +23,5 @@ export async function generateMetadata({ params }: MapPageProps): Promise<Metada
 export default async function MapPage({ params }: MapPageProps) {
   const { slug } = await params;
   if (!mapSlugs.includes(slug as MapSlug) || slug === "erangel") notFound();
-  return <PubgMapExplorer mapSlug={slug as MapSlug} />;
+  return <main><SiteHeader /><PubgMapExplorer mapSlug={slug as MapSlug} /></main>;
 }
