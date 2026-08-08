@@ -31,12 +31,14 @@ export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
   const mapRef = useRef<Leaflet.Map | null>(null);
   const markerLayerRef = useRef<Leaflet.LayerGroup | null>(null);
   const routeLayerRef = useRef<Leaflet.LayerGroup | null>(null);
+  const endgameLayerRef = useRef<Leaflet.LayerGroup | null>(null);
   const leafletRef = useRef<typeof Leaflet | null>(null);
   const [active, setActive] = useState<Set<MapCategoryId>>(new Set());
   const [mode, setMode] = useState<MapMode>("normal");
   const [ready, setReady] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [showRoutes, setShowRoutes] = useState(false);
+  const [showEndgames, setShowEndgames] = useState(false);
   const [routeAnalysis, setRouteAnalysis] = useState<OpeningRouteAnalysis | null>(null);
   const [routeStatus, setRouteStatus] = useState<"idle" | "loading" | "error">("idle");
 
@@ -67,11 +69,13 @@ export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
       L.imageOverlay(definition.image, bounds).addTo(map);
       const layer = L.layerGroup().addTo(map);
       const routeLayer = L.layerGroup().addTo(map);
+      const endgameLayer = L.layerGroup().addTo(map);
       map.fitBounds(bounds, { animate: false });
       leafletRef.current = L;
       mapRef.current = map;
       markerLayerRef.current = layer;
       routeLayerRef.current = routeLayer;
+      endgameLayerRef.current = endgameLayer;
       setReady(true);
     }
 
@@ -82,6 +86,7 @@ export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
       mapRef.current = null;
       markerLayerRef.current = null;
       routeLayerRef.current = null;
+      endgameLayerRef.current = null;
       leafletRef.current = null;
     };
   }, [definition.image]);
@@ -136,10 +141,42 @@ export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
     }
   }, [definition.worldSize, ready, routeAnalysis, showRoutes]);
 
-  async function toggleRoutes() {
-    const next = !showRoutes;
-    setShowRoutes(next);
-    if (!next || routeAnalysis || routeStatus === "loading") return;
+  useEffect(() => {
+    const L = leafletRef.current;
+    const layer = endgameLayerRef.current;
+    if (!ready || !L || !layer) return;
+    layer.clearLayers();
+    if (!showEndgames || !routeAnalysis) return;
+
+    for (const endgame of routeAnalysis.endgames) {
+      const center: Leaflet.LatLngTuple = [
+        1_000 - (endgame.y / definition.worldSize) * 1_000,
+        (endgame.x / definition.worldSize) * 1_000,
+      ];
+      const radius = (endgame.radius / definition.worldSize) * 1_000;
+      const popup = `${endgame.playedAt.slice(0, 10)} · 최종 ${endgame.phase}페이즈 · 생존 ${endgame.alivePlayers}명`;
+      L.circle(center, {
+        color: "#55d6be",
+        fillColor: "#55d6be",
+        fillOpacity: 0.12,
+        radius,
+        weight: 2,
+      }).bindPopup(popup).addTo(layer);
+
+      for (const route of endgame.routes) {
+        const coordinates = route.points.map((point) => [
+          1_000 - (point.y / definition.worldSize) * 1_000,
+          (point.x / definition.worldSize) * 1_000,
+        ] as Leaflet.LatLngTuple);
+        L.polyline(coordinates, { color: "#55d6be", opacity: 0.62, weight: 2 })
+          .bindPopup(`${route.leaderboardRank}위 ${escapeHtml(route.playerName)} · 매치 ${route.placement}위`)
+          .addTo(layer);
+      }
+    }
+  }, [definition.worldSize, ready, routeAnalysis, showEndgames]);
+
+  async function loadAnalysis() {
+    if (routeAnalysis || routeStatus === "loading") return;
     setRouteStatus("loading");
     try {
       const response = await fetch(`/api/map-routes/${mapSlug}`);
@@ -149,6 +186,18 @@ export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
     } catch {
       setRouteStatus("error");
     }
+  }
+
+  async function toggleRoutes() {
+    const next = !showRoutes;
+    setShowRoutes(next);
+    if (next) await loadAnalysis();
+  }
+
+  async function toggleEndgames() {
+    const next = !showEndgames;
+    setShowEndgames(next);
+    if (next) await loadAnalysis();
   }
 
   function toggle(category: MapCategoryId) {
@@ -216,9 +265,22 @@ export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
             <span>상위 랭커 초반 루트</span>
             <b>{routeStatus === "loading" ? "분석 중" : routeAnalysis ? routeAnalysis.routes.length : "LIVE"}</b>
           </button>
+          <button
+            aria-pressed={showEndgames}
+            className={showEndgames ? "active endgame" : ""}
+            disabled={!definition.ranked || routeStatus === "loading"}
+            onClick={toggleEndgames}
+            type="button"
+          >
+            <span>최종 자기장 운영</span>
+            <b>{routeStatus === "loading" ? "분석 중" : routeAnalysis ? routeAnalysis.endgames.length : "LIVE"}</b>
+          </button>
           {routeStatus === "error" && <p>현재 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>}
           {showRoutes && routeAnalysis && (
             <p>경쟁전 스쿼드 FPP · 상위 {routeAnalysis.sampledPlayers}명 · 낙하 후 10분</p>
+          )}
+          {showEndgames && routeAnalysis && (
+            <p>최근 {routeAnalysis.endgames.length}경기 · 3페이즈 이후 이동과 최종 안전구역</p>
           )}
         </div>
 
