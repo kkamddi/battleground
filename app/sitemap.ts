@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     { path: "", changeFrequency: "weekly" as const, priority: 1 },
     { path: "/players", changeFrequency: "daily" as const, priority: 0.9 },
+    { path: "/maps/erangel", changeFrequency: "weekly" as const, priority: 0.9 },
     { path: "/patch-notes", changeFrequency: "weekly" as const, priority: 0.9 },
     { path: "/weapons", changeFrequency: "weekly" as const, priority: 0.9 },
     { path: "/lab", changeFrequency: "weekly" as const, priority: 0.8 },
