@@ -56,15 +56,15 @@ export const mapCategories: Array<{ id: MapCategoryId; label: string; icon: stri
 ];
 
 export const mapCatalog: Record<MapSlug, MapDefinition> = {
-  erangel: { nameKo: "에란겔", nameEn: "Erangel", image: "Erangel_Main_Low_Res.png", worldSize: 816000, ranked: true, points: erangelPoints },
-  miramar: { nameKo: "미라마", nameEn: "Miramar", image: "Miramar_Main_Low_Res.png", worldSize: 816000, ranked: true, points: miramarPoints },
-  taego: { nameKo: "태이고", nameEn: "Taego", image: "Taego_Main_Low_Res.png", worldSize: 816000, ranked: true, points: taegoPoints },
-  rondo: { nameKo: "론도", nameEn: "Rondo", image: "Rondo_Main_Low_Res.png", worldSize: 816000, ranked: true, points: rondoPoints },
-  vikendi: { nameKo: "비켄디", nameEn: "Vikendi", image: "Vikendi_Main_Low_Res.png", worldSize: 816000, ranked: false, points: vikendiPoints },
-  deston: { nameKo: "데스턴", nameEn: "Deston", image: "Deston_Main_Low_Res.png", worldSize: 816000, ranked: false, points: destonPoints },
-  sanhok: { nameKo: "사녹", nameEn: "Sanhok", image: "Sanhok_Main_Low_Res.png", worldSize: 408000, ranked: false, points: sanhokPoints },
-  karakin: { nameKo: "카라킨", nameEn: "Karakin", image: "Karakin_Main_Low_Res.png", worldSize: 204000, ranked: false, points: karakinPoints },
-  paramo: { nameKo: "파라모", nameEn: "Paramo", image: "Paramo_Main_Low_Res.png", worldSize: 306000, ranked: false, points: paramoPoints },
+  erangel: { nameKo: "에란겔", nameEn: "Erangel", image: "/maps/erangel.webp", worldSize: 816000, ranked: true, points: erangelPoints },
+  miramar: { nameKo: "미라마", nameEn: "Miramar", image: "/maps/miramar.webp", worldSize: 816000, ranked: true, points: miramarPoints },
+  taego: { nameKo: "태이고", nameEn: "Taego", image: "/maps/taego.webp", worldSize: 816000, ranked: true, points: taegoPoints },
+  rondo: { nameKo: "론도", nameEn: "Rondo", image: "/maps/rondo.webp", worldSize: 816000, ranked: true, points: rondoPoints },
+  vikendi: { nameKo: "비켄디", nameEn: "Vikendi", image: "/maps/vikendi.webp", worldSize: 816000, ranked: false, points: vikendiPoints },
+  deston: { nameKo: "데스턴", nameEn: "Deston", image: "/maps/deston.webp", worldSize: 816000, ranked: false, points: destonPoints },
+  sanhok: { nameKo: "사녹", nameEn: "Sanhok", image: "/maps/sanhok.webp", worldSize: 408000, ranked: false, points: sanhokPoints },
+  karakin: { nameKo: "카라킨", nameEn: "Karakin", image: "/maps/karakin.webp", worldSize: 204000, ranked: false, points: karakinPoints },
+  paramo: { nameKo: "파라모", nameEn: "Paramo", image: "/maps/paramo.webp", worldSize: 306000, ranked: false, points: paramoPoints },
 };
 
 export const mapSlugs = Object.keys(mapCatalog) as MapSlug[];

@@ -14,8 +14,6 @@ import {
   type MapSlug,
 } from "../lib/mapData";
 
-const imageRoot = "https://raw.githubusercontent.com/pubg/api-assets/master/Assets/Maps";
-
 export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
   const definition = mapCatalog[mapSlug];
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,11 +45,11 @@ export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
         maxBounds: bounds.pad(0.08),
         maxBoundsViscosity: 0.9,
         minZoom: -1,
-        maxZoom: 3,
+        maxZoom: 2,
         zoomControl: true,
         zoomSnap: 0.25,
       });
-      L.imageOverlay(`${imageRoot}/${definition.image}`, bounds).addTo(map);
+      L.imageOverlay(definition.image, bounds).addTo(map);
       const layer = L.layerGroup().addTo(map);
       map.fitBounds(bounds, { animate: false });
       leafletRef.current = L;
