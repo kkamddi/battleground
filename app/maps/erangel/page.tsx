@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import PubgMapExplorer from "../../../components/PubgMapExplorer";
+import SiteHeader from "../../../components/SiteHeader";
 
 export const metadata: Metadata = {
   title: "에란겔 지도",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function ErangelMapPage() {
-  return <PubgMapExplorer mapSlug="erangel" />;
+  return <main><SiteHeader /><PubgMapExplorer mapSlug="erangel" /></main>;
 }
