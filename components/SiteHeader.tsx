@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 
 const navigation = [
+  { href: "/maps", label: "맵" },
   { href: "/patch-notes", label: "패치노트" },
   { href: "/weapons", label: "총기 도감" },
   { href: "/meta", label: "통계" },

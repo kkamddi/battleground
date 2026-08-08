@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import PubgMapExplorer from "../../../components/PubgMapExplorer";
 
 export const metadata: Metadata = {
-  robots: { index: false, follow: false },
+  title: "에란겔 지도",
+  description: "에란겔 일반전·경쟁전 차량, 보트, 차고지, 글라이더와 비밀 공간 위치를 확인하세요.",
 };
 
 export default function ErangelMapPage() {
-  notFound();
+  return <PubgMapExplorer mapSlug="erangel" />;
 }

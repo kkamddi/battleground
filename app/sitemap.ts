@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { mapSlugs } from "../lib/mapData";
 
 const siteUrl = "https://battleground-info.vercel.app";
 
@@ -16,9 +17,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/guides", changeFrequency: "monthly" as const, priority: 0.8 },
   ];
 
-  return routes.map((route) => ({
-    url: `${siteUrl}${route.path}`,
-    changeFrequency: route.changeFrequency,
-    priority: route.priority,
-  }));
+  return [
+    ...routes.map((route) => ({
+      url: `${siteUrl}${route.path}`,
+      changeFrequency: route.changeFrequency,
+      priority: route.priority,
+    })),
+    ...mapSlugs.map((slug) => ({
+      url: `${siteUrl}/maps/${slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+  ];
 }
