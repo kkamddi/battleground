@@ -1,0 +1,26 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import PubgMapExplorer from "../../../components/PubgMapExplorer";
+import { mapCatalog, mapSlugs, type MapSlug } from "../../../lib/mapData";
+
+type MapPageProps = { params: Promise<{ slug: string }> };
+
+export function generateStaticParams() {
+  return mapSlugs.filter((slug) => slug !== "erangel").map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: MapPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  if (!mapSlugs.includes(slug as MapSlug)) return {};
+  const map = mapCatalog[slug as MapSlug];
+  return {
+    title: `${map.nameKo} 지도`,
+    description: `${map.nameKo} 일반전${map.ranked ? "·경쟁전" : ""} 차량, 보트와 주요 시설 위치를 확인하세요.`,
+  };
+}
+
+export default async function MapPage({ params }: MapPageProps) {
+  const { slug } = await params;
+  if (!mapSlugs.includes(slug as MapSlug) || slug === "erangel") notFound();
+  return <PubgMapExplorer mapSlug={slug as MapSlug} />;
+}

@@ -100,13 +100,17 @@ kbd {
 .map-filter-head span { color: #737b87; font-size: 9px; font-weight: 800; letter-spacing: .1em; }
 .map-filter-head h1 { color: #f0b429; font-size: 20px; margin: 5px 0 0; }
 .map-filter-head > button { background: #252525; border: 1px solid #3a3a3a; border-radius: 8px; color: #aaa; cursor: pointer; display: none; font-size: 22px; height: 34px; width: 34px; }
-.map-picker { border-bottom: 1px solid #2b2b2b; display: grid; gap: 7px; padding: 14px 18px; }
-.map-picker b { color: #f0b429; font-size: 11px; letter-spacing: .08em; }
-.map-picker span { color: #6f7680; font-size: 9px; line-height: 1.5; }
+.map-picker { border-bottom: 1px solid #2b2b2b; display: grid; gap: 5px; grid-template-columns: repeat(3, 1fr); padding: 12px 14px; }
+.map-picker a { background: #202020; border: 1px solid #2e2e2e; border-radius: 4px; color: #858b93; font-size: 9px; font-weight: 700; padding: 7px 3px; text-align: center; }
+.map-picker a:hover, .map-picker a.active { border-color: #f0b429; color: #f0b429; }
+.map-mode-picker { border-bottom: 1px solid #2b2b2b; display: grid; gap: 6px; grid-template-columns: 1fr 1fr; padding: 10px 14px; }
+.map-mode-picker button { background: #202020; border: 1px solid #303030; border-radius: 4px; color: #858b93; cursor: pointer; font-size: 10px; font-weight: 800; padding: 8px 4px; }
+.map-mode-picker button.active { background: #f0b429; border-color: #f0b429; color: #151515; }
+.map-mode-picker button:disabled { cursor: not-allowed; opacity: .4; }
 .map-filter-title { align-items: center; display: flex; justify-content: space-between; padding: 16px 18px 8px; }
 .map-filter-title > span { color: #737b87; font-size: 9px; font-weight: 800; letter-spacing: .08em; }
 .map-filter-title button { background: transparent; border: 0; color: #858b93; cursor: pointer; font-size: 9px; padding: 0; }
-.map-filter-list { display: grid; }
+.map-filter-list { display: grid; overflow-y: auto; }
 .map-filter-list button { align-items: center; background: transparent; border: 0; color: #969ba2; cursor: pointer; display: grid; gap: 12px; grid-template-columns: 25px 1fr auto; min-height: 46px; padding: 8px 18px; text-align: left; }
 .map-filter-list button:hover, .map-filter-list button.active { background: #202020; color: #fff; }
 .map-filter-list i { align-items: center; border-radius: 50%; color: #101010; display: flex; font-size: 12px; font-style: normal; font-weight: 900; height: 22px; justify-content: center; opacity: .45; width: 22px; }
