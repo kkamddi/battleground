@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type * as Leaflet from "leaflet";
+import type { OpeningRouteAnalysis } from "../lib/pubgRoutes";
 import {
   mapCatalog,
   mapCategories,
@@ -14,16 +15,30 @@ import {
   type MapSlug,
 } from "../lib/mapData";
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "'": "&#39;",
+    "\"": "&quot;",
+  })[character]!);
+}
+
 export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
   const definition = mapCatalog[mapSlug];
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Leaflet.Map | null>(null);
   const markerLayerRef = useRef<Leaflet.LayerGroup | null>(null);
+  const routeLayerRef = useRef<Leaflet.LayerGroup | null>(null);
   const leafletRef = useRef<typeof Leaflet | null>(null);
   const [active, setActive] = useState<Set<MapCategoryId>>(new Set());
   const [mode, setMode] = useState<MapMode>("normal");
   const [ready, setReady] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [showRoutes, setShowRoutes] = useState(false);
+  const [routeAnalysis, setRouteAnalysis] = useState<OpeningRouteAnalysis | null>(null);
+  const [routeStatus, setRouteStatus] = useState<"idle" | "loading" | "error">("idle");
 
   const modePoints = useMemo(
     () => definition.points.filter((point) => point[3] === mode || point[3] === "both"),
@@ -51,10 +66,12 @@ export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
       });
       L.imageOverlay(definition.image, bounds).addTo(map);
       const layer = L.layerGroup().addTo(map);
+      const routeLayer = L.layerGroup().addTo(map);
       map.fitBounds(bounds, { animate: false });
       leafletRef.current = L;
       mapRef.current = map;
       markerLayerRef.current = layer;
+      routeLayerRef.current = routeLayer;
       setReady(true);
     }
 
@@ -64,6 +81,7 @@ export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
       mapRef.current?.remove();
       mapRef.current = null;
       markerLayerRef.current = null;
+      routeLayerRef.current = null;
       leafletRef.current = null;
     };
   }, [definition.image]);
@@ -91,6 +109,47 @@ export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
         .addTo(layer);
     }
   }, [active, definition.worldSize, modePoints, ready]);
+
+  useEffect(() => {
+    const L = leafletRef.current;
+    const layer = routeLayerRef.current;
+    if (!ready || !L || !layer) return;
+    layer.clearLayers();
+    if (!showRoutes || !routeAnalysis) return;
+
+    for (const route of routeAnalysis.routes) {
+      const coordinates = route.points.map((point) => [
+        1_000 - (point.y / definition.worldSize) * 1_000,
+        (point.x / definition.worldSize) * 1_000,
+      ] as Leaflet.LatLngTuple);
+      const popup = `${route.leaderboardRank}위 ${escapeHtml(route.playerName)} · 매치 ${route.placement}위`;
+      L.polyline(coordinates, { color: "#f0b429", opacity: 0.72, weight: 3 })
+        .bindPopup(popup)
+        .addTo(layer);
+      L.circleMarker(coordinates[0], {
+        color: "#111",
+        fillColor: "#f0b429",
+        fillOpacity: 1,
+        radius: 5,
+        weight: 2,
+      }).bindPopup(`낙하지점 · ${popup}`).addTo(layer);
+    }
+  }, [definition.worldSize, ready, routeAnalysis, showRoutes]);
+
+  async function toggleRoutes() {
+    const next = !showRoutes;
+    setShowRoutes(next);
+    if (!next || routeAnalysis || routeStatus === "loading") return;
+    setRouteStatus("loading");
+    try {
+      const response = await fetch(`/api/map-routes/${mapSlug}`);
+      if (!response.ok) throw new Error(`ROUTES_${response.status}`);
+      setRouteAnalysis(await response.json() as OpeningRouteAnalysis);
+      setRouteStatus("idle");
+    } catch {
+      setRouteStatus("error");
+    }
+  }
 
   function toggle(category: MapCategoryId) {
     setActive((current) => {
@@ -144,6 +203,23 @@ export default function PubgMapExplorer({ mapSlug }: { mapSlug: MapSlug }) {
           >
             경쟁전{definition.ranked ? "" : " 미지원"}
           </button>
+        </div>
+
+        <div className="map-route-control">
+          <button
+            aria-pressed={showRoutes}
+            className={showRoutes ? "active" : ""}
+            disabled={!definition.ranked || routeStatus === "loading"}
+            onClick={toggleRoutes}
+            type="button"
+          >
+            <span>상위 랭커 초반 루트</span>
+            <b>{routeStatus === "loading" ? "분석 중" : routeAnalysis ? routeAnalysis.routes.length : "LIVE"}</b>
+          </button>
+          {routeStatus === "error" && <p>현재 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>}
+          {showRoutes && routeAnalysis && (
+            <p>경쟁전 스쿼드 FPP · 상위 {routeAnalysis.sampledPlayers}명 · 낙하 후 10분</p>
+          )}
         </div>
 
         <div className="map-filter-title">

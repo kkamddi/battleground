@@ -107,6 +107,12 @@ kbd {
 .map-mode-picker button { background: #202020; border: 1px solid #303030; border-radius: 4px; color: #858b93; cursor: pointer; font-size: 10px; font-weight: 800; padding: 8px 4px; }
 .map-mode-picker button.active { background: #f0b429; border-color: #f0b429; color: #151515; }
 .map-mode-picker button:disabled { cursor: not-allowed; opacity: .4; }
+.map-route-control { border-bottom: 1px solid #2b2b2b; padding: 10px 14px; }
+.map-route-control > button { align-items: center; background: #202020; border: 1px solid #303030; border-radius: 4px; color: #a1a7af; cursor: pointer; display: flex; font-size: 10px; font-weight: 800; justify-content: space-between; padding: 10px; width: 100%; }
+.map-route-control > button.active { border-color: #f0b429; color: #f0b429; }
+.map-route-control > button:disabled { cursor: wait; opacity: .55; }
+.map-route-control b { background: #303030; border-radius: 10px; color: #f0b429; font-size: 8px; padding: 3px 6px; }
+.map-route-control p { color: #777f89; font-size: 8px; line-height: 1.45; margin: 7px 2px 0; }
 .map-filter-title { align-items: center; display: flex; justify-content: space-between; padding: 16px 18px 8px; }
 .map-filter-title > span { color: #737b87; font-size: 9px; font-weight: 800; letter-spacing: .08em; }
 .map-filter-title button { background: transparent; border: 0; color: #858b93; cursor: pointer; font-size: 9px; padding: 0; }
