@@ -91,6 +91,17 @@ def main() -> None:
         output,
         on_conflict="stat_date,window_days,platform,game_mode,map_name,weapon_key,loadout_hash",
     )
+    for table, cutoff in (
+        ("weapon_loadout_rankings", today - dt.timedelta(days=7)),
+        ("daily_attachment_stats", today - dt.timedelta(days=35)),
+        ("daily_loadout_stats", today - dt.timedelta(days=35)),
+    ):
+        database.request(
+            table,
+            method="DELETE",
+            params={"stat_date": f"lt.{cutoff.isoformat()}"},
+            prefer="return=minimal",
+        )
     print(f"Built {len(output)} attachment recommendation rows.")
 
 
