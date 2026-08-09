@@ -13,6 +13,17 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "PUBG 전적 검색·경쟁전 랭킹",
   description: "Steam·Kakao PUBG 닉네임 전적 검색과 경쟁전 상위 플레이어의 최근 무기·파츠 리포트를 확인하세요.",
+  keywords: ["PUBG 전적검색", "배틀그라운드 전적검색", "PUBG 닉네임 검색", "배틀그라운드 경쟁전 랭킹"],
+  alternates: { canonical: "/players" },
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    url: "/players",
+    siteName: "BGI",
+    title: "PUBG 전적 검색·경쟁전 랭킹",
+    description: "Steam·Kakao PUBG 닉네임 전적과 경쟁전 상위 플레이어 리포트를 확인하세요.",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "BGI PUBG 전적 검색" }],
+  },
 };
 
 async function loadLeaderboard(platform: PubgPlatform) {

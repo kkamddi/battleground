@@ -6,12 +6,12 @@ const siteUrl = "https://battleground-info.vercel.app";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "BGI — BattleGround Information",
+    default: "PUBG 전적검색·총기·맵 정보 | BGI",
     template: "%s | BGI",
   },
-  description: "PUBG 최신 패치노트, 총기 스펙과 변경 이력, 공식 메타 통계와 플레이 가이드를 확인하세요.",
+  description: "Steam·Kakao PUBG 전적검색과 경쟁전 랭킹, 총기 스펙·파츠 추천, 패치노트와 맵 정보를 확인하세요.",
   applicationName: "BGI",
-  keywords: ["배틀그라운드", "PUBG", "패치노트", "총기 스펙", "총기 도감", "메타 통계", "플레이 가이드"],
+  keywords: ["배틀그라운드 전적검색", "PUBG 전적검색", "PUBG", "경쟁전 랭킹", "총기 스펙", "파츠 추천", "배틀그라운드 지도", "패치노트"],
   creator: "BGI",
   publisher: "BGI",
   verification: {
@@ -20,20 +20,19 @@ export const metadata: Metadata = {
       "naver-site-verification": "68e38f9c35d151935e91728b59562718afb17c61",
     },
   },
-  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "ko_KR",
     url: siteUrl,
     siteName: "BGI",
-    title: "BGI — BattleGround Information",
-    description: "PUBG 패치노트, 총기 데이터, 메타 통계와 플레이 가이드.",
+    title: "PUBG 전적검색·총기·맵 정보 | BGI",
+    description: "Steam·Kakao PUBG 전적검색, 경쟁전 랭킹, 총기·파츠와 맵 정보.",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "BGI — BattleGround Information" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BGI — BattleGround Information",
-    description: "PUBG 패치노트, 총기 데이터, 메타 통계와 플레이 가이드.",
+    title: "PUBG 전적검색·총기·맵 정보 | BGI",
+    description: "Steam·Kakao PUBG 전적검색, 경쟁전 랭킹, 총기·파츠와 맵 정보.",
     images: ["/opengraph-image"],
   },
   robots: {
@@ -55,7 +54,12 @@ export default function RootLayout({
     alternateName: "BattleGround Information",
     url: siteUrl,
     inLanguage: "ko-KR",
-    description: "PUBG 패치노트, 총기 데이터, 메타 통계와 플레이 가이드.",
+    description: "Steam·Kakao PUBG 전적검색, 경쟁전 랭킹, 총기·파츠와 맵 정보를 제공하는 한국어 데이터 사이트.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${siteUrl}/player/steam/{search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
   };
 
   return (
