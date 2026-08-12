@@ -75,8 +75,7 @@ export default async function WeaponDetailPage({ params }: { params: Promise<{ s
       select: "attachment_keys,kill_count,sample_matches,top_player_observations,popularity_score,confidence,window_days,stat_date",
       weapon_key: `eq.${weapon.key}`,
       window_days: "eq.30",
-      kill_count: "gte.5",
-      unique_players: "gte.3",
+      stat_date: "gte.2026-08-12",
       order: "stat_date.desc,popularity_score.desc",
       limit: "6",
     })),
@@ -101,7 +100,8 @@ export default async function WeaponDetailPage({ params }: { params: Promise<{ s
         </section>
 
         <section className="weapon-detail-section">
-          <div className="home-section-head"><div><span>TELEMETRY · RECENT 30 DAYS</span><h2>실전 파츠 추천 조합</h2></div><p>킬 시점 장착 조합 + 상위권 최근 경기 표본</p></div>
+          <div className="home-section-head"><div><span>UPDATE 42.3 TELEMETRY</span><h2>실전 파츠 추천 조합</h2></div><p>킬 시점 장착 조합 + 상위권 최근 경기 표본</p></div>
+          <p className="live-meta-note"><strong>UPDATE 42.3 초기 표본</strong> 패치 적용일 이후 관측 1건부터 참고용 순위에 반영합니다.</p>
           {recommendations.length ? <div className="recommendation-grid">{recommendations.map((row, index) => (
             <article key={`${row.stat_date}-${index}`}><span>추천 {index + 1}</span><h3>{row.attachment_keys.map(attachmentName).join(" + ")}</h3><dl><div><dt>관측 킬</dt><dd>{row.kill_count}</dd></div><div><dt>상위권 관측</dt><dd>{row.top_player_observations}</dd></div><div><dt>신뢰도</dt><dd>{Math.round(Number(row.confidence) * 100)}%</dd></div></dl></article>
           ))}</div> : <div className="collection-empty"><strong>표본을 모으는 중입니다.</strong><p>파츠 2개 이상이 확인된 킬·상위권 세팅이 충분히 쌓이면 자동으로 추천 순위를 표시합니다.</p></div>}

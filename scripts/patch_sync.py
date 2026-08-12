@@ -12,6 +12,7 @@ from supabase_rest import SupabaseRest
 
 NEWS_URL = "https://pubg.com/en/news?category=patch_notes"
 USER_AGENT = "BGI-Patch-Monitor/1.0 (+https://battleground-info.vercel.app)"
+PATCH_RELEASES = {"42.3": "2026-08-12"}
 
 CATEGORY_RULES = (
     ("weapon", re.compile(r"\b(weapon|gun|rifle|smg|dmr|sniper|shotgun|pistol|damage|recoil|velocity|rpm)\b", re.I)),
@@ -205,16 +206,20 @@ def main() -> None:
         detected.extend(page_candidates)
         if page_candidates:
             first = page_candidates[0]
+            version = str(first["detected_version"])
+            version_row = {
+                "version": version,
+                "title": first["title"],
+                "source_url": url,
+                "status": "published" if version in PATCH_RELEASES else "draft",
+            }
+            if version in PATCH_RELEASES:
+                version_row["pc_applied_at"] = PATCH_RELEASES[version]
             database.upsert(
                 "patch_versions",
-                [{
-                    "version": first["detected_version"],
-                    "title": first["title"],
-                    "source_url": url,
-                    "status": "draft",
-                }],
+                [version_row],
                 on_conflict="version",
-                ignore_duplicates=True,
+                ignore_duplicates=version not in PATCH_RELEASES,
             )
     database.upsert(
         "patch_candidates",

@@ -35,8 +35,9 @@ def main() -> None:
             before_end = applied - dt.timedelta(days=1)
             after_start = applied
             after_end = applied + dt.timedelta(days=window - 1)
-            if after_end >= today:
+            if after_start > today:
                 continue
+            observed_after_end = min(after_end, today)
             before = database.select_all(
                 "daily_weapon_stats",
                 {
@@ -50,7 +51,7 @@ def main() -> None:
                 {
                     "select": "weapon_key,player_count",
                     "stat_date": f"gte.{after_start.isoformat()}",
-                    "and": f"(stat_date.lte.{after_end.isoformat()})",
+                    "and": f"(stat_date.lte.{observed_after_end.isoformat()})",
                 },
             )
             before_totals, before_denominator = weapon_totals(before)
@@ -68,7 +69,7 @@ def main() -> None:
                 {
                     "select": "match_id",
                     "played_at": f"gte.{after_start.isoformat()}T00:00:00Z",
-                    "and": f"(played_at.lt.{(after_end + dt.timedelta(days=1)).isoformat()}T00:00:00Z)",
+                    "and": f"(played_at.lt.{(observed_after_end + dt.timedelta(days=1)).isoformat()}T00:00:00Z)",
                 },
             )
             for weapon in before_totals.keys() | after_totals.keys():

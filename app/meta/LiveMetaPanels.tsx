@@ -65,11 +65,13 @@ function percent(value: number | null) {
 }
 
 export default async function LiveMetaPanels() {
-  const since = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+  const rollingSince = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+  const since = rollingSince > "2026-08-12" ? rollingSince : "2026-08-12";
   try {
     const [comparisons, loadouts, players] = await Promise.all([
       query<ComparisonRow>("patch_meta_comparisons", new URLSearchParams({
-        select: "subject_key,metric,before_value,after_value,change_percent,sample_matches_before,sample_matches_after",
+        select: "subject_key,metric,before_value,after_value,change_percent,sample_matches_before,sample_matches_after,patch_versions!inner(version)",
+        "patch_versions.version": "eq.42.3",
         order: "generated_at.desc",
         limit: "6",
       })),
@@ -82,7 +84,7 @@ export default async function LiveMetaPanels() {
       query<PlayerRow>("top_player_loadouts", new URLSearchParams({
         select: "player_name,rank_value,weapon_key,attachment_keys,sample_matches,snapshot_date",
         source_kind: "eq.official_leaderboard_recent_match",
-        sample_matches: "gte.2",
+        snapshot_date: `gte.${since}`,
         order: "snapshot_date.desc,rank_value.asc",
         limit: "20",
       })),
@@ -94,7 +96,7 @@ export default async function LiveMetaPanels() {
       const current = combined.get(key);
       combined.set(key, current ? { ...current, kill_count: current.kill_count + row.kill_count } : row);
     }
-    const rankedLoadouts = [...combined.values()].filter((row) => row.kill_count >= 5).sort((a, b) => b.kill_count - a.kill_count).slice(0, 6);
+    const rankedLoadouts = [...combined.values()].sort((a, b) => b.kill_count - a.kill_count).slice(0, 6);
     const totalLoadoutKills = [...combined.values()].reduce((sum, row) => sum + row.kill_count, 0);
     const representativePlayers = players.filter((row) => row.attachment_keys.length >= 2);
 
@@ -104,6 +106,7 @@ export default async function LiveMetaPanels() {
           <div><span>최근 7일 실전 표본</span><h2>실전 메타</h2></div>
           <p>Steam 공식 API 표본 기준 · 매일 갱신</p>
         </div>
+        <p className="live-meta-note"><strong>UPDATE 42.3 · 초기 표본</strong> 2026.08.12 이후 데이터만 우선 사용하며, 관측 1건부터 숨기지 않고 표시합니다.</p>
         <div className="live-meta-grid">
           <article>
             <span>패치 영향</span>

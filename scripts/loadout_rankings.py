@@ -10,6 +10,8 @@ from typing import Any
 
 from supabase_rest import SupabaseRest
 
+CURRENT_PATCH_START = dt.date(2026, 8, 12)
+
 
 def main() -> None:
     database = SupabaseRest()
@@ -18,19 +20,19 @@ def main() -> None:
         "daily_loadout_stats",
         {
             "select": "stat_date,platform,game_mode,map_name,weapon_key,attachment_keys,kill_count,unique_players,winner_count,match_count",
-            "stat_date": f"gte.{today - dt.timedelta(days=30)}",
+            "stat_date": f"gte.{max(today - dt.timedelta(days=30), CURRENT_PATCH_START)}",
         },
     )
     top_players = database.select_all(
         "top_player_loadouts",
         {
             "select": "snapshot_date,platform,game_mode,weapon_key,attachment_keys,sample_matches",
-            "snapshot_date": f"gte.{today - dt.timedelta(days=30)}",
+            "snapshot_date": f"gte.{max(today - dt.timedelta(days=30), CURRENT_PATCH_START)}",
         },
     )
     output: list[dict[str, Any]] = []
     for window in (7, 30):
-        start = today - dt.timedelta(days=window - 1)
+        start = max(today - dt.timedelta(days=window - 1), CURRENT_PATCH_START)
         grouped: dict[tuple[str, str, str, str, tuple[str, ...]], collections.Counter[str]] = (
             collections.defaultdict(collections.Counter)
         )
@@ -86,6 +88,12 @@ def main() -> None:
                     "confidence": round(confidence, 5),
                 }
             )
+    database.request(
+        "weapon_loadout_rankings",
+        method="DELETE",
+        params={"stat_date": f"eq.{today.isoformat()}"},
+        prefer="return=minimal",
+    )
     database.upsert(
         "weapon_loadout_rankings",
         output,

@@ -30,7 +30,8 @@ export const metadata: Metadata = {
   },
 };
 
-const categories = ["AR", "SMG", "DMR", "SR"] as const;
+const currentPatch = { version: "42.3", pcAppliedAt: "2026-08-12" } as const;
+const categories = ["AR", "SMG", "DMR", "SR", "LMG"] as const;
 type WeaponCategory = (typeof categories)[number];
 
 type DailyWeaponRow = {
@@ -54,6 +55,7 @@ type MetaStat = {
 type MetaSnapshot = {
   categoryTotals: Record<WeaponCategory, number>;
   date: string;
+  startDate: string;
   stats: Record<WeaponCategory, MetaStat[]>;
   totalKills: number;
 };
@@ -94,9 +96,12 @@ async function loadMetaSnapshot(): Promise<MetaSnapshot | null> {
   const latestDate = latest[0].stat_date;
   const start = new Date(`${latestDate}T00:00:00Z`);
   start.setUTCDate(start.getUTCDate() - 6);
+  const patchStart = new Date(`${currentPatch.pcAppliedAt}T00:00:00Z`);
+  if (new Date(`${latestDate}T00:00:00Z`) >= patchStart && start < patchStart) start.setTime(patchStart.getTime());
+  const startDate = start.toISOString().slice(0, 10);
   const rows = await queryAll<DailyWeaponRow>("daily_weapon_stats", new URLSearchParams({
     select: "stat_date,weapon_key,kills,headshot_kills,distance_sum_m,distance_samples",
-    stat_date: `gte.${start.toISOString().slice(0, 10)}`,
+    stat_date: `gte.${startDate}`,
     order: "stat_date.asc,platform.asc,game_mode.asc,map_name.asc,weapon_key.asc",
   }));
 
@@ -139,6 +144,7 @@ async function loadMetaSnapshot(): Promise<MetaSnapshot | null> {
   return {
     categoryTotals,
     date: latestDate,
+    startDate,
     stats,
     totalKills: [...combined.values()].reduce((sum, stat) => sum + stat.kills, 0),
   };
@@ -208,9 +214,10 @@ export default async function MetaPage() {
           <h1>시즌 42 메타 통계</h1>
           <p>최신 적재일 기준 최근 7일 킬을 병과별로 나눠 총기 점유율과 교전 특성을 비교합니다.</p>
         </header>
+        <p className="live-meta-note"><strong>UPDATE {currentPatch.version} 기준</strong> PC 적용일인 {formatDate(currentPatch.pcAppliedAt)} 이후 표본을 우선 집계합니다. 표본이 적어도 초기 흐름을 먼저 표시하므로 참고용으로 확인해 주세요.</p>
         <div className="status-panel">
           <span>최근 7일</span><strong>총기별 실전 킬 순위</strong>
-          <p>{snapshot ? `${formatDate(snapshot.date)} 조회 · 집계된 킬 ${snapshot.totalKills.toLocaleString("ko-KR")}건 · 매일 갱신` : "최신 통계를 불러오는 중입니다."}</p>
+          <p>{snapshot ? `${formatDate(snapshot.startDate)}~${formatDate(snapshot.date)} · 집계된 킬 ${snapshot.totalKills.toLocaleString("ko-KR")}건 · 매일 갱신` : "최신 통계를 불러오는 중입니다."}</p>
         </div>
         <section className="meta-stat-grid">
           {categories.map((category) => {
