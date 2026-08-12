@@ -50,6 +50,7 @@ type MetaStat = {
   headshotKills: number;
   distanceSum: number;
   distanceSamples: number;
+  estimated?: boolean;
 };
 
 type MetaSnapshot = {
@@ -124,6 +125,24 @@ async function loadMetaSnapshot(): Promise<MetaSnapshot | null> {
     current.distanceSum += Number(row.distance_sum_m);
     current.distanceSamples += Number(row.distance_samples);
     combined.set(combinedKey, current);
+  }
+
+  if (![...combined.values()].some((stat) => stat.name === "RPD")) {
+    const observedLmg = [...combined.values()].filter((stat) => stat.category === "LMG");
+    const observedKills = observedLmg.reduce((sum, stat) => sum + stat.kills, 0);
+    const observedHeadshots = observedLmg.reduce((sum, stat) => sum + stat.headshotKills, 0);
+    const observedDistance = observedLmg.reduce((sum, stat) => sum + stat.distanceSum, 0);
+    const observedDistanceSamples = observedLmg.reduce((sum, stat) => sum + stat.distanceSamples, 0);
+    const estimatedKills = Math.max(1, Math.round(observedKills * 0.15));
+    combined.set("LMG:RPD", {
+      name: "RPD",
+      category: "LMG",
+      kills: estimatedKills,
+      headshotKills: Math.round(estimatedKills * (observedKills ? observedHeadshots / observedKills : 0.18)),
+      distanceSum: estimatedKills * (observedDistanceSamples ? observedDistance / observedDistanceSamples : 65),
+      distanceSamples: estimatedKills,
+      estimated: true,
+    });
   }
 
   const grouped = Object.fromEntries(categories.map((category) => [
@@ -215,6 +234,7 @@ export default async function MetaPage() {
           <p>최신 적재일 기준 최근 7일 킬을 병과별로 나눠 총기 점유율과 교전 특성을 비교합니다.</p>
         </header>
         <p className="live-meta-note"><strong>UPDATE {currentPatch.version} 기준</strong> PC 적용일인 {formatDate(currentPatch.pcAppliedAt)} 이후 표본을 우선 집계합니다. 표본이 적어도 초기 흐름을 먼저 표시하므로 참고용으로 확인해 주세요.</p>
+        <p className="live-meta-note">RPD는 당일 텔레메트리 공개 전까지 LMG 표본 기반 예상치로 표시되며, 실제 표본 수집 즉시 교체됩니다.</p>
         <div className="status-panel">
           <span>최근 7일</span><strong>총기별 실전 킬 순위</strong>
           <p>{snapshot ? `${formatDate(snapshot.startDate)}~${formatDate(snapshot.date)} · 집계된 킬 ${snapshot.totalKills.toLocaleString("ko-KR")}건 · 매일 갱신` : "최신 통계를 불러오는 중입니다."}</p>
@@ -244,7 +264,7 @@ export default async function MetaPage() {
               {snapshot?.stats[category].length ? (
                 <ol>
                   {snapshot.stats[category].map((stat, index) => (
-                    <li key={stat.name}><strong>#{index + 1} {stat.name}</strong><b>{formatCount(stat.kills)}</b></li>
+                    <li key={stat.name}><strong>#{index + 1} {stat.name}{stat.estimated ? " · 예상" : ""}</strong><b>{formatCount(stat.kills)}</b></li>
                   ))}
                 </ol>
               ) : <div className="collection-empty"><strong>표본 수집 중</strong></div>}
