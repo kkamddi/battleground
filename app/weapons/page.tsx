@@ -3,10 +3,10 @@
 import { useState } from "react";
 import SiteFooter from "../../components/SiteFooter";
 import SiteHeader from "../../components/SiteHeader";
-import { attachments, weaponImageBase, weapons } from "../../lib/catalog";
+import { attachments, weaponImageUrl, weapons } from "../../lib/catalog";
 
 const categories = ["전체", "AR", "DMR", "SR", "LMG", "SMG", "SG", "HG", "ETC"];
-const featuredNames = ["M416", "AUG", "SLR", "Beryl M762"];
+const featuredNames = ["RPD", "M416", "AUG", "SLR"];
 
 function magazine(standard: number, extended: number | null) {
   return extended ? `${standard} / ${extended}` : String(standard);
@@ -26,7 +26,7 @@ export default function WeaponsPage() {
       <SiteHeader />
       <div className="page-shell subpage-shell">
         <header className="page-heading weapon-page-heading">
-          <span>WEAPON &amp; ATTACHMENT INDEX · 42.2</span>
+          <span>WEAPON &amp; ATTACHMENT INDEX · 42.3</span>
           <h1>총기 도감</h1>
           <p>현재 스펙, 최근 변경과 실전 파츠 조합을 총기 상세에서 함께 확인합니다. 총 {weapons.length}종.</p>
           <a className="progressive-index-link" href="/weapons/progressive">성장형 스킨 도감 46종 →</a>
@@ -36,7 +36,7 @@ export default function WeaponsPage() {
           {featured.map((weapon) => (
             <a href={`/weapons/${weapon.slug}`} key={weapon.name}>
               <article>
-                <div className="weapon-image"><img src={`${weaponImageBase}/img-weapons-${weapon.image}.webp`} alt={`${weapon.name} 총기`} /></div>
+                <div className="weapon-image"><img src={weaponImageUrl(weapon)} alt={`${weapon.name} 총기`} /></div>
                 <span>{weapon.category} · {weapon.ammo}</span>
                 <h2>{weapon.name}</h2>
                 <dl><div><dt>피해량</dt><dd>{weapon.damageDisplay}</dd></div><div><dt>RPM</dt><dd>{weapon.rpm ?? "—"}</dd></div><div><dt>탄속</dt><dd>{weapon.velocity ?? "—"}</dd></div></dl>
@@ -60,7 +60,7 @@ export default function WeaponsPage() {
               <tbody>
                 {filtered.map((weapon) => (
                   <tr key={weapon.key}>
-                    <td><a className="weapon-name-cell" href={`/weapons/${weapon.slug}`}><span className="weapon-thumb"><img src={`${weaponImageBase}/img-weapons-${weapon.image}.webp`} alt="" /></span><strong>{weapon.name}</strong></a></td>
+                    <td><a className="weapon-name-cell" href={`/weapons/${weapon.slug}`}><span className="weapon-thumb"><img src={weaponImageUrl(weapon)} alt="" /></span><strong>{weapon.name}</strong></a></td>
                     <td><span className="category-code">{weapon.category}</span></td>
                     <td>{weapon.ammo}</td><td>{weapon.damageDisplay}</td><td>{weapon.rpm ?? "—"}</td><td>{weapon.velocity ?? "—"}</td><td>{magazine(weapon.magazine, weapon.extendedMagazine)}</td>
                     <td>{weapon.change ? <span className={`change ${weapon.changeType}`}>{weapon.change}</span> : <span className="no-change">변경 없음</span>}</td>

@@ -31,6 +31,7 @@ const weaponAliases: Record<string, string> = {
   WeapKar98k: "Kar98k",
   WeapMP5K: "MP5K",
   WeapMk12: "Mk12",
+  WeapRPD: "RPD",
   Item_Weapon_HK416_C: "M416",
   Item_Weapon_AUG_C: "AUG",
   Item_Weapon_BerylM762_C: "Beryl M762",
@@ -38,6 +39,7 @@ const weaponAliases: Record<string, string> = {
   Item_Weapon_MP5K_C: "MP5K",
   Item_Weapon_UMP_C: "UMP45",
   Item_Weapon_FNFal_C: "SLR",
+  Item_Weapon_RPD_C: "RPD",
 };
 
 function label(value: string, aliases: Record<string, string>) {

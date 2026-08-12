@@ -14,6 +14,7 @@ export type WeaponCatalogItem = {
   magazine: number;
   extendedMagazine: number | null;
   image: string;
+  imageUrl?: string;
   falloffStart?: number;
   falloffEnd?: number;
   minimumMultiplier?: number;
@@ -34,6 +35,10 @@ export type AttachmentCatalogItem = {
 export const weapons = weaponData as WeaponCatalogItem[];
 export const attachments = attachmentData as AttachmentCatalogItem[];
 export const weaponImageBase = "https://wstatic-prod.pubg.com/web/live/static/game-info/weapons/images/viewer";
+
+export function weaponImageUrl(weapon: WeaponCatalogItem) {
+  return weapon.imageUrl ?? `${weaponImageBase}/img-weapons-${weapon.image}.webp`;
+}
 
 export function weaponName(key: string) {
   const direct = weapons.find((weapon) => weapon.key === key);

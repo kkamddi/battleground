@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SiteFooter from "../../../components/SiteFooter";
 import SiteHeader from "../../../components/SiteHeader";
-import { attachmentName, weaponImageBase, weapons } from "../../../lib/catalog";
+import { attachmentName, weaponImageUrl, weapons } from "../../../lib/catalog";
 
 type History = {
   stat_key: string;
@@ -88,7 +88,7 @@ export default async function WeaponDetailPage({ params }: { params: Promise<{ s
       <SiteHeader />
       <div className="page-shell subpage-shell">
         <header className="weapon-detail-head">
-          <div className="weapon-detail-image"><img src={`${weaponImageBase}/img-weapons-${weapon.image}.webp`} alt={`${weapon.name} 총기`} /></div>
+          <div className="weapon-detail-image"><img src={weaponImageUrl(weapon)} alt={`${weapon.name} 총기`} /></div>
           <div><span>{weapon.category} · {weapon.ammo}</span><h1>{weapon.name}</h1><p>현재 스펙과 패치 이력, 실제 킬 시점 파츠 표본을 한 화면에 정리했습니다.</p></div>
         </header>
 

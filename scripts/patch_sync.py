@@ -35,6 +35,7 @@ SUBJECT_ALIASES = {
     "dragunov": "Item_Weapon_Dragunov_C",
     "mp5k": "Item_Weapon_MP5K_C",
     "ump45": "Item_Weapon_UMP_C",
+    "rpd": "Item_Weapon_RPD_C",
     "vertical foregrip": "Item_Attach_Weapon_Lower_VerticalForeGrip_C",
     "half grip": "Item_Attach_Weapon_Lower_HalfGrip_C",
     "thumb grip": "Item_Attach_Weapon_Lower_ThumbGrip_C",

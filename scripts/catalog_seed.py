@@ -36,7 +36,7 @@ def main() -> None:
                 "falloff_start_m": row.get("falloffStart"),
                 "falloff_end_m": row.get("falloffEnd"),
                 "minimum_damage_multiplier": row.get("minimumMultiplier", 1),
-                "current_patch": "42.2",
+                "current_patch": "42.3",
                 "source_url": SOURCE_URL,
                 "source_kind": "curated",
             }
