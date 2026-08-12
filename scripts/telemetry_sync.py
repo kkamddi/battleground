@@ -208,7 +208,8 @@ def aggregate(
 def main() -> None:
     database = SupabaseRest()
     max_matches = max(1, min(int(os.getenv("MAX_MATCHES", "500")), 1000))
-    day = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=1)).date().isoformat()
+    day = os.getenv("SAMPLE_DATE") or (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=1)).date().isoformat()
+    dt.date.fromisoformat(day)
     sample = api_json(f"{API_ROOT}/samples?filter[createdAt-start]={day}T00:00:00Z")
     match_ids = [item["id"] for item in sample.get("data", {}).get("relationships", {}).get("matches", {}).get("data", [])]
     written = 0

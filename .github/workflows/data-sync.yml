@@ -13,6 +13,9 @@ on:
         description: Competitive matches to inspect per leaderboard player
         required: false
         default: "10"
+      sample_date:
+        description: UTC telemetry date (YYYY-MM-DD); defaults to yesterday
+        required: false
 
 permissions:
   contents: read
@@ -31,6 +34,7 @@ jobs:
       PUBG_API_KEY: ${{ secrets.PUBG_API_KEY }}
       MAX_MATCHES: ${{ inputs.max_matches || '500' }}
       TOP_PLAYER_MATCHES: ${{ inputs.top_player_matches || '10' }}
+      SAMPLE_DATE: ${{ inputs.sample_date || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
