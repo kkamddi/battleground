@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 const patches = [
+  { version: "42.3", date: "2026.08.11", pc: "08.12", console: "08.20", title: "신규 RPD와 LMG 메타 로테이션", points: ["신규 7.62mm LMG RPD 추가: 피해량 43·750 RPM·기본 50발", "모든 LMG 재장전 시간 약 25% 단축·최대 수평 반동 30% 감소", "차량 사격 시 속도에 따라 탄 퍼짐·반동 페널티 강화", "PUBG: 플레이그라운드와 설정 공유·조준선 커스터마이즈 추가"], url: "https://www.pubg.com/ko/news/10885" },
   { version: "42.2", date: "2026.07.14", pc: "07.15", console: "07.23", title: "기본 훈련·월드맵 개편", points: ["기본 훈련 17개 챕터·초보자 훈련장 추가", "태이고·론도 비밀의 방 총기 구성 변경", "월드맵에 지도·미션·매치 로그 탭 추가", "솔로 데스매치 기간 한정 운영"], url: "https://www.pubg.com/ko/news/10459" },
   { version: "42.1", date: "2026.06.16", pc: "06.17", console: "06.25", title: "SLR 상향과 무기 6종 삭제", points: ["SLR 탄속 840 → 870m/s", "SLR 수평 반동 10% 감소", "SLR 초·중반 수직 반동 증가량 완화", "모신 나강·R45·DP-28·비존·P1911·QBU 삭제"], url: "https://www.pubg.com/ko/news/10179" },
   { version: "41.2", date: "2026.05.12", pc: "05.13", console: "05.21", title: "PAYDAY·미라마 업데이트", points: ["PAYDAY 컬래버레이션 모드", "미라마 비밀의 방 추가", "근접 무기 처형 모션 추가", "블루칩 송신기 보급 호출 조건 조정"], url: "https://www.pubg.com/ko/news/10080" },
