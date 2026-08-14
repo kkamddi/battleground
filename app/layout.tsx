@@ -21,7 +21,10 @@ export const metadata: Metadata = {
       "cZNEEOwP9GKlWTlVVBBDjxkXV3XeIhAz1H3wCxk0CcY",
     ],
     other: {
-      "naver-site-verification": "68e38f9c35d151935e91728b59562718afb17c61",
+      "naver-site-verification": [
+        "68e38f9c35d151935e91728b59562718afb17c61",
+        "c92df88ef5538d3390f3d6fd4b521f26b9df83da",
+      ],
     },
   },
   openGraph: {
