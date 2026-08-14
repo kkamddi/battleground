@@ -16,7 +16,10 @@ export const metadata: Metadata = {
   creator: "BGI",
   publisher: "BGI",
   verification: {
-    google: "73w1RX9gnTnkQ5xPTdZ2a4jRl9pQJCwEET4LPf9KExI",
+    google: [
+      "73w1RX9gnTnkQ5xPTdZ2a4jRl9pQJCwEET4LPf9KExI",
+      "cZNEEOwP9GKlWTlVVBBDjxkXV3XeIhAz1H3wCxk0CcY",
+    ],
     other: {
       "naver-site-verification": "68e38f9c35d151935e91728b59562718afb17c61",
     },
