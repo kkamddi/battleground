@@ -11,7 +11,7 @@ from html.parser import HTMLParser
 from supabase_rest import SupabaseRest
 
 NEWS_URL = "https://pubg.com/en/news?category=patch_notes"
-USER_AGENT = "BGI-Patch-Monitor/1.0 (+https://battleground-info.vercel.app)"
+USER_AGENT = "BGI-Patch-Monitor/1.0 (+https://bgi.pwkor.com)"
 PATCH_RELEASES = {"42.3": "2026-08-12"}
 
 CATEGORY_RULES = (

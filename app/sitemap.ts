@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { weapons } from "../lib/catalog";
 import { mapSlugs } from "../lib/mapData";
 
-const siteUrl = "https://battleground-info.vercel.app";
+const siteUrl = "https://bgi.pwkor.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [

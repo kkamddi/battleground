@@ -16,7 +16,7 @@ from typing import Any
 from supabase_rest import SupabaseRest
 
 API_ROOT = "https://api.pubg.com/shards/steam"
-USER_AGENT = "BGI-Telemetry-Aggregator/1.0 (+https://battleground-info.vercel.app)"
+USER_AGENT = "BGI-Telemetry-Aggregator/1.0 (+https://bgi.pwkor.com)"
 
 
 def api_json(url: str, *, authenticated: bool = True) -> dict[str, Any] | list[dict[str, Any]]:

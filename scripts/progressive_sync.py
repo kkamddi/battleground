@@ -7,7 +7,7 @@ import urllib.request
 
 from supabase_rest import SupabaseRest
 
-USER_AGENT = "BGI-Progressive-Monitor/1.0 (+https://battleground-info.vercel.app)"
+USER_AGENT = "BGI-Progressive-Monitor/1.0 (+https://bgi.pwkor.com)"
 
 SKINS = [
     {

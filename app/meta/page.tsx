@@ -4,7 +4,7 @@ import SiteHeader from "../../components/SiteHeader";
 import { weaponName, weapons } from "../../lib/catalog";
 import LiveMetaPanels from "./LiveMetaPanels";
 
-const siteUrl = "https://battleground-info.vercel.app";
+const siteUrl = "https://bgi.pwkor.com";
 const pageTitle = "PUBG 총기별 실전 킬 순위";
 const pageDescription = "최근 7일 Steam 공식 API 표본으로 AR·SMG·DMR·SR 총기별 킬 순위, 헤드샷 비율과 평균 교전 거리를 비교하세요.";
 
