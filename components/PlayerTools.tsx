@@ -80,7 +80,13 @@ export default function PlayerTools({
         </div>
       </form>
       <div>
-        <button type="button" onClick={toggleFavorite}>
+        <button
+          aria-pressed={favorite}
+          className={favorite ? "favorite-active" : ""}
+          key={favorite ? "favorite-saved" : "favorite-empty"}
+          type="button"
+          onClick={toggleFavorite}
+        >
           {favorite ? "★ 즐겨찾기 저장됨" : "☆ 즐겨찾기"}
         </button>
         <button type="button" onClick={share}>전적 공유</button>

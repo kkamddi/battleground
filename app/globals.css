@@ -707,6 +707,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .player-tools input { border: 1px solid var(--line); font: inherit; font-size: 14px; min-width: 0; padding: 11px 12px; }
 .player-tools button { background: white; border: 1px solid var(--line); cursor: pointer; font-size: 13px; font-weight: 700; padding: 11px 14px; }
 .player-tools form button { background: var(--ink); color: white; }
+.player-tools button.favorite-active { background: #e9f2ec; border-color: #9fc4ac; color: var(--point); }
 .player-tools > div { display: flex; gap: 8px; }
 .player-summary { display: grid; grid-template-columns: 280px 1fr; margin-top: 30px; }
 .player-tier { background: var(--ink); color: white; padding: 25px; }
