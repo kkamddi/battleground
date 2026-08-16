@@ -4,6 +4,7 @@ import SiteFooter from "../../../../components/SiteFooter";
 import SiteHeader from "../../../../components/SiteHeader";
 import PlayerSearchForm from "../../../../components/PlayerSearchForm";
 import PlayerTools from "../../../../components/PlayerTools";
+import PlayerShareCard from "../../../../components/PlayerShareCard";
 import { weapons } from "../../../../lib/catalog";
 import {
   getPlayerProfile,
@@ -110,6 +111,15 @@ function recentAverage(matches: RecentMatch[]) {
     longestKill: Math.max(0, ...matches.map((match) => match.longestKill)),
     movement: matches.reduce((sum, match) => sum + match.walkDistance + match.rideDistance, 0) / games,
   };
+}
+
+function matchRating(match: RecentMatch) {
+  const placementScore = match.placement > 0 ? Math.max(0, 35 - match.placement) : 0;
+  const value = match.kills * 12 + match.damage / 18 + placementScore + match.dbnos * 3 + match.assists * 2;
+  if (value >= 90) return "캐리 경기";
+  if (value >= 65) return "좋은 경기";
+  if (value >= 40) return "안정적인 경기";
+  return "아쉬운 경기";
 }
 
 function score(value: number, low: number, high: number) {
@@ -343,6 +353,9 @@ export default async function PlayerPage({
     ? weapons.find((weapon) => weapon.name.toLowerCase() === topWeapon.name.toLowerCase())
     : undefined;
   const reportConfidence = Math.min(100, Math.round((profile.recentMatches.length / 32) * 100));
+  const trendMatches = profile.recentMatches.slice(0, 10).reverse();
+  const maxTrendDamage = Math.max(1, ...trendMatches.map((match) => match.damage));
+  const winRate = ratio(stats.winRatio ?? (rounds ? wins / rounds : 0));
 
   return (
     <main>
@@ -412,6 +425,18 @@ export default async function PlayerPage({
           <div><span>평균 이동</span><strong>{number(recent.movement / 1000, 1)}km</strong></div>
         </section>
 
+        <PlayerShareCard
+          adr={adr}
+          kd={kd}
+          nickname={profile.name}
+          platform={platformName}
+          recentDamage={recent.damage}
+          recentKills={recent.kills}
+          styleName={style.name}
+          topWeapon={topWeapon?.name}
+          winRate={winRate}
+        />
+
         <section className="player-analysis-grid">
           <article className="style-card">
             <span>BGI PLAY STYLE</span>
@@ -457,6 +482,26 @@ export default async function PlayerPage({
             {topWeaponCatalog ? <a href={`/weapons/${topWeaponCatalog.slug}`}>{topWeaponCatalog.name} 스펙·실전 추천 보기 →</a> : null}
           </article>
         </section>
+
+        {trendMatches.length ? (
+          <section className="player-form-chart">
+            <div className="home-section-head">
+              <div><span>LAST 10 MATCHES</span><h2>최근 폼 그래프</h2></div>
+              <p>막대 높이는 경기별 피해량, 숫자는 킬 수입니다.</p>
+            </div>
+            <div className="form-chart" aria-label="최근 10경기 피해량과 킬 추이">
+              {trendMatches.map((match, index) => (
+                <div className="form-chart-item" key={match.id}>
+                  <b>{match.kills}K</b>
+                  <i style={{ height: `${Math.max(8, (match.damage / maxTrendDamage) * 100)}%` }} />
+                  <span>{number(match.damage, 0)}</span>
+                  <small>{index + 1}</small>
+                </div>
+              ))}
+            </div>
+            <div className="form-chart-legend"><span>이전</span><span>최근</span></div>
+          </section>
+        ) : null}
 
         <section className="player-breakdown">
           <div className="home-section-head">
@@ -539,24 +584,30 @@ export default async function PlayerPage({
           {profile.recentMatches.length ? (
             <div className="match-list">
               {profile.recentMatches.map((match) => (
-                <article key={match.id}>
-                  <div>
-                    <span>{mapNames[match.mapName] ?? match.mapName}</span>
-                    <strong>#{match.placement || "—"}</strong>
+                <details className="match-detail" key={match.id}>
+                  <summary>
+                    <div>
+                      <span>{mapNames[match.mapName] ?? match.mapName}</span>
+                      <strong>#{match.placement || "—"}</strong>
+                    </div>
+                    <p>{modeNames[match.gameMode] ?? match.gameMode}</p>
+                    <dl>
+                      <div><dt>킬</dt><dd>{match.kills}</dd></div>
+                      <div><dt>피해량</dt><dd>{number(match.damage, 0)}</dd></div>
+                      <div><dt>생존</dt><dd>{time(match.survivalSeconds)}</dd></div>
+                    </dl>
+                    <time dateTime={match.createdAt}>
+                      {match.createdAt ? new Date(match.createdAt).toLocaleDateString("ko-KR") : "날짜 없음"}
+                    </time>
+                  </summary>
+                  <div className="match-detail-body">
+                    <div><span>BGI 경기 평가</span><strong>{matchRating(match)}</strong></div>
+                    <div><span>교전 기여</span><strong>{match.dbnos} DBNO · {match.assists} 어시스트</strong></div>
+                    <div><span>팀 지원</span><strong>{match.revives} 부활 · {match.heals + match.boosts} 회복</strong></div>
+                    <div><span>정밀 사격</span><strong>{match.headshotKills} 헤드샷 · {number(match.longestKill, 0)}m</strong></div>
+                    <div><span>이동 거리</span><strong>{number((match.walkDistance + match.rideDistance) / 1000, 1)}km</strong></div>
                   </div>
-                  <p>{modeNames[match.gameMode] ?? match.gameMode}</p>
-                  <dl>
-                    <div><dt>킬</dt><dd>{match.kills}</dd></div>
-                    <div><dt>피해량</dt><dd>{number(match.damage, 0)}</dd></div>
-                    <div><dt>생존</dt><dd>{time(match.survivalSeconds)}</dd></div>
-                    <div><dt>헤드샷</dt><dd>{match.headshotKills}</dd></div>
-                    <div><dt>최장 킬</dt><dd>{number(match.longestKill, 0)}m</dd></div>
-                    <div><dt>이동</dt><dd>{number((match.walkDistance + match.rideDistance) / 1000, 1)}km</dd></div>
-                  </dl>
-                  <time dateTime={match.createdAt}>
-                    {match.createdAt ? new Date(match.createdAt).toLocaleDateString("ko-KR") : "날짜 없음"}
-                  </time>
-                </article>
+                </details>
               ))}
             </div>
           ) : (
