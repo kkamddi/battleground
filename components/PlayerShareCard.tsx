@@ -48,18 +48,18 @@ export default function PlayerShareCard(props: PlayerShareCardProps) {
     const cardWeapon = english && props.topWeapon === "베릴 M762" ? "Beryl M762" : props.topWeapon;
 
     const gradient = context.createLinearGradient(0, 0, 1200, 630);
-    gradient.addColorStop(0, "#111512");
-    gradient.addColorStop(1, "#24342a");
+    gradient.addColorStop(0, "#f7f7f4");
+    gradient.addColorStop(1, "#e8ece8");
     context.fillStyle = gradient;
     context.fillRect(0, 0, 1200, 630);
-    context.fillStyle = "#e7ff4e";
+    context.fillStyle = "#14783f";
     context.fillRect(72, 68, 72, 8);
     context.font = "700 28px Arial, sans-serif";
     context.fillText(`BGI · ${labels.report} · ${props.platform.toUpperCase()}`, 72, 125);
-    context.fillStyle = "#ffffff";
+    context.fillStyle = "#171917";
     context.font = "900 74px Arial, sans-serif";
     context.fillText(props.nickname, 72, 225);
-    context.fillStyle = "#b7c2ba";
+    context.fillStyle = "#59605a";
     context.font = "600 25px Arial, sans-serif";
     context.fillText(`${labels.style}  /  ${cardStyle}`, 76, 278);
 
@@ -71,19 +71,19 @@ export default function PlayerShareCard(props: PlayerShareCardProps) {
     ];
     metrics.forEach(([label, value], index) => {
       const x = 72 + index * 265;
-      context.fillStyle = "rgba(255,255,255,.07)";
+      context.fillStyle = "#ffffff";
       roundedRect(context, x, 330, 235, 130, 12);
-      context.fillStyle = "#9daa9f";
+      context.fillStyle = "#6b706a";
       context.font = "700 19px Arial, sans-serif";
       context.fillText(label, x + 22, 372);
-      context.fillStyle = "#ffffff";
+      context.fillStyle = "#171917";
       context.font = "900 35px Arial, sans-serif";
       context.fillText(value, x + 22, 424);
     });
-    context.fillStyle = "#e7ff4e";
+    context.fillStyle = "#14783f";
     context.font = "800 22px Arial, sans-serif";
     context.fillText(`${labels.recent}  ·  ${props.recentKills.toFixed(1)} ${labels.kills}  ·  ${props.recentDamage.toFixed(0)} ${labels.damage}`, 72, 525);
-    context.fillStyle = "#a8b2aa";
+    context.fillStyle = "#6b706a";
     context.font = "600 20px Arial, sans-serif";
     context.fillText("bgi.pwkor.com", 72, 574);
 

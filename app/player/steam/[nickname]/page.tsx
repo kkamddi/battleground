@@ -5,6 +5,7 @@ import SiteHeader from "../../../../components/SiteHeader";
 import PlayerSearchForm from "../../../../components/PlayerSearchForm";
 import PlayerTools from "../../../../components/PlayerTools";
 import PlayerShareCard from "../../../../components/PlayerShareCard";
+import MatchReplay from "../../../../components/MatchReplay";
 import { weapons } from "../../../../lib/catalog";
 import {
   getPlayerProfile,
@@ -487,15 +488,16 @@ export default async function PlayerPage({
           <section className="player-form-chart">
             <div className="home-section-head">
               <div><span>LAST 10 MATCHES</span><h2>최근 폼 그래프</h2></div>
-              <p>막대 높이는 경기별 피해량, 숫자는 킬 수입니다.</p>
+              <p>경기별 피해량 추이 · 상단 K는 킬 수</p>
             </div>
             <div className="form-chart" aria-label="최근 10경기 피해량과 킬 추이">
+              <span className="form-chart-axis">피해량</span>
               {trendMatches.map((match, index) => (
-                <div className="form-chart-item" key={match.id}>
+                <div className="form-chart-item" key={match.id} title={`${number(match.damage, 0)} 피해량 · ${match.kills}킬`}>
                   <b>{match.kills}K</b>
                   <i style={{ height: `${Math.max(8, (match.damage / maxTrendDamage) * 100)}%` }} />
                   <span>{number(match.damage, 0)}</span>
-                  <small>{index + 1}</small>
+                  <small>{match.createdAt ? new Date(match.createdAt).toLocaleDateString("ko-KR", { month: "2-digit", day: "2-digit" }).replace(/\. /g, ".").replace(/\.$/, "") : index + 1}</small>
                 </div>
               ))}
             </div>
@@ -607,6 +609,7 @@ export default async function PlayerPage({
                     <div><span>정밀 사격</span><strong>{match.headshotKills} 헤드샷 · {number(match.longestKill, 0)}m</strong></div>
                     <div><span>이동 거리</span><strong>{number((match.walkDistance + match.rideDistance) / 1000, 1)}km</strong></div>
                   </div>
+                  <MatchReplay accountId={profile.accountId} matchId={match.id} platform={platform} />
                 </details>
               ))}
             </div>
