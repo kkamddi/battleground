@@ -70,6 +70,20 @@ nav a.active { color: var(--point); }
   padding: 8px 10px 8px 13px;
 }
 .steam-link { font-weight: 700; }
+.header-actions { align-items: center; display: flex; gap: 8px; justify-self: end; }
+.language-toggle {
+  background: transparent;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  display: flex;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 4px;
+  padding: 8px 9px;
+}
+.language-toggle span { color: #a2a6a1; }
+.language-toggle span.active { color: var(--point); }
+.language-toggle i { color: var(--line); font-style: normal; }
 kbd {
   background: var(--soft);
   border: 0;

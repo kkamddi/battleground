@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import LanguageToggle from "./LanguageToggle";
 
 const navigation = [
   { href: "/maps", label: "맵" },
@@ -31,14 +32,17 @@ export default function SiteHeader() {
           </a>
         ))}
       </nav>
-      <a
-        className="steam-link"
-        href="https://store.steampowered.com/app/578080/PUBG_BATTLEGROUNDS/"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Steam PUBG ↗
-      </a>
+      <div className="header-actions">
+        <LanguageToggle />
+        <a
+          className="steam-link"
+          href="https://store.steampowered.com/app/578080/PUBG_BATTLEGROUNDS/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Steam PUBG ↗
+        </a>
+      </div>
     </header>
   );
 }

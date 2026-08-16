@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { LanguageRuntime } from "../components/LanguageToggle";
 import "./globals.css";
 
 const siteUrl = "https://bgi.pwkor.com";
@@ -79,6 +80,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <LanguageRuntime />
         {children}
         <Analytics />
         <script
