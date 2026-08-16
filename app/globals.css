@@ -624,6 +624,19 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .players-heading > p { color: var(--muted); font-size: 15px; margin: 0; }
 .players-search-box { background: var(--ink); color: white; margin-top: 30px; padding: 25px 28px; }
 .players-search-box .player-search { margin: 0 auto; max-width: 760px; }
+.favorite-players { border-bottom: 1px solid var(--line); margin-top: 28px; padding-bottom: 28px; }
+.favorite-players-head { align-items: end; display: flex; justify-content: space-between; }
+.favorite-players-head span { color: var(--point); font-size: 9px; font-weight: 800; letter-spacing: .1em; }
+.favorite-players-head h2 { font-size: 22px; margin: 6px 0 0; }
+.favorite-players-head p { color: var(--muted); font-size: 11px; margin: 0; }
+.favorite-player-list { display: grid; gap: 8px; grid-template-columns: repeat(5, 1fr); margin-top: 15px; }
+.favorite-player-list article { align-items: stretch; background: var(--panel); border: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; min-width: 0; }
+.favorite-player-list a { align-items: center; display: grid; gap: 8px; grid-template-columns: 25px minmax(0, 1fr); min-width: 0; padding: 12px; }
+.favorite-player-list a:hover strong { color: var(--point); }
+.favorite-player-list strong { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.favorite-player-list small { color: var(--muted); font-size: 9px; grid-column: 2; }
+.favorite-player-list button { background: transparent; border: 0; border-left: 1px solid var(--line); color: var(--muted); cursor: pointer; font-size: 9px; padding: 0 9px; }
+.favorite-player-list button:hover { background: #f4e9e7; color: #9a3932; }
 .ranker-intro {
   align-items: end;
   display: flex;
@@ -1169,6 +1182,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .lead-action { min-height: 190px; }
   .home-player-search, .player-heading, .player-summary { grid-template-columns: 1fr; }
   .ranker-grid { grid-template-columns: 1fr; }
+  .favorite-player-list { grid-template-columns: repeat(2, 1fr); }
   .ranker-intro { align-items: start; flex-direction: column; gap: 12px; }
   .ranker-intro > p { text-align: left; }
   .player-heading { gap: 25px; }
@@ -1217,6 +1231,8 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .home-player-search .player-search > div { grid-template-columns: 82px minmax(0, 1fr); }
   .home-player-search .player-search button { grid-column: 1 / -1; min-height: 44px; }
   .players-search-box { padding: 22px 18px; }
+  .favorite-players-head { align-items: start; flex-direction: column; gap: 6px; }
+  .favorite-player-list { grid-template-columns: 1fr; }
   .ranker-table-head, .ranker-list a {
     grid-template-columns: 28px minmax(100px, 1fr) 76px 48px;
     padding: 0 12px;

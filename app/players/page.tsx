@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import PlayerSearchForm from "../../components/PlayerSearchForm";
+import FavoritePlayers from "../../components/FavoritePlayers";
 import SiteFooter from "../../components/SiteFooter";
 import SiteHeader from "../../components/SiteHeader";
 import {
@@ -111,6 +112,8 @@ export default async function PlayersPage() {
             <PlayerSearchForm />
           </div>
         </section>
+
+        <FavoritePlayers />
 
         <section className="ranker-intro">
           <div>

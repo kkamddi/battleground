@@ -17,8 +17,18 @@ export default function PlayerTools({
   const storageKey = "bgi-favorite-players";
   const playerKey = `${platform}:${nickname}`;
 
+  function readFavoriteKeys() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(storageKey) ?? "[]");
+      return Array.isArray(stored) ? stored.filter((value): value is string => typeof value === "string") : [];
+    } catch {
+      localStorage.removeItem(storageKey);
+      return [];
+    }
+  }
+
   useEffect(() => {
-    const players = JSON.parse(localStorage.getItem(storageKey) ?? "[]") as string[];
+    const players = readFavoriteKeys();
     setFavorite(players.includes(playerKey));
   }, [playerKey]);
 
@@ -30,12 +40,13 @@ export default function PlayerTools({
   }
 
   function toggleFavorite() {
-    const players = JSON.parse(localStorage.getItem(storageKey) ?? "[]") as string[];
+    const players = readFavoriteKeys();
     const next = players.includes(playerKey)
       ? players.filter((player) => player !== playerKey)
       : [playerKey, ...players].slice(0, 10);
     localStorage.setItem(storageKey, JSON.stringify(next));
     setFavorite(next.includes(playerKey));
+    window.dispatchEvent(new Event("bgi-favorites-change"));
   }
 
   async function share() {
