@@ -91,6 +91,8 @@ export async function getMatchReplay(platform: PubgPlatform, matchId: string, su
   const points = new Map(team.map((player) => [player.accountId, [] as ReplayPoint[]]));
   const events: ReplayEvent[] = [];
   const zones: ReplayZone[] = [];
+  const landed = new Set<string>();
+  const lastVehicleEvent = new Map<string, number>();
 
   for (const event of telemetry) {
     const eventType = String(event._T ?? "");
@@ -99,7 +101,7 @@ export async function getMatchReplay(platform: PubgPlatform, matchId: string, su
       const character = (event.character as JsonRecord | undefined) ?? {};
       const accountId = String(character.accountId ?? "");
       const route = points.get(accountId);
-      if (!route) continue;
+      if (!route || !landed.has(accountId)) continue;
       const point = location(character);
       const previous = route.at(-1);
       if (point.x > 0 && point.y > 0 && (!previous || eventElapsed - previous.elapsedSeconds >= 10)) route.push({ ...point, elapsedSeconds: eventElapsed });
@@ -108,6 +110,8 @@ export async function getMatchReplay(platform: PubgPlatform, matchId: string, su
       const accountId = String(character.accountId ?? "");
       if (!teamIds.has(accountId)) continue;
       const point = location(character);
+      landed.add(accountId);
+      points.get(accountId)?.push({ ...point, elapsedSeconds: eventElapsed });
       events.push({ type: "landing", ...point, elapsedSeconds: eventElapsed, label: `${String(character.name ?? "Player")} 착륙` });
     } else if (eventType === "LogPlayerKillV2") {
       const killer = (event.killer as JsonRecord | undefined) ?? {};
@@ -129,14 +133,16 @@ export async function getMatchReplay(platform: PubgPlatform, matchId: string, su
       events.push({ type: "revive", ...location(reviver), elapsedSeconds: eventElapsed, label: `${String(reviver.name ?? "Player")} 부활` });
     } else if (eventType === "LogVehicleRide") {
       const character = (event.character as JsonRecord | undefined) ?? {};
-      if (!teamIds.has(String(character.accountId ?? ""))) continue;
+      const accountId = String(character.accountId ?? "");
+      if (!teamIds.has(accountId) || eventElapsed - (lastVehicleEvent.get(accountId) ?? -120) < 60) continue;
+      lastVehicleEvent.set(accountId, eventElapsed);
       events.push({ type: "vehicle", ...location(character), elapsedSeconds: eventElapsed, label: `${String(character.name ?? "Player")} 차량 탑승` });
     } else if (eventType === "LogGameStatePeriodic") {
       const state = (event.gameState as JsonRecord | undefined) ?? {};
       const position = (state.safetyZonePosition as JsonRecord | undefined) ?? {};
       const radius = Number(state.safetyZoneRadius ?? 0);
       const previous = zones.at(-1);
-      if (radius > 0 && (!previous || Math.abs(previous.radius - radius) > 100)) {
+      if (radius > 0 && (!previous || (eventElapsed - previous.elapsedSeconds >= 60 && Math.abs(previous.radius - radius) > 1_000))) {
         zones.push({ x: Number(position.x ?? 0), y: Number(position.y ?? 0), radius, elapsedSeconds: eventElapsed });
       }
     }
@@ -144,5 +150,8 @@ export async function getMatchReplay(platform: PubgPlatform, matchId: string, su
 
   const players = team.map((player) => ({ ...player, subject: player.accountId === subjectAccountId, points: points.get(player.accountId) ?? [] }));
   const durationSeconds = Math.max(1, ...players.flatMap((player) => player.points.map((point) => point.elapsedSeconds)), ...events.map((event) => event.elapsedSeconds));
-  return { matchId, mapSlug, mapName: mapCatalog[mapSlug].nameKo, worldSize: mapCatalog[mapSlug].worldSize, durationSeconds, players, events, zones };
+  const uniqueEvents = events.filter((event, index) => events.findIndex((candidate) => (
+    candidate.type === event.type && candidate.elapsedSeconds === event.elapsedSeconds && candidate.label === event.label
+  )) === index);
+  return { matchId, mapSlug, mapName: mapCatalog[mapSlug].nameKo, worldSize: mapCatalog[mapSlug].worldSize, durationSeconds, players, events: uniqueEvents, zones };
 }
