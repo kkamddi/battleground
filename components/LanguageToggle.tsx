@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { generatedTranslations } from "./generatedTranslations";
 
 type Language = "ko" | "en";
 
 const translations: Record<string, string> = {
+  ...generatedTranslations,
   "맵": "Maps",
   "패치노트": "Patch Notes",
   "총기 도감": "Weapons",
@@ -52,6 +54,23 @@ const translations: Record<string, string> = {
   "재장전": "Reload",
   "연사 속도": "Fire Rate",
   "탄창 용량": "Magazine Capacity",
+  "연사": "Automatic fire",
+  "단발": "Single fire",
+  "수직": "Vertical",
+  "수평": "Horizontal",
+  "반동": "Recoil",
+  "현행": "Current",
+  "다수": "Multiple",
+  "총구": "Muzzle",
+  "화면 흔들림": "Screen shake",
+  "은폐": "Concealment",
+  "지속": "Sustained",
+  "전 맵": "All maps",
+  "약": "Approximately",
+  "탄두": "Projectile",
+  "프라이팬": "Pan",
+  "년": "Year",
+  "별": "By",
   "권장 배율": "Recommended Scope",
   "운용 거리": "Effective Range",
   "맵 선택": "Select Map",
@@ -165,6 +184,10 @@ const replacements: Array<[RegExp, string]> = [
   [/변경 없음/g, "No change"],
 ];
 
+const generatedReplacements = Object.entries(translations)
+  .filter(([source, target]) => source !== target && source.length > 0)
+  .sort(([a], [b]) => b.length - a.length);
+
 const originalText = new WeakMap<Text, string>();
 const originalAttributes = new WeakMap<Element, Map<string, string>>();
 const translatedAttributes = ["aria-label", "placeholder", "title"];
@@ -180,6 +203,9 @@ function translate(value: string) {
       result = result.replace(pattern, replacement);
     });
   }
+  generatedReplacements.forEach(([source, replacement]) => {
+    result = result.replaceAll(source, replacement);
+  });
   return `${leading}${result}${trailing}`;
 }
 
