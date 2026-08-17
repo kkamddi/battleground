@@ -181,6 +181,7 @@ const translations: Record<string, string> = {
   "조준경": "Optic",
   "배치 전": "Placement pending",
   "현재 일반전": "Current Normal",
+  "현재 경쟁전": "Current Ranked",
   "기록 없음": "No record",
   "선택한 모드의 시즌 기록이 없습니다.": "No season record is available for the selected mode.",
   "언랭크": "Unranked",

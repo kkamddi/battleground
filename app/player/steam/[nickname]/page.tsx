@@ -267,7 +267,7 @@ function profileMetrics(profile: PlayerProfile, queue?: string, selectedMode?: s
   const rounds = Number(stats.roundsPlayed ?? 0);
   const wins = Number(stats.wins ?? 0);
   const kills = Number(stats.kills ?? 0);
-  const deaths = Number(stats.deaths ?? 0) || Math.max(rounds - wins, 0);
+  const deaths = Math.max(rounds - wins, 0);
   return {
     modeKey,
     stats,
