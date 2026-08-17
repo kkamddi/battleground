@@ -739,7 +739,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .comparison-table span { color: var(--muted); font-size: 12px; }
 .comparison-table strong { font-size: 16px; }
 .player-report-intro { align-items: end; border-bottom: 2px solid var(--ink); display: flex; justify-content: space-between; margin-top: 42px; padding-bottom: 14px; }
-.player-report-intro span { color: var(--point); font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+.player-report-intro > div > span { color: var(--point); font-size: 10px; font-weight: 800; letter-spacing: .1em; }
 .player-report-intro h2 { font-size: 32px; letter-spacing: -.04em; margin: 10px 0 6px; }
 .player-report-intro p { color: var(--muted); font-size: 11px; margin: 0 0 6px; white-space: nowrap; }
 .player-report-facts {

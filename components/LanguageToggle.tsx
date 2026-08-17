@@ -203,6 +203,8 @@ const translations: Record<string, string> = {
   "함께한 Top 10": "Top 10 Together",
   "호흡 점수는 함께 플레이한 경기의 Top 10 진입, 두 선수의 합산 킬과 피해량을 기준으로 계산합니다.": "Chemistry is based on Top 10 finishes plus the two players' combined kills and damage in shared matches.",
   "비교할 닉네임": "Nickname to compare",
+  "비교": "Compare",
+  "플레이 리포트": "Play Report",
   "분석 신뢰도 높음": "High confidence",
   "분석 표본 부족": "Limited sample",
   "예비 분석": "Preliminary analysis",

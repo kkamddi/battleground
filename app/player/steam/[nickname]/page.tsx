@@ -593,7 +593,7 @@ export default async function PlayerPage({
         ) : null}
 
         <section className="player-report-intro">
-          <div><span>PERSONAL REPORT</span><h2>{profile.name}의 플레이 리포트</h2></div>
+          <div><span>PERSONAL REPORT</span><h2>{profile.name} · <span>플레이 리포트</span></h2></div>
           <p>{`${profile.recentMatches.length}경기 분석 · 신뢰도 ${reportConfidence}%`}</p>
         </section>
 
