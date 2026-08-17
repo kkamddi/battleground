@@ -598,10 +598,10 @@ export default async function PlayerPage({
         </section>
 
         <section className="player-report-facts" aria-label="최근 플레이 핵심 지표">
-          <div><span>교전</span><strong>{number(recent.kills, 1)}킬 · ADR {number(recent.damage, 0)}</strong></div>
+          <div><span>교전</span><strong>{`${number(recent.kills, 1)}킬 · ADR ${number(recent.damage, 0)}`}</strong></div>
           <div><span>헤드샷 비중</span><strong>{ratio(recentKills ? recentHeadshots / recentKills : 0)}</strong></div>
-          <div><span>팀 기여</span><strong>경기당 {number(teamActions / recentGames, 1)}회</strong></div>
-          <div><span>평균 이동</span><strong>{number(recent.movement / 1000, 1)}km</strong></div>
+          <div><span>팀 기여</span><strong>{`경기당 ${number(teamActions / recentGames, 1)}회`}</strong></div>
+          <div><span>평균 이동</span><strong>{`${number(recent.movement / 1000, 1)}km`}</strong></div>
         </section>
 
         <section className="player-snapshot">
