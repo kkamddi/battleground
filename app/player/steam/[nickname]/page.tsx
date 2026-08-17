@@ -604,6 +604,34 @@ export default async function PlayerPage({
           <div><span>평균 이동</span><strong>{number(recent.movement / 1000, 1)}km</strong></div>
         </section>
 
+        <section className="player-snapshot">
+          <div className="home-section-head">
+            <div><span>BGI SNAPSHOT</span><h2>한눈에 보기</h2></div>
+            <p>유형 · 진단 · 다음 경기</p>
+          </div>
+          <div>
+            <article className="primary">
+              <span>내 플레이 유형</span>
+              <strong>{style.name}</strong>
+              <p>{style.description}</p>
+            </article>
+            <article>
+              <span>현재 진단</span>
+              <strong>{coach.diagnosis}</strong>
+            </article>
+            <article>
+              <span>다음 경기</span>
+              <strong>{coach.missions[0]}</strong>
+            </article>
+          </div>
+        </section>
+
+        <details className="player-deep-report">
+          <summary>
+            <span><b>DETAILED ANALYSIS</b><strong>상세 분석 보기</strong></span>
+            <small>성장 · 맵 · 팀원 · 장비 · 최근 흐름</small>
+          </summary>
+          <div className="player-deep-report-body">
         <section className="player-coach-report">
           <div className="home-section-head">
             <div><span>BGI COACH</span><h2>왜 이런 전적이 나왔을까?</h2></div>
@@ -826,6 +854,8 @@ export default async function PlayerPage({
             )) : <p className="player-no-matches">최근 표본에서 킬 당시 파츠 조합을 확인하지 못했습니다.</p>}
           </div>
         </section>
+          </div>
+        </details>
 
         <section className="recent-matches">
           <div className="home-section-head">
