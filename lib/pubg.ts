@@ -180,9 +180,13 @@ function matchSummary(match: JsonRecord, accountId: string): RecentMatch | null 
   if (!participant) return null;
   const participantAttributes = (participant.attributes as JsonRecord | undefined) ?? {};
   const stats = (participantAttributes.stats as JsonRecord | undefined) ?? {};
-  const participantRelationships = (participant.relationships as JsonRecord | undefined) ?? {};
-  const participantRoster = (participantRelationships.roster as JsonRecord | undefined)?.data as JsonRecord | undefined;
-  const roster = included.find((item) => item.type === "roster" && item.id === participantRoster?.id);
+  const participantId = String(participant.id ?? "");
+  const roster = included.find((item) => {
+    if (item.type !== "roster") return false;
+    const relationships = (item.relationships as JsonRecord | undefined) ?? {};
+    const rosterParticipants = ((relationships.participants as JsonRecord | undefined)?.data as JsonRecord[] | undefined) ?? [];
+    return rosterParticipants.some((rosterParticipant) => String(rosterParticipant.id ?? "") === participantId);
+  });
   const rosterRelationships = (roster?.relationships as JsonRecord | undefined) ?? {};
   const rosterParticipants = ((rosterRelationships.participants as JsonRecord | undefined)?.data as JsonRecord[] | undefined) ?? [];
   const rosterIds = new Set(rosterParticipants.map((item) => String(item.id ?? "")));
@@ -439,7 +443,7 @@ const playerStats = unstable_cache(
       ...telemetry,
     };
   },
-  ["pubg-player-stats-v2"],
+  ["pubg-player-stats-v3"],
   { revalidate: 1800 },
 );
 
