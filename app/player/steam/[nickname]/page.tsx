@@ -590,7 +590,7 @@ export default async function PlayerPage({
                   <article key={label}>
                     <span>{label}</span><h3>{map.name}</h3>
                     <dl>
-                      <div><dt>표본</dt><dd>{map.games}경기</dd></div>
+                      <div><dt>표본</dt><dd>{`${map.games}경기`}</dd></div>
                       <div><dt>ADR</dt><dd>{number(map.adr, 0)}</dd></div>
                       <div><dt>평균 킬</dt><dd>{number(map.kills, 1)}</dd></div>
                       <div><dt>Top 10</dt><dd>{ratio(map.top10)}</dd></div>
