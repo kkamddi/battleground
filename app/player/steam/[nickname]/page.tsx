@@ -318,6 +318,51 @@ function coachReport(matches: RecentMatch[]) {
   return { categories, diagnosis, missions: missions.slice(0, 2), games: sample.length };
 }
 
+function growthReport(matches: RecentMatch[]) {
+  if (matches.length < 10) return null;
+  const currentMatches = matches.slice(0, 5);
+  const previousMatches = matches.slice(5, 10);
+  const current = recentAverage(currentMatches);
+  const previous = recentAverage(previousMatches);
+  const averagePlacement = (sample: RecentMatch[]) => {
+    const placements = sample.map((match) => match.placement).filter((placement) => placement > 0);
+    return placements.length ? placements.reduce((sum, placement) => sum + placement, 0) / placements.length : 0;
+  };
+  const placementDelta = averagePlacement(previousMatches) - averagePlacement(currentMatches);
+  const metrics = [
+    { name: "평균 킬", value: current.kills - previous.kills, weight: (current.kills - previous.kills) / .7 },
+    { name: "평균 피해량", value: current.damage - previous.damage, weight: (current.damage - previous.damage) / 80 },
+    { name: "평균 생존", value: (current.survival - previous.survival) / 60, weight: (current.survival - previous.survival) / 240 },
+    { name: "평균 순위", value: placementDelta, weight: placementDelta / 6 },
+  ];
+  const driver = [...metrics].sort((a, b) => Math.abs(b.weight) - Math.abs(a.weight))[0];
+  const direction = metrics.reduce((sum, metric) => sum + metric.weight, 0) / metrics.length;
+  const status = direction > .35 ? "상승세" : direction < -.35 ? "하락세" : "유지 중";
+  const summaries: Record<string, [string, string]> = {
+    "평균 킬": ["최근 경기에서는 킬 생산 증가가 상승세를 가장 크게 이끌었습니다.", "최근 경기에서는 킬 생산 감소가 흐름을 가장 크게 낮췄습니다."],
+    "평균 피해량": ["최근 경기에서는 교전 피해량 증가가 상승세를 가장 크게 이끌었습니다.", "최근 경기에서는 교전 피해량 감소가 흐름을 가장 크게 낮췄습니다."],
+    "평균 생존": ["최근 경기에서는 생존 시간 증가가 상승세를 가장 크게 이끌었습니다.", "최근 경기에서는 생존 시간 감소가 흐름을 가장 크게 낮췄습니다."],
+    "평균 순위": ["최근 경기에서는 평균 순위 개선이 상승세를 가장 크게 이끌었습니다.", "최근 경기에서는 평균 순위 하락이 흐름을 가장 크게 낮췄습니다."],
+  };
+  return { metrics, status, summary: summaries[driver.name][driver.value >= 0 ? 0 : 1] };
+}
+
+function mapReport(groups: Array<[string, MatchGroup]>) {
+  const eligible = groups
+    .filter(([key, value]) => Boolean(mapNames[key]) && value.games >= 2)
+    .map(([key, value]) => ({
+      name: mapNames[key] ?? key,
+      games: value.games,
+      adr: value.damage / value.games,
+      kills: value.kills / value.games,
+      top10: value.top10s / value.games,
+      score: value.damage / value.games + (value.kills / value.games) * 70 + (value.top10s / value.games) * 120,
+    }))
+    .sort((a, b) => b.score - a.score);
+  if (eligible.length < 2) return null;
+  return { strong: eligible[0], weak: eligible[eligible.length - 1] };
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -412,6 +457,8 @@ export default async function PlayerPage({
   const maxTrendDamage = Math.max(1, ...trendMatches.map((match) => match.damage));
   const winRate = ratio(stats.winRatio ?? (rounds ? wins / rounds : 0));
   const coach = coachReport(profile.recentMatches);
+  const growth = growthReport(profile.recentMatches);
+  const mapFit = mapReport(maps);
 
   return (
     <main>
@@ -514,6 +561,46 @@ export default async function PlayerPage({
           </div>
           <small>점수는 최근 경기 안에서 확인되는 피해량·킬·생존·이동·팀 기여 지표를 BGI 기준으로 환산한 참고 지표입니다.</small>
         </section>
+
+        {growth || mapFit ? (
+          <section className={`player-growth-report ${growth && mapFit ? "" : "single"}`}>
+            {growth ? <div className="growth-trend">
+              <div className="home-section-head">
+                <div><span>BGI GROWTH TRACKER</span><h2>최근 5경기는 왜 달라졌을까?</h2></div>
+                <strong className={`growth-status ${growth.status === "상승세" ? "up" : growth.status === "하락세" ? "down" : ""}`}>{growth.status}</strong>
+              </div>
+              <p className="growth-summary">{growth.summary}</p>
+              <div className="growth-metrics">
+                {growth.metrics.map((metric) => (
+                  <article key={metric.name}>
+                    <span>{metric.name}</span>
+                    <strong>{metric.value > 0 ? "+" : ""}{number(metric.value, 1)}</strong>
+                    <small>이전 5경기 대비</small>
+                  </article>
+                ))}
+              </div>
+            </div> : null}
+            {mapFit ? <div className="map-fit-report">
+              <div className="home-section-head">
+                <div><span>MAP FIT</span><h2>내 맵 궁합</h2></div>
+                <p>2경기 이상 플레이한 맵 기준</p>
+              </div>
+              <div>
+                {[{ label: "강한 맵", map: mapFit.strong }, { label: "보완할 맵", map: mapFit.weak }].map(({ label, map }) => (
+                  <article key={label}>
+                    <span>{label}</span><h3>{map.name}</h3>
+                    <dl>
+                      <div><dt>표본</dt><dd>{map.games}경기</dd></div>
+                      <div><dt>ADR</dt><dd>{number(map.adr, 0)}</dd></div>
+                      <div><dt>평균 킬</dt><dd>{number(map.kills, 1)}</dd></div>
+                      <div><dt>Top 10</dt><dd>{ratio(map.top10)}</dd></div>
+                    </dl>
+                  </article>
+                ))}
+              </div>
+            </div> : null}
+          </section>
+        ) : null}
 
         <PlayerShareCard
           adr={adr}
