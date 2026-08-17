@@ -776,6 +776,18 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .map-fit-report dl div { border-top: 1px solid var(--line); padding-top: 8px; }
 .map-fit-report dt { color: var(--muted); font-size: 9px; }
 .map-fit-report dd { font-size: 13px; font-weight: 800; margin: 4px 0 0; }
+.teammate-report { border: 1px solid var(--line); margin-top: 18px; padding: 24px 26px; }
+.teammate-report-grid { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); margin-top: 20px; }
+.teammate-report-grid article { background: var(--panel); border-top: 3px solid var(--ink); padding: 18px; }
+.teammate-report-grid article > div:first-child { align-items: center; display: flex; justify-content: space-between; }
+.teammate-report-grid article > div:first-child span { color: var(--point); font-size: 10px; font-weight: 800; }
+.teammate-report-grid article > div:first-child strong { font-size: 23px; }
+.teammate-report-grid h3 { font-size: 19px; margin: 10px 0 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.teammate-report-grid dl { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; margin: 0; }
+.teammate-report-grid dl div { border-top: 1px solid var(--line); padding-top: 8px; }
+.teammate-report-grid dt { color: var(--muted); font-size: 9px; }
+.teammate-report-grid dd { font-size: 13px; font-weight: 800; margin: 4px 0 0; }
+.teammate-report > small { color: var(--muted); display: block; font-size: 10px; margin-top: 15px; }
 .player-share-card {
   align-items: center;
   background: var(--panel);
@@ -1233,6 +1245,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .coach-score-grid { grid-template-columns: repeat(2, 1fr); }
   .player-growth-report { grid-template-columns: 1fr; }
   .player-analysis-grid { grid-template-columns: 1fr; }
+  .teammate-report-grid { grid-template-columns: 1fr; }
   .player-analysis-grid article + article { border-left: 1px solid var(--line); border-top: 0; }
   .match-detail-body { grid-template-columns: repeat(3, 1fr); padding-left: 174px; row-gap: 18px; }
   .breakdown-columns, .loadout-columns { grid-template-columns: 1fr; }

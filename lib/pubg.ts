@@ -46,6 +46,12 @@ export type RecentMatch = {
   revives: number;
   rideDistance: number;
   walkDistance: number;
+  teammates: Array<{
+    accountId: string;
+    name: string;
+    kills: number;
+    damage: number;
+  }>;
   telemetryUrl?: string;
 };
 
@@ -174,6 +180,25 @@ function matchSummary(match: JsonRecord, accountId: string): RecentMatch | null 
   if (!participant) return null;
   const participantAttributes = (participant.attributes as JsonRecord | undefined) ?? {};
   const stats = (participantAttributes.stats as JsonRecord | undefined) ?? {};
+  const participantRelationships = (participant.relationships as JsonRecord | undefined) ?? {};
+  const participantRoster = (participantRelationships.roster as JsonRecord | undefined)?.data as JsonRecord | undefined;
+  const roster = included.find((item) => item.type === "roster" && item.id === participantRoster?.id);
+  const rosterRelationships = (roster?.relationships as JsonRecord | undefined) ?? {};
+  const rosterParticipants = ((rosterRelationships.participants as JsonRecord | undefined)?.data as JsonRecord[] | undefined) ?? [];
+  const rosterIds = new Set(rosterParticipants.map((item) => String(item.id ?? "")));
+  const teammates = included.flatMap((item) => {
+    if (item.type !== "participant" || !rosterIds.has(String(item.id ?? ""))) return [];
+    const teammateAttributes = (item.attributes as JsonRecord | undefined) ?? {};
+    const teammateStats = (teammateAttributes.stats as JsonRecord | undefined) ?? {};
+    const teammateAccountId = String(teammateStats.playerId ?? "");
+    if (!teammateAccountId || teammateAccountId === accountId) return [];
+    return [{
+      accountId: teammateAccountId,
+      name: String(teammateStats.name ?? "이름 비공개"),
+      kills: Number(teammateStats.kills ?? 0),
+      damage: Number(teammateStats.damageDealt ?? 0),
+    }];
+  });
   const asset = included.find((item) => item.type === "asset");
   const assetAttributes = (asset?.attributes as JsonRecord | undefined) ?? {};
 
@@ -195,6 +220,7 @@ function matchSummary(match: JsonRecord, accountId: string): RecentMatch | null 
     revives: Number(stats.revives ?? 0),
     rideDistance: Number(stats.rideDistance ?? 0),
     walkDistance: Number(stats.walkDistance ?? 0),
+    teammates,
     telemetryUrl: typeof assetAttributes.URL === "string" ? assetAttributes.URL : undefined,
   };
 }
@@ -395,22 +421,11 @@ const playerStats = unstable_cache(
         apiJson(platform, `/matches/${encodeURIComponent(matchId)}`, true).catch(() => null),
       ),
     );
-    const ranked = await apiJson(
-      platform,
-      `/players/${encodeURIComponent(accountId)}/seasons/${encodeURIComponent(seasonId)}/ranked`,
-      true,
-    );
+    const [ranked, season] = await Promise.all([
+      apiJson(platform, `/players/${encodeURIComponent(accountId)}/seasons/${encodeURIComponent(seasonId)}/ranked`, true),
+      apiJson(platform, `/players/${encodeURIComponent(accountId)}/seasons/${encodeURIComponent(seasonId)}`, true),
+    ]);
     const rankedModes = modeStats(ranked, "rankedGameModeStats");
-    const hasRankedGames = Object.values(rankedModes).some(
-      (stats) => Number(stats.roundsPlayed ?? 0) > 0,
-    );
-    const season = hasRankedGames
-      ? null
-        : await apiJson(
-          platform,
-          `/players/${encodeURIComponent(accountId)}/seasons/${encodeURIComponent(seasonId)}`,
-          true,
-        );
     const matches = await matchesPromise;
     const recentMatches = matches
       .filter((match): match is JsonRecord => match !== null)
@@ -424,7 +439,7 @@ const playerStats = unstable_cache(
       ...telemetry,
     };
   },
-  ["pubg-player-stats"],
+  ["pubg-player-stats-v2"],
   { revalidate: 1800 },
 );
 

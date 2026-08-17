@@ -363,6 +363,58 @@ function mapReport(groups: Array<[string, MatchGroup]>) {
   return { strong: eligible[0], weak: eligible[eligible.length - 1] };
 }
 
+function teammateReport(matches: RecentMatch[]) {
+  const teammates = new Map<string, {
+    name: string;
+    games: number;
+    top10s: number;
+    combinedKills: number;
+    combinedDamage: number;
+    teammateDamage: number;
+  }>();
+  for (const match of matches) {
+    for (const teammate of match.teammates ?? []) {
+      const key = teammate.accountId || teammate.name;
+      const current = teammates.get(key) ?? {
+        name: teammate.name,
+        games: 0,
+        top10s: 0,
+        combinedKills: 0,
+        combinedDamage: 0,
+        teammateDamage: 0,
+      };
+      current.games += 1;
+      current.top10s += match.placement > 0 && match.placement <= 10 ? 1 : 0;
+      current.combinedKills += match.kills + teammate.kills;
+      current.combinedDamage += match.damage + teammate.damage;
+      current.teammateDamage += teammate.damage;
+      teammates.set(key, current);
+    }
+  }
+  return [...teammates.values()]
+    .filter((teammate) => teammate.games >= 2)
+    .map((teammate) => {
+      const top10Rate = teammate.top10s / teammate.games;
+      const combinedKills = teammate.combinedKills / teammate.games;
+      const combinedDamage = teammate.combinedDamage / teammate.games;
+      const chemistry = Math.round(
+        top10Rate * 45
+        + score(combinedKills, .5, 6) * .25
+        + score(combinedDamage, 150, 700) * .3,
+      );
+      return {
+        ...teammate,
+        top10Rate,
+        combinedKills,
+        chemistry,
+        teammateAdr: teammate.teammateDamage / teammate.games,
+        label: chemistry >= 75 ? "찰떡 호흡" : chemistry >= 55 ? "좋은 호흡" : "호흡 맞추는 중",
+      };
+    })
+    .sort((a, b) => b.games - a.games || b.chemistry - a.chemistry)
+    .slice(0, 3);
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -459,6 +511,7 @@ export default async function PlayerPage({
   const coach = coachReport(profile.recentMatches);
   const growth = growthReport(profile.recentMatches);
   const mapFit = mapReport(maps);
+  const teammateFit = teammateReport(profile.recentMatches);
 
   return (
     <main>
@@ -599,6 +652,30 @@ export default async function PlayerPage({
                 ))}
               </div>
             </div> : null}
+          </section>
+        ) : null}
+
+        {teammateFit.length ? (
+          <section className="teammate-report">
+            <div className="home-section-head">
+              <div><span>SQUAD CHEMISTRY</span><h2>자주 함께한 팀원과의 호흡</h2></div>
+              <p>최근 경기에서 2회 이상 같은 팀이 된 플레이어 기준</p>
+            </div>
+            <div className="teammate-report-grid">
+              {teammateFit.map((teammate) => (
+                <article key={teammate.name}>
+                  <div><span>{teammate.label}</span><strong>{teammate.chemistry}</strong></div>
+                  <h3>{teammate.name}</h3>
+                  <dl>
+                    <div><dt>함께한 경기</dt><dd>{`${teammate.games}경기`}</dd></div>
+                    <div><dt>둘의 평균 킬</dt><dd>{number(teammate.combinedKills, 1)}</dd></div>
+                    <div><dt>팀원 ADR</dt><dd>{number(teammate.teammateAdr, 0)}</dd></div>
+                    <div><dt>함께한 Top 10</dt><dd>{ratio(teammate.top10Rate)}</dd></div>
+                  </dl>
+                </article>
+              ))}
+            </div>
+            <small>호흡 점수는 함께 플레이한 경기의 Top 10 진입, 두 선수의 합산 킬과 피해량을 기준으로 계산합니다.</small>
           </section>
         ) : null}
 
