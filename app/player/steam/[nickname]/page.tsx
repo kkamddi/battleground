@@ -7,6 +7,7 @@ import PlayerTools from "../../../../components/PlayerTools";
 import PlayerShareCard from "../../../../components/PlayerShareCard";
 import MatchReplay from "../../../../components/MatchReplay";
 import { weapons } from "../../../../lib/catalog";
+import { getPlayerBenchmark } from "../../../../lib/playerArchive";
 import {
   getPlayerProfile,
   PlayerModeStats,
@@ -476,6 +477,7 @@ export default async function PlayerPage({
   }
 
   const { modeKey, stats, ranked, rounds, wins, kills, kd, adr } = profileMetrics(profile, queue, mode);
+  const benchmark = await getPlayerBenchmark(profile, modeKey, ranked);
   const modeSource = ranked ? profile.rankedModes : profile.seasonModes;
   const availableModes = Object.entries(modeSource)
     .filter(([, value]) => Number(value.roundsPlayed ?? 0) > 0)
@@ -491,7 +493,6 @@ export default async function PlayerPage({
   const modes = groupMatches(profile.recentMatches, "gameMode");
   const style = playStyle(profile.recentMatches);
   const recent = recentAverage(profile.recentMatches.slice(0, 5));
-  const previous = recentAverage(profile.recentMatches.slice(5, 10));
   const topWeapon = profile.weaponStats[0];
   const topAttachment = profile.attachmentStats[0];
   const killLoadouts = profile.killLoadoutStats ?? [];
@@ -557,6 +558,15 @@ export default async function PlayerPage({
           </dl>
         </section>
 
+        {benchmark ? (
+          <section className="player-benchmark">
+            <div><span>BGI PERCENTILE</span><strong>{`${benchmark.sampleSize}명 비교`}</strong></div>
+            {benchmark.metrics.map((metric) => (
+              <article key={metric.label}><span>{metric.label}</span><strong>{`상위 ${metric.topPercent}%`}</strong></article>
+            ))}
+          </section>
+        ) : null}
+
         {comparison ? (
           <section className="player-comparison">
             <div className="home-section-head">
@@ -583,9 +593,8 @@ export default async function PlayerPage({
         ) : null}
 
         <section className="player-report-intro">
-          <span>PERSONAL REPORT</span>
-          <h2>{profile.name}의 플레이 리포트</h2>
-          <p>최근 경기 {profile.recentMatches.length}개를 기준으로 플레이 성향과 맞춤 장비를 분석했습니다. 표본 충족도 {reportConfidence}%.</p>
+          <div><span>PERSONAL REPORT</span><h2>{profile.name}의 플레이 리포트</h2></div>
+          <p>{`${profile.recentMatches.length}경기 분석 · 신뢰도 ${reportConfidence}%`}</p>
         </section>
 
         <section className="player-report-facts" aria-label="최근 플레이 핵심 지표">
@@ -598,7 +607,6 @@ export default async function PlayerPage({
         <section className="player-coach-report">
           <div className="home-section-head">
             <div><span>BGI COACH</span><h2>왜 이런 전적이 나왔을까?</h2></div>
-            <p>최근 경기의 플레이 결과를 네 가지 축으로 분석했습니다.</p>
           </div>
           <div className="coach-score-grid">
             {coach.categories.map((category) => (
@@ -612,7 +620,6 @@ export default async function PlayerPage({
             <article><span>분석</span><p>{coach.diagnosis}</p></article>
             <article><span>다음 경기 미션</span><ol>{coach.missions.map((mission) => <li key={mission}>{mission}</li>)}</ol></article>
           </div>
-          <small>점수는 최근 경기 안에서 확인되는 피해량·킬·생존·이동·팀 기여 지표를 BGI 기준으로 환산한 참고 지표입니다.</small>
         </section>
 
         {growth || mapFit ? (
@@ -659,7 +666,7 @@ export default async function PlayerPage({
           <section className="teammate-report">
             <div className="home-section-head">
               <div><span>SQUAD CHEMISTRY</span><h2>자주 함께한 팀원과의 호흡</h2></div>
-              <p>최근 경기에서 2회 이상 같은 팀이 된 플레이어 기준</p>
+              <p>2회 이상 함께한 팀원</p>
             </div>
             <div className="teammate-report-grid">
               {teammateFit.map((teammate) => (
@@ -675,7 +682,6 @@ export default async function PlayerPage({
                 </article>
               ))}
             </div>
-            <small>호흡 점수는 함께 플레이한 경기의 Top 10 진입, 두 선수의 합산 킬과 피해량을 기준으로 계산합니다.</small>
           </section>
         ) : null}
 
@@ -705,16 +711,6 @@ export default async function PlayerPage({
               <div><dt>최근 평균 피해</dt><dd>{number(recent.damage, 0)}</dd></div>
               <div><dt>평균 생존</dt><dd>{time(recent.survival)}</dd></div>
             </dl>
-          </article>
-          <article className="trend-card">
-            <span>RECENT FORM</span>
-            <h2>최근 경기 흐름</h2>
-            <div>
-              <p>평균 킬 <strong>{number(recent.kills - previous.kills, 1)}</strong></p>
-              <p>평균 피해 <strong>{number(recent.damage - previous.damage, 1)}</strong></p>
-              <p>평균 순위 <strong>{number(recent.placement, 1)}위</strong></p>
-            </div>
-            <small>최근 5경기와 그 이전 5경기를 비교한 값입니다.</small>
           </article>
           <article className="recommend-card">
             <span>BGI PERSONAL PICK</span>

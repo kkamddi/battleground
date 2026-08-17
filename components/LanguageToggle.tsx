@@ -141,10 +141,13 @@ const translations: Record<string, string> = {
   "팀 이동 경로": "Squad Route",
   "☆ 즐겨찾기": "☆ Favorite",
   "★ 즐겨찾기 저장됨": "★ Saved",
+  "★ 저장됨": "★ Saved",
   "즐겨찾는 플레이어": "Favorite Players",
   "즐겨찾기": "Favorites",
   "이 브라우저에 저장된 플레이어": "Players saved in this browser",
   "즐겨찾기 삭제": "Remove favorite",
+  "공유": "Share",
+  "2회 이상 함께한 팀원": "Teammates in 2+ matches",
   "최근 검색": "Recent Searches",
   "최근 검색한 플레이어를 바로 다시 확인하세요.": "Quickly reopen players you searched for recently.",
   "왜 이런 전적이 나왔을까?": "Why did I get these results?",
@@ -242,6 +245,9 @@ const translations: Record<string, string> = {
 
 const replacements: Array<[RegExp, string]> = [
   [/경쟁전 TOP 10/g, "Ranked TOP 10"],
+  [/([0-9,]+)명 비교/g, "$1-player sample"],
+  [/상위 ([0-9]+)%/g, "Top $1%"],
+  [/([0-9,]+)경기 분석 · 신뢰도 ([0-9]+)%/g, "$1 matches analyzed · $2% confidence"],
   [/현재 시즌/g, "Current season"],
   [/2시간마다 갱신/g, "Updated every 2 hours"],
   [/스쿼드 TPP/g, "Squad TPP"],

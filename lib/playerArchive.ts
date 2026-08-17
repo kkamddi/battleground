@@ -1,10 +1,76 @@
-import type { PlayerProfile } from "./pubg";
+import type { PlayerModeStats, PlayerProfile } from "./pubg";
 
 function configured() {
   return Boolean(
     process.env.SUPABASE_URL &&
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY),
   );
+}
+
+export type PlayerBenchmark = {
+  sampleSize: number;
+  metrics: Array<{ label: string; topPercent: number; value: number }>;
+};
+
+function benchmarkValue(stats: PlayerModeStats) {
+  const rounds = Number(stats.roundsPlayed ?? 0);
+  const wins = Number(stats.wins ?? 0);
+  const kills = Number(stats.kills ?? 0);
+  const deaths = Math.max(rounds - wins, 1);
+  return {
+    kd: Number(stats.kdr ?? 0) || kills / deaths,
+    adr: rounds ? Number(stats.damageDealt ?? 0) / rounds : 0,
+    winRate: Number(stats.winRatio ?? (rounds ? wins / rounds : 0)),
+    top10Rate: Number(stats.top10Ratio ?? (rounds ? Number(stats.top10s ?? 0) / rounds : 0)),
+  };
+}
+
+export async function getPlayerBenchmark(
+  profile: PlayerProfile,
+  modeKey: string,
+  ranked: boolean,
+): Promise<PlayerBenchmark | null> {
+  if (!configured()) return null;
+  const url = process.env.SUPABASE_URL!;
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const column = ranked ? "ranked_modes" : "season_modes";
+  const search = new URLSearchParams({
+    select: column,
+    platform: `eq.${profile.platform}`,
+    season_id: `eq.${profile.seasonId}`,
+    limit: "500",
+  });
+  try {
+    const response = await fetch(`${url}/rest/v1/player_season_stats?${search}`, {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+      next: { revalidate: 3600 },
+    });
+    if (!response.ok) return null;
+    const rows = await response.json() as Array<Record<string, Record<string, PlayerModeStats>>>;
+    const sample = rows
+      .map((row) => row[column]?.[modeKey])
+      .filter((stats): stats is PlayerModeStats => Boolean(stats) && Number(stats.roundsPlayed ?? 0) >= 5)
+      .map(benchmarkValue);
+    if (sample.length < 30) return null;
+    const currentStats = (ranked ? profile.rankedModes : profile.seasonModes)[modeKey];
+    if (!currentStats) return null;
+    const current = benchmarkValue(currentStats);
+    const topPercent = (value: number, values: number[]) => {
+      const better = values.filter((sampleValue) => sampleValue > value).length;
+      return Math.max(1, Math.ceil(((better + 1) / (values.length + 1)) * 100));
+    };
+    return {
+      sampleSize: sample.length,
+      metrics: [
+        { label: "K/D", value: current.kd, topPercent: topPercent(current.kd, sample.map((value) => value.kd)) },
+        { label: "ADR", value: current.adr, topPercent: topPercent(current.adr, sample.map((value) => value.adr)) },
+        { label: "승률", value: current.winRate, topPercent: topPercent(current.winRate, sample.map((value) => value.winRate)) },
+        { label: "Top 10", value: current.top10Rate, topPercent: topPercent(current.top10Rate, sample.map((value) => value.top10Rate)) },
+      ],
+    };
+  } catch {
+    return null;
+  }
 }
 
 async function upsert(
@@ -14,7 +80,7 @@ async function upsert(
 ) {
   if (!rows.length) return;
   const url = process.env.SUPABASE_URL!;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY!;
   const search = new URLSearchParams({ on_conflict: conflictColumns });
   const response = await fetch(`${url}/rest/v1/${table}?${search}`, {
     method: "POST",
