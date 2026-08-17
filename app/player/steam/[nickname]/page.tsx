@@ -262,20 +262,20 @@ function profileMetrics(profile: PlayerProfile, queue?: string, selectedMode?: s
   };
   const ranked = selected(profile.rankedModes) ?? preferredMode(profile.rankedModes);
   const season = selected(profile.seasonModes) ?? preferredMode(profile.seasonModes);
-  const primary = queue === "normal" ? season ?? ranked : ranked ?? season;
+  const primary = queue === "normal" ? season : queue === "ranked" ? ranked : ranked ?? season;
   const [modeKey, stats] = primary ?? ["squad-fpp", {}];
   const rounds = Number(stats.roundsPlayed ?? 0);
   const wins = Number(stats.wins ?? 0);
   const kills = Number(stats.kills ?? 0);
-  const deaths = Number(stats.deaths ?? Math.max(rounds - wins, 0));
+  const deaths = Number(stats.deaths ?? 0) || Math.max(rounds - wins, 0);
   return {
     modeKey,
     stats,
-    ranked: primary === ranked,
+    ranked: queue === "ranked" ? true : queue === "normal" ? false : primary === ranked,
     rounds,
     wins,
     kills,
-    kd: stats.kdr ?? (deaths ? kills / deaths : kills),
+    kd: Number(stats.kdr ?? 0) || (deaths ? kills / deaths : kills),
     adr: rounds ? Number(stats.damageDealt ?? 0) / rounds : 0,
   };
 }
@@ -443,9 +443,9 @@ export default async function PlayerPage({
 
         <section className="player-summary">
           <article className="player-tier">
-            <span>현재 경쟁전</span>
-            <strong>{ranked ? tier(stats) : "경쟁전 기록 없음"}</strong>
-            <p>{ranked ? `${number(stats.rankPoints)} RP · ${number(rounds)}경기` : "일반전 시즌 기록을 표시합니다."}</p>
+            <span>{ranked ? "현재 경쟁전" : "현재 일반전"}</span>
+            <strong>{rounds ? ranked ? tier(stats) : modeNames[modeKey] ?? modeKey : "기록 없음"}</strong>
+            <p>{rounds ? ranked ? `${number(stats.rankPoints)} RP · ${number(rounds)}경기` : `${number(rounds)}경기 일반전` : "선택한 모드의 시즌 기록이 없습니다."}</p>
           </article>
           <dl>
             <div><dt>K/D</dt><dd>{number(kd, 2)}</dd></div>
