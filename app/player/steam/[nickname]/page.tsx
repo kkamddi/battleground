@@ -255,10 +255,15 @@ function playStyle(matches: RecentMatch[]) {
   };
 }
 
-function profileMetrics(profile: PlayerProfile) {
-  const ranked = preferredMode(profile.rankedModes);
-  const season = preferredMode(profile.seasonModes);
-  const [modeKey, stats] = ranked ?? season ?? ["squad-fpp", {}];
+function profileMetrics(profile: PlayerProfile, queue?: string, selectedMode?: string) {
+  const selected = (modes: Record<string, PlayerModeStats>) => {
+    const stats = selectedMode ? modes[selectedMode] : undefined;
+    return stats && Number(stats.roundsPlayed ?? 0) > 0 ? [selectedMode, stats] as [string, PlayerModeStats] : undefined;
+  };
+  const ranked = selected(profile.rankedModes) ?? preferredMode(profile.rankedModes);
+  const season = selected(profile.seasonModes) ?? preferredMode(profile.seasonModes);
+  const primary = queue === "normal" ? season ?? ranked : ranked ?? season;
+  const [modeKey, stats] = primary ?? ["squad-fpp", {}];
   const rounds = Number(stats.roundsPlayed ?? 0);
   const wins = Number(stats.wins ?? 0);
   const kills = Number(stats.kills ?? 0);
@@ -266,13 +271,51 @@ function profileMetrics(profile: PlayerProfile) {
   return {
     modeKey,
     stats,
-    ranked: Boolean(ranked),
+    ranked: primary === ranked,
     rounds,
     wins,
     kills,
     kd: stats.kdr ?? (deaths ? kills / deaths : kills),
     adr: rounds ? Number(stats.damageDealt ?? 0) / rounds : 0,
   };
+}
+
+function coachReport(matches: RecentMatch[]) {
+  const sample = matches.slice(0, 10);
+  const games = sample.length || 1;
+  const average = recentAverage(sample);
+  const total = (key: "assists" | "dbnos" | "revives") => sample.reduce((sum, match) => sum + match[key], 0);
+  const top10Rate = sample.filter((match) => match.placement > 0 && match.placement <= 10).length / games;
+  const rideDistance = sample.reduce((sum, match) => sum + match.rideDistance, 0);
+  const totalDistance = sample.reduce((sum, match) => sum + match.rideDistance + match.walkDistance, 0);
+  const categories = [
+    { name: "교전", value: Math.round(score(average.damage, 70, 400) * .55 + score(average.kills, .3, 3) * .45) },
+    { name: "생존", value: Math.round(score(average.survival, 420, 1_500) * .55 + top10Rate * 45) },
+    { name: "운영", value: Math.round(score(average.movement, 1_000, 7_000) * .6 + (totalDistance ? rideDistance / totalDistance : 0) * 40) },
+    { name: "팀 기여", value: Math.round(score((total("assists") + total("revives")) / games, 0, 2) * .7 + score(total("dbnos") / games, 0, 2.5) * .3) },
+  ].map((category) => ({ ...category, value: Math.max(0, Math.min(100, category.value)) }));
+
+  const damagePerKill = average.damage / Math.max(average.kills, .25);
+  const weakest = [...categories].sort((a, b) => a.value - b.value)[0];
+  let diagnosis = weakest.name === "교전"
+    ? "생존과 운영에 비해 교전 성과가 낮습니다. 유리한 자리에서 먼저 사격할 수 있는 교전을 선택해 보세요."
+    : weakest.name === "생존"
+      ? "교전 성과에 비해 생존 지표가 낮습니다. 교전 직후 정비와 다음 안전 구역 진입을 앞당겨 보세요."
+      : weakest.name === "운영"
+        ? "전투 성과에 비해 이동과 운영 지표가 낮습니다. 첫 자기장부터 이동 수단과 다음 거점을 준비해 보세요."
+        : "개인 전투 지표는 강점이지만 팀 기여는 보완할 여지가 있습니다. 팀 간격을 좁혀 함께 사격할 기회를 늘려 보세요.";
+  if (average.damage >= 180 && average.kills < 1) diagnosis = "피해량에 비해 킬 전환이 낮습니다. 첫 타격 이후 확정 각과 팀의 집중 사격을 연결하는 과정이 핵심입니다.";
+  else if (average.kills >= 1.5 && top10Rate < .3) diagnosis = "초중반 교전 성과는 좋지만 후반 진입률이 낮습니다. 교전 직후 정비 시간을 줄이고 다음 안전 구역을 먼저 잡는 편이 유리합니다.";
+  else if (top10Rate >= .5 && average.damage < 150) diagnosis = "후반까지 살아남는 운영은 안정적이지만 유효 교전이 적습니다. 유리한 지형에서 먼저 사격할 수 있는 자리를 만드는 것이 다음 단계입니다.";
+
+  const missions: string[] = [];
+  if (damagePerKill > 180 || (average.damage >= 140 && average.kills < 1)) missions.push("다운을 만든 교전은 시야를 유지해 킬 전환률을 높이기");
+  if (top10Rate < .4) missions.push("첫 10분 생존과 Top 10 진입을 우선 목표로 잡기");
+  if (average.movement < 2_500) missions.push("첫 자기장 확정 뒤 이동 수단과 다음 거점을 먼저 확보하기");
+  if ((total("assists") + total("revives")) / games < .7) missions.push("교전 전 팀 간격을 좁혀 어시스트·부활 기회를 만들기");
+  if (!missions.length) missions.push("현재 강점을 유지하며 최근 평균 피해량을 10% 높이기");
+
+  return { categories, diagnosis, missions: missions.slice(0, 2), games: sample.length };
 }
 
 export async function generateMetadata({
@@ -294,10 +337,10 @@ export default async function PlayerPage({
   searchParams,
 }: {
   params: Promise<{ nickname: string; platform?: string }>;
-  searchParams: Promise<{ compare?: string }>;
+  searchParams: Promise<{ compare?: string; mode?: string; queue?: string }>;
 }) {
   const { nickname, platform: routePlatform } = await params;
-  const { compare } = await searchParams;
+  const { compare, mode, queue } = await searchParams;
   if (routePlatform && routePlatform !== "kakao") notFound();
   const platform: PubgPlatform = routePlatform === "kakao" ? "kakao" : "steam";
   const platformName = platform === "kakao" ? "Kakao" : "Steam";
@@ -335,7 +378,18 @@ export default async function PlayerPage({
     );
   }
 
-  const { modeKey, stats, ranked, rounds, wins, kills, kd, adr } = profileMetrics(profile);
+  const { modeKey, stats, ranked, rounds, wins, kills, kd, adr } = profileMetrics(profile, queue, mode);
+  const modeSource = ranked ? profile.rankedModes : profile.seasonModes;
+  const availableModes = Object.entries(modeSource)
+    .filter(([, value]) => Number(value.roundsPlayed ?? 0) > 0)
+    .sort((a, b) => Number(b[1].roundsPlayed ?? 0) - Number(a[1].roundsPlayed ?? 0));
+  const playerPath = `/player/${platform}/${encodeURIComponent(profile.name)}`;
+  const reportLink = (nextQueue: "ranked" | "normal", nextMode?: string) => {
+    const query = new URLSearchParams({ queue: nextQueue });
+    if (nextMode) query.set("mode", nextMode);
+    if (compare) query.set("compare", compare);
+    return `${playerPath}?${query}`;
+  };
   const maps = groupMatches(profile.recentMatches, "mapName");
   const modes = groupMatches(profile.recentMatches, "gameMode");
   const style = playStyle(profile.recentMatches);
@@ -357,6 +411,7 @@ export default async function PlayerPage({
   const trendMatches = profile.recentMatches.slice(0, 10).reverse();
   const maxTrendDamage = Math.max(1, ...trendMatches.map((match) => match.damage));
   const winRate = ratio(stats.winRatio ?? (rounds ? wins / rounds : 0));
+  const coach = coachReport(profile.recentMatches);
 
   return (
     <main>
@@ -371,6 +426,20 @@ export default async function PlayerPage({
           <PlayerSearchForm compact platform={platform} />
         </section>
         <PlayerTools nickname={profile.name} platform={platform} />
+
+        <nav className="player-mode-filter" aria-label="전적 유형과 모드 선택">
+          <div>
+            <a className={ranked ? "active" : ""} href={reportLink("ranked")}>경쟁전</a>
+            <a className={!ranked ? "active" : ""} href={reportLink("normal")}>일반전</a>
+          </div>
+          <div>
+            {availableModes.map(([key]) => (
+              <a className={key === modeKey ? "active" : ""} href={reportLink(ranked ? "ranked" : "normal", key)} key={key}>
+                {modeNames[key] ?? key}
+              </a>
+            ))}
+          </div>
+        </nav>
 
         <section className="player-summary">
           <article className="player-tier">
@@ -424,6 +493,26 @@ export default async function PlayerPage({
           <div><span>헤드샷 비중</span><strong>{ratio(recentKills ? recentHeadshots / recentKills : 0)}</strong></div>
           <div><span>팀 기여</span><strong>경기당 {number(teamActions / recentGames, 1)}회</strong></div>
           <div><span>평균 이동</span><strong>{number(recent.movement / 1000, 1)}km</strong></div>
+        </section>
+
+        <section className="player-coach-report">
+          <div className="home-section-head">
+            <div><span>BGI COACH</span><h2>왜 이런 전적이 나왔을까?</h2></div>
+            <p>최근 경기의 플레이 결과를 네 가지 축으로 분석했습니다.</p>
+          </div>
+          <div className="coach-score-grid">
+            {coach.categories.map((category) => (
+              <article key={category.name}>
+                <span>{category.name}</span><strong>{category.value}</strong>
+                <i><b style={{ width: `${category.value}%` }} /></i>
+              </article>
+            ))}
+          </div>
+          <div className="coach-guidance">
+            <article><span>분석</span><p>{coach.diagnosis}</p></article>
+            <article><span>다음 경기 미션</span><ol>{coach.missions.map((mission) => <li key={mission}>{mission}</li>)}</ol></article>
+          </div>
+          <small>점수는 최근 경기 안에서 확인되는 피해량·킬·생존·이동·팀 기여 지표를 BGI 기준으로 환산한 참고 지표입니다.</small>
         </section>
 
         <PlayerShareCard

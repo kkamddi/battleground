@@ -19,6 +19,13 @@ export default function PlayerSearchForm({
     event.preventDefault();
     const value = nickname.trim();
     if (!value) return;
+    try {
+      const playerKey = `${platform}:${value}`;
+      const stored = JSON.parse(window.localStorage.getItem("bgi-recent-players") ?? "[]");
+      const recent = Array.isArray(stored) ? stored.filter((item) => item !== playerKey) : [];
+      window.localStorage.setItem("bgi-recent-players", JSON.stringify([playerKey, ...recent].slice(0, 8)));
+      window.dispatchEvent(new Event("bgi-recent-players-change"));
+    } catch {}
     router.push(`/player/${platform}/${encodeURIComponent(value)}`);
   }
 

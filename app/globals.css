@@ -637,6 +637,8 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .favorite-player-list small { color: var(--muted); font-size: 9px; grid-column: 2; }
 .favorite-player-list button { background: transparent; border: 0; border-left: 1px solid var(--line); color: var(--muted); cursor: pointer; font-size: 9px; padding: 0 9px; }
 .favorite-player-list button:hover { background: #f4e9e7; color: #9a3932; }
+.recent-player-block { border-top: 1px dashed var(--line); margin-top: 24px; padding-top: 24px; }
+.recent-player-list article { display: block; }
 .ranker-intro {
   align-items: end;
   display: flex;
@@ -709,6 +711,10 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .player-tools form button { background: var(--ink); color: white; }
 .player-tools button.favorite-active { background: #e9f2ec; border-color: #9fc4ac; color: var(--point); }
 .player-tools > div { display: flex; gap: 8px; }
+.player-mode-filter { align-items: center; border-bottom: 1px solid var(--line); display: flex; gap: 20px; justify-content: space-between; padding: 14px 0; }
+.player-mode-filter > div { display: flex; flex-wrap: wrap; gap: 7px; }
+.player-mode-filter a { border: 1px solid var(--line); color: var(--muted); font-size: 11px; font-weight: 700; padding: 8px 11px; }
+.player-mode-filter a:hover, .player-mode-filter a.active { background: var(--ink); border-color: var(--ink); color: white; }
 .player-summary { display: grid; grid-template-columns: 280px 1fr; margin-top: 30px; }
 .player-tier { background: var(--ink); color: white; padding: 25px; }
 .player-tier > span { color: #75c894; display: block; font-size: 10px; font-weight: 800; margin-bottom: 22px; }
@@ -737,6 +743,19 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
 .player-report-facts > div:last-child { border-right: 0; }
 .player-report-facts span { color: var(--muted); display: block; font-size: 11px; margin-bottom: 6px; }
 .player-report-facts strong { font-size: 15px; }
+.player-coach-report { border: 1px solid var(--line); margin-top: 18px; padding: 26px 28px; }
+.coach-score-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, 1fr); margin-top: 22px; }
+.coach-score-grid article { background: var(--panel); border-top: 3px solid var(--ink); padding: 15px; }
+.coach-score-grid span { color: var(--muted); font-size: 11px; }
+.coach-score-grid strong { display: block; font-size: 29px; margin: 7px 0 10px; }
+.coach-score-grid i { background: #dce2dd; display: block; height: 5px; }
+.coach-score-grid b { background: var(--point); display: block; height: 100%; }
+.coach-guidance { display: grid; gap: 20px; grid-template-columns: 1fr 1fr; margin-top: 20px; }
+.coach-guidance article { border-top: 1px solid var(--line); padding-top: 15px; }
+.coach-guidance span { color: var(--point); font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+.coach-guidance p, .coach-guidance ol { font-size: 14px; line-height: 1.7; margin: 8px 0 0; }
+.coach-guidance ol { padding-left: 20px; }
+.player-coach-report > small { color: var(--muted); display: block; font-size: 10px; margin-top: 18px; }
 .player-share-card {
   align-items: center;
   background: var(--panel);
@@ -1191,6 +1210,7 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   .player-report-facts { grid-template-columns: repeat(2, 1fr); }
   .player-report-facts > div:nth-child(2) { border-right: 0; }
   .player-report-facts > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .coach-score-grid { grid-template-columns: repeat(2, 1fr); }
   .player-analysis-grid { grid-template-columns: 1fr; }
   .player-analysis-grid article + article { border-left: 1px solid var(--line); border-top: 0; }
   .match-detail-body { grid-template-columns: repeat(3, 1fr); padding-left: 174px; row-gap: 18px; }
@@ -1240,8 +1260,10 @@ footer > div { display: flex; font-size: 10px; gap: 18px; justify-content: flex-
   }
   .ranker-table-head span:last-child, .ranker-list a > span:last-child { display: none; }
   .player-tools { align-items: stretch; flex-direction: column; }
+  .player-mode-filter { align-items: flex-start; flex-direction: column; }
   .player-tools > div { display: grid; grid-template-columns: 1fr 1fr; }
   .player-share-card { align-items: stretch; grid-template-columns: 1fr; }
+  .coach-guidance { grid-template-columns: 1fr; }
   .player-summary > dl { grid-template-columns: repeat(2, 1fr); }
   .player-summary > dl > div:nth-child(3n) { border-right: 1px solid var(--line); }
   .player-summary > dl > div:nth-child(2n) { border-right: 0; }
