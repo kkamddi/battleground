@@ -12,17 +12,17 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "PUBG 전적 검색·경쟁전 랭킹",
-  description: "Steam·Kakao PUBG 닉네임 전적 검색과 경쟁전 상위 플레이어의 최근 무기·파츠 리포트를 확인하세요.",
-  keywords: ["PUBG 전적검색", "배틀그라운드 전적검색", "PUBG 닉네임 검색", "배틀그라운드 경쟁전 랭킹"],
+  title: "배그 전적검색 | PUBG 전적·플레이 분석",
+  description: "Steam·Kakao 배그 닉네임으로 시즌 전적, 최근 매치, 플레이 스타일과 맞춤 분석을 확인하세요.",
+  keywords: ["배그 전적검색", "배틀그라운드 전적검색", "PUBG 전적검색", "배그 닉네임 검색", "배틀그라운드 경쟁전 랭킹"],
   alternates: { canonical: "/players" },
   openGraph: {
     type: "website",
     locale: "ko_KR",
     url: "/players",
     siteName: "BGI",
-    title: "PUBG 전적 검색·경쟁전 랭킹",
-    description: "Steam·Kakao PUBG 닉네임 전적과 경쟁전 상위 플레이어 리포트를 확인하세요.",
+    title: "배그 전적검색 | PUBG 전적·플레이 분석",
+    description: "Steam·Kakao 배그 닉네임 전적과 BGI 플레이 분석을 확인하세요.",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "BGI PUBG 전적 검색" }],
   },
 };
@@ -106,8 +106,8 @@ export default async function PlayersPage() {
       <div className="page-shell players-shell">
         <section className="players-heading">
           <span>PLAYER SEARCH</span>
-          <h1>전적 검색</h1>
-          <p>게임 내 닉네임으로 최근 전적, 플레이 스타일, 킬 무기와 자주 쓰는 파츠를 확인합니다.</p>
+          <h1>배그 전적검색</h1>
+          <p>닉네임으로 시즌 전적, 최근 매치와 BGI 플레이 분석을 확인합니다.</p>
           <div className="players-search-box">
             <PlayerSearchForm />
           </div>

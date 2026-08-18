@@ -424,9 +424,23 @@ export async function generateMetadata({
   const { nickname, platform } = await params;
   const decoded = decodeURIComponent(nickname);
   const platformName = platform === "kakao" ? "Kakao" : "Steam";
+  const platformKey = platform === "kakao" ? "kakao" : "steam";
+  const canonical = `/player/${platformKey}/${encodeURIComponent(decoded)}`;
+  const title = `${decoded} 배그 전적 · 플레이 분석`;
+  const description = `${decoded}의 ${platformName} 배그 시즌 전적, 최근 매치, 플레이 스타일과 BGI 맞춤 분석을 확인하세요.`;
   return {
-    title: `${decoded} ${platformName} PUBG 전적`,
-    description: `${decoded}의 ${platformName} PUBG 현재 시즌 경쟁전과 최근 매치 전적을 확인하세요.`,
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      locale: "ko_KR",
+      url: canonical,
+      siteName: "BGI",
+      title,
+      description,
+      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${decoded} 배그 전적` }],
+    },
   };
 }
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { LanguageRuntime } from "../components/LanguageToggle";
 import "./globals.css";
@@ -8,12 +9,13 @@ const siteUrl = "https://bgi.pwkor.com";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "PUBG 전적검색·총기·맵 정보 | BGI",
+    default: "배그 전적검색·전적 분석·총기·맵 | BGI",
     template: "%s | BGI",
   },
-  description: "Steam·Kakao PUBG 전적검색과 경쟁전 랭킹, 총기 스펙·파츠 추천, 패치노트와 맵 정보를 확인하세요.",
+  description: "Steam·Kakao 배틀그라운드(배그) 전적검색, 플레이 분석과 경쟁전 랭킹, 총기·파츠·맵·패치 정보를 확인하세요.",
   applicationName: "BGI",
-  keywords: ["배틀그라운드 전적검색", "PUBG 전적검색", "PUBG", "경쟁전 랭킹", "총기 스펙", "파츠 추천", "배틀그라운드 지도", "패치노트"],
+  keywords: ["배그 전적검색", "배틀그라운드 전적검색", "PUBG 전적검색", "배그 닉네임 검색", "배그 통계", "경쟁전 랭킹", "총기 스펙", "파츠 추천", "배틀그라운드 지도", "패치노트"],
+  category: "games",
   creator: "BGI",
   publisher: "BGI",
   verification: {
@@ -33,14 +35,14 @@ export const metadata: Metadata = {
     locale: "ko_KR",
     url: siteUrl,
     siteName: "BGI",
-    title: "PUBG 전적검색·총기·맵 정보 | BGI",
-    description: "Steam·Kakao PUBG 전적검색, 경쟁전 랭킹, 총기·파츠와 맵 정보.",
+    title: "배그 전적검색·플레이 분석 | BGI",
+    description: "Steam·Kakao 배그 전적검색, 플레이 분석, 경쟁전 랭킹과 총기·맵 정보.",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "BGI — BattleGround Information" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PUBG 전적검색·총기·맵 정보 | BGI",
-    description: "Steam·Kakao PUBG 전적검색, 경쟁전 랭킹, 총기·파츠와 맵 정보.",
+    title: "배그 전적검색·플레이 분석 | BGI",
+    description: "Steam·Kakao 배그 전적검색, 플레이 분석, 경쟁전 랭킹과 총기·맵 정보.",
     images: ["/opengraph-image"],
   },
   robots: {
@@ -83,6 +85,12 @@ export default function RootLayout({
         <LanguageRuntime />
         {children}
         <Analytics />
+        <Script
+          data-cf-beacon='{"token":"4dde6b7444214f22bde4246ae9571a9c"}'
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          strategy="afterInteractive"
+          type="module"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd).replace(/</g, "\\u003c") }}
