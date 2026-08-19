@@ -15,11 +15,11 @@ export const metadata: Metadata = {
   title: "배그 전적검색 | PUBG 전적·플레이 분석",
   description: "Steam·Kakao 배그 닉네임으로 시즌 전적, 최근 매치, 플레이 스타일과 맞춤 분석을 확인하세요.",
   keywords: ["배그 전적검색", "배틀그라운드 전적검색", "PUBG 전적검색", "배그 닉네임 검색", "배틀그라운드 경쟁전 랭킹"],
-  alternates: { canonical: "/players" },
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "ko_KR",
-    url: "/players",
+    url: "/",
     siteName: "BGI",
     title: "배그 전적검색 | PUBG 전적·플레이 분석",
     description: "Steam·Kakao 배그 닉네임 전적과 BGI 플레이 분석을 확인하세요.",
