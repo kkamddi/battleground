@@ -30,6 +30,8 @@ export default function WeaponsPage() {
           <h1>총기 도감</h1>
           <p>현재 스펙, 최근 변경과 실전 파츠 조합을 총기 상세에서 함께 확인합니다. 총 {weapons.length}종.</p>
           <a className="progressive-index-link" href="/weapons/progressive">성장형 스킨 도감 46종 →</a>
+          <br />
+          <a className="progressive-index-link" href="/weapons/compare">인기 총기 1:1 비교 →</a>
         </header>
 
         <section className="weapon-feature-grid">

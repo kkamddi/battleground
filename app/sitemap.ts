@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
 import { weapons } from "../lib/catalog";
 import { mapSlugs } from "../lib/mapData";
+import { weaponComparisons } from "../lib/weaponComparisons";
 
 const siteUrl = "https://bgi.pwkor.com";
 const lastModified = new Date("2026-08-19T00:00:00+09:00");
+const comparisonLastModified = new Date("2026-08-26T00:00:00+09:00");
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
@@ -25,6 +27,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: route.changeFrequency,
       priority: route.priority,
     })),
+    {
+      url: `${siteUrl}/weapons/compare`,
+      lastModified: comparisonLastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    },
     ...mapSlugs.map((slug) => ({
       url: `${siteUrl}/maps/${slug}`,
       lastModified,
@@ -36,6 +44,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
       changeFrequency: "monthly" as const,
       priority: 0.7,
+    })),
+    ...weaponComparisons.map((comparison) => ({
+      url: `${siteUrl}/weapons/compare/${comparison.slug}`,
+      lastModified: comparisonLastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
     })),
   ];
 }
