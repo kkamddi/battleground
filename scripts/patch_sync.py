@@ -12,8 +12,6 @@ from supabase_rest import SupabaseRest
 
 NEWS_URL = "https://pubg.com/en/news?category=patch_notes"
 USER_AGENT = "BGI-Patch-Monitor/1.0 (+https://bgi.pwkor.com)"
-PATCH_RELEASES = {"42.3": "2026-08-12"}
-
 CATEGORY_RULES = (
     ("weapon", re.compile(r"\b(weapon|gun|rifle|smg|dmr|sniper|shotgun|pistol|damage|recoil|velocity|rpm)\b", re.I)),
     ("attachment", re.compile(r"\b(attachment|grip|muzzle|magazine|stock|scope|sight)\b", re.I)),
@@ -78,6 +76,16 @@ def page_text(document: str) -> str:
     parser = TextExtractor()
     parser.feed(document)
     return html.unescape("\n".join(parser.parts))
+
+
+def iso_date(text: str, pattern: str) -> str | None:
+    match = re.search(pattern, text, re.I)
+    if not match:
+        return None
+    year, month, day = (int(value) for value in match.groups())
+    if year < 100:
+        year += 2000
+    return f"{year:04d}-{month:02d}-{day:02d}T00:00:00Z"
 
 
 def patch_links(document: str) -> list[str]:
@@ -198,28 +206,43 @@ def candidates(url: str, document: str) -> list[dict[str, object]]:
     return result[:120]
 
 
+def version_dates(document: str) -> tuple[str | None, str | None, str | None]:
+    text = page_text(document)
+    title = re.search(r"Patch Notes\s*-\s*Update\s*[0-9.]+", text, re.I)
+    nearby = text[title.end():title.end() + 800] if title else text
+    published = iso_date(nearby, r"\b(20\d{2})[./-](\d{1,2})[./-](\d{1,2})\b")
+    pc_applied = iso_date(text, r"\bPC:\s*(\d{2})/(\d{1,2})/(\d{1,2})\b")
+    console_applied = iso_date(text, r"\bConsole:\s*(\d{2})/(\d{1,2})/(\d{1,2})\b")
+    return published, pc_applied, console_applied
+
+
 def main() -> None:
     database = SupabaseRest()
     detected: list[dict[str, object]] = []
     for url in patch_links(fetch(NEWS_URL)):
-        page_candidates = candidates(url, fetch(url))
+        document = fetch(url)
+        page_candidates = candidates(url, document)
         detected.extend(page_candidates)
         if page_candidates:
             first = page_candidates[0]
             version = str(first["detected_version"])
+            published_at, pc_applied_at, console_applied_at = version_dates(document)
             version_row = {
                 "version": version,
                 "title": first["title"],
                 "source_url": url,
-                "status": "published" if version in PATCH_RELEASES else "draft",
+                "status": "published",
             }
-            if version in PATCH_RELEASES:
-                version_row["pc_applied_at"] = PATCH_RELEASES[version]
+            if published_at:
+                version_row["published_at"] = published_at
+            if pc_applied_at:
+                version_row["pc_applied_at"] = pc_applied_at
+            if console_applied_at:
+                version_row["console_applied_at"] = console_applied_at
             database.upsert(
                 "patch_versions",
                 [version_row],
                 on_conflict="version",
-                ignore_duplicates=version not in PATCH_RELEASES,
             )
     database.upsert(
         "patch_candidates",
