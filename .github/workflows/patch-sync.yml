@@ -2,8 +2,8 @@ name: BGI patch sync
 
 on:
   schedule:
-    # Wednesday and Thursday at 10:07 KST. GitHub may start scheduled jobs later.
-    - cron: "7 1 * * 3,4"
+    # Wednesday at 10:07 KST. GitHub may start scheduled jobs later.
+    - cron: "7 1 * * 3"
   workflow_dispatch:
 
 permissions:
