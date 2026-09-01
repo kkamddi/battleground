@@ -43,10 +43,6 @@ jobs:
           python-version: "3.12"
       - name: Seed the curated catalog
         run: python scripts/catalog_seed.py
-      - name: Detect official patch notes
-        run: python scripts/patch_sync.py
-      - name: Publish pending patch review digest
-        run: python scripts/pending_patch_digest.py
       - name: Refresh official progressive-skin references
         run: python scripts/progressive_sync.py
       - name: Aggregate PUBG telemetry sample
