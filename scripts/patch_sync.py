@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import html
+import os
 import re
 import urllib.request
 from html.parser import HTMLParser
@@ -230,13 +231,20 @@ def version_dates(document: str) -> tuple[str | None, str | None, str | None]:
 def main() -> None:
     database = SupabaseRest()
     detected: list[dict[str, object]] = []
-    for url in patch_links(fetch(NEWS_URL)):
+    new_versions: list[str] = []
+    for index, url in enumerate(patch_links(fetch(NEWS_URL))):
         document = fetch(url)
         page_candidates = candidates(url, document)
         detected.extend(page_candidates)
         if page_candidates:
             first = page_candidates[0]
             version = str(first["detected_version"])
+            existing = database.request(
+                "patch_versions",
+                params={"version": f"eq.{version}", "select": "id", "limit": "1"},
+            )
+            if index == 0 and not existing:
+                new_versions.append(version)
             published_at, pc_applied_at, console_applied_at = version_dates(document)
             version_row = {
                 "version": version,
@@ -261,7 +269,13 @@ def main() -> None:
         on_conflict="source_url,source_hash",
         ignore_duplicates=True,
     )
+    output_path = os.getenv("GITHUB_OUTPUT")
+    if output_path:
+        with open(output_path, "a", encoding="utf-8") as output:
+            output.write(f"new_patch={'true' if new_versions else 'false'}\n")
+            output.write(f"versions={','.join(new_versions)}\n")
     print(f"Staged {len(detected)} conservative patch candidates for review.")
+    print(f"New latest patch detected: {', '.join(new_versions) if new_versions else 'none'}")
 
 
 if __name__ == "__main__":

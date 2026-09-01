@@ -2,8 +2,9 @@ name: BGI patch sync
 
 on:
   schedule:
-    # Wednesday at 10:07 KST. GitHub may start scheduled jobs later.
-    - cron: "7 1 * * 3"
+    # Every four hours on Wednesday KST. GitHub may start scheduled jobs later.
+    - cron: "7 15,19,23 * * 2"
+    - cron: "7 3,7,11 * * 3"
   workflow_dispatch:
 
 permissions:
@@ -22,10 +23,41 @@ jobs:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Resolve the KST date
+        id: date
+        shell: bash
+        run: echo "kst=$(TZ=Asia/Seoul date +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: Check whether today's patch was already detected
+        id: detected-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .patch-sync-marker
+          key: bgi-patch-detected-${{ steps.date.outputs.kst }}
+
       - uses: actions/setup-python@v5
+        if: ${{ steps.detected-cache.outputs.cache-hit != 'true' }}
         with:
           python-version: "3.12"
       - name: Detect and publish official patch notes
+        id: detect
+        if: ${{ steps.detected-cache.outputs.cache-hit != 'true' }}
         run: python scripts/patch_sync.py
       - name: Publish patch review digest
+        if: ${{ steps.detected-cache.outputs.cache-hit != 'true' }}
         run: python scripts/pending_patch_digest.py
+
+      - name: Mark today's patch as detected
+        if: ${{ steps.detect.outputs.new_patch == 'true' }}
+        shell: bash
+        run: |
+          mkdir -p .patch-sync-marker
+          printf '%s\n' "${{ steps.detect.outputs.versions }}" > .patch-sync-marker/versions.txt
+
+      - name: Stop later checks for today
+        if: ${{ steps.detect.outputs.new_patch == 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: .patch-sync-marker
+          key: bgi-patch-detected-${{ steps.date.outputs.kst }}
